@@ -9,20 +9,14 @@ import team.frostfield.xtrafight.builders.minecraft.GameRulesBuilder.EnumValue;
 import team.frostfield.xtrafight.builders.minecraft.GameRulesBuilder.SynchronizedGameRule;
 import team.frostfield.xtrafight.cls.lists.BasicArrayList;
 import team.frostfield.xtrafight.cls.lists.BasicList;
-import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
-import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
-import team.frostfield.xtrafight.events.bus.ModBus;
 
 @Experimental
-public class XtraFightAPIGameRules implements ILoadableClass {
+public class XtraFightAPIGameRules {
     private static final BasicList<SynchronizedGameRule<?>> GAME_RULES = new BasicArrayList<>();
 
-    public static final SynchronizedGameRule<BooleanValue> BOOLEAN_GAMERULE = registerBoolean("booleanVal", Category.PLAYER, false, true);
+     // Used for testing purposes
+   // public static final SynchronizedGameRule<BooleanValue> BOOLEAN_GAMERULE = registerBoolean("booleanVal", Category.PLAYER, false, true);
 
-    @Invoke
-    private XtraFightAPIGameRules(ModBus modBus) {
-        modBus.run(this::register);
-    }
 
     private static SynchronizedGameRule<BooleanValue> registerBoolean(String name, Category category, boolean defaultValue, boolean syncToAllPlayers) {
         SynchronizedGameRule<BooleanValue> boolRule = GameRulesBuilder.newBoolean(name, category, defaultValue, syncToAllPlayers);

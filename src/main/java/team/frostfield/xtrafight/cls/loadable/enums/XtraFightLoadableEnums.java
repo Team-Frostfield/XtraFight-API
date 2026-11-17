@@ -1,19 +1,18 @@
 package team.frostfield.xtrafight.cls.loadable.enums;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
 import team.frostfield.xtrafight.client.sound.data.XtraFightAPISoundsManager;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.config.XtraFightAPIConfigs;
-import team.frostfield.xtrafight.gameassets.XtraFightAPIGameRules;
 import team.frostfield.xtrafight.gameassets.XtraFightAPIKeyMappings;
 import team.frostfield.xtrafight.gameassets.XtraFightAPISkillDataKeys;
 import team.frostfield.xtrafight.gameassets.XtraFightAPISkills;
 import team.frostfield.xtrafight.network.XtraFightAPINetworkManager;
-import org.jetbrains.annotations.ApiStatus.Internal;
 
 @Internal
 public enum XtraFightLoadableEnums implements LoadableEnum {
     NETWORK_MANAGER(XtraFightAPINetworkManager.class),
-    GAME_RULES(XtraFightAPIGameRules.class),
+    // GAME_RULES(XtraFightAPIGameRules.class),
     CONFIG(XtraFightAPIConfigs.class),
     SOUND_MANAGER(XtraFightAPISoundsManager.class),
     SKILLS(XtraFightAPISkills.class),

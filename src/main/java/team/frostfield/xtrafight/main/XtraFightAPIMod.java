@@ -4,7 +4,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import team.frostfield.xtrafight.cls.loadable.LoadableClassManager;
 import team.frostfield.xtrafight.cls.loadable.enums.XtraFightLoadableEnums;
 import team.frostfield.xtrafight.compat.plugin.CompatibilityPluginsManager;
@@ -12,7 +11,6 @@ import team.frostfield.xtrafight.compat.plugin.ExamplePlugin;
 import team.frostfield.xtrafight.events.bus.ModBus;
 import team.frostfield.xtrafight.events.bus.NeoBus;
 import team.frostfield.xtrafight.events.xtrafight_api.dispatch.DispatchingEvent;
-import team.frostfield.xtrafight.events.xtrafight_api.registry.EntityPatchDispatchEvent;
 import team.frostfield.xtrafight.input.XtraFightAPIInputActions;
 import team.frostfield.xtrafight.skills.XtraFightAPISkillCategories;
 import team.frostfield.xtrafight.skills.XtraFightSkillSlots;
@@ -34,14 +32,8 @@ public final class XtraFightAPIMod implements XtraFightAPI {
         this.doEpicAPIStuff();
     }
 
-    private void modConstruct(FMLConstructModEvent event) {
-        EntityPatchDispatchEvent entityPatchEH = new EntityPatchDispatchEvent();
-        event.enqueueWork(entityPatchEH::post);
-    }
-
     private void doEpicAPIStuff() {
         DispatchingEvent.postEvent();
-        this.modBus.addListener(this::modConstruct);
         LoadableClassManager.loadEnum(this.modBus, XtraFightLoadableEnums.values());
         CompatibilityPluginsManager.registerPlugins(this.modBus, ExamplePlugin.class);
         SkillSlot.ENUM_MANAGER.registerEnumCls(XtraFightAPI.MOD_ID, XtraFightSkillSlots.class);

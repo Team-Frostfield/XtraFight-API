@@ -7,19 +7,12 @@ import team.frostfield.xtrafight.events.xtrafight_api.player.AddPlayerMotionsDis
 import team.frostfield.xtrafight.events.xtrafight_api.player.CounterAttackDispatchEvent;
 import team.frostfield.xtrafight.events.xtrafight_api.player.HeavyAttackDispatchEvent;
 import team.frostfield.xtrafight.events.xtrafight_api.registry.CameraAnimationRegistryDispatchEvent;
-import team.frostfield.xtrafight.events.xtrafight_api.registry.EntityPatchDispatchEvent;
 import team.frostfield.xtrafight.events.xtrafight_api.skill.AddGuardMotionsDispatchEvent;
 
 public class XtraFightAPIDispatchableEvents {
 
     public static class Registry {
         private Registry(){}
-        /* combines:
-           EntityPatchRegistryEvent
-           RegisterPatchedRenderersEvent.AddEntity
-           into 1 event
-        */
-        public static final EventDispatch<EntityPatchDispatchEvent> ENTITY_PATCH = EventDispatch.createDispatchable();
         // registers camera animations
         public static final EventDispatch<CameraAnimationRegistryDispatchEvent> CAMERA_ANIMATIONS = EventDispatch.createDispatchable();
     }

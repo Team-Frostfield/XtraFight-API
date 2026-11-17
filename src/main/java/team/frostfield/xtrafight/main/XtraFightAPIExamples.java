@@ -25,8 +25,7 @@ import team.frostfield.xtrafight.animation.types.SimpleMovementAnimation;
 import team.frostfield.xtrafight.animation.types.SimpleStaticAnimation;
 import team.frostfield.xtrafight.animation.types.joints.JointMasks;
 import team.frostfield.xtrafight.builders.epicfight.ArmatureBuilder;
-import team.frostfield.xtrafight.builders.epicfight.ArmatureBuilder.ArmatureTypes;
-import team.frostfield.xtrafight.builders.epicfight.EntityPatchBuilder;
+import team.frostfield.xtrafight.builders.epicfight.ArmatureBuilder.ArmatureType;
 import team.frostfield.xtrafight.builders.epicfight.MeshBuilder;
 import team.frostfield.xtrafight.builders.epicfight.MeshBuilder.MeshTypes;
 import team.frostfield.xtrafight.builders.epicfight.excap.deferred.DeferredCapabilityBuilder;
@@ -44,7 +43,6 @@ import team.frostfield.xtrafight.events.bus.ModBus;
 import team.frostfield.xtrafight.events.bus.NeoBus;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventPriority;
 import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
-import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.dispatch.DispatchingEvent;
 import team.frostfield.xtrafight.utils.EnvironmentHelper.Environments;
 import yesman.epicfight.api.animation.AnimationManager;
@@ -53,14 +51,10 @@ import yesman.epicfight.api.animation.LivingMotions;
 import yesman.epicfight.api.client.animation.Layer;
 import yesman.epicfight.api.client.animation.Layer.LayerType;
 import yesman.epicfight.api.client.animation.Layer.Priority;
-import yesman.epicfight.api.client.model.Meshes;
 import yesman.epicfight.api.client.model.Meshes.MeshAccessor;
 import yesman.epicfight.api.client.model.SkinnedMesh;
 import yesman.epicfight.client.mesh.HumanoidMesh;
 import yesman.epicfight.client.mesh.WitherMesh;
-import yesman.epicfight.client.renderer.patched.entity.PHumanoidRenderer;
-import yesman.epicfight.client.renderer.patched.entity.PIronGolemRenderer;
-import yesman.epicfight.client.renderer.patched.entity.PPlayerRenderer;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.Armatures.ArmatureAccessor;
@@ -72,9 +66,6 @@ import yesman.epicfight.registry.entries.EpicFightParticles;
 import yesman.epicfight.registry.entries.EpicFightProviderConditionals;
 import yesman.epicfight.registry.entries.EpicFightSkills;
 import yesman.epicfight.registry.entries.EpicFightSounds;
-import yesman.epicfight.world.capabilities.entitypatch.mob.IronGolemPatch;
-import yesman.epicfight.world.capabilities.entitypatch.mob.ZombiePatch;
-import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 
@@ -88,11 +79,11 @@ class XtraFightAPIExamples {
         // mod-id:path,
         // mod-id, path,
         // ResourceLocation#fromNamespaceAndPath(mod-id, path)
-        public static final ArmatureAccessor<HumanoidArmature> PLACEHOLDER_ARMATURE = ArmatureBuilder.newEntityArmature(EntityType.ZOMBIE, "epicfight:entity/biped", ArmatureTypes.HUMANOID);
+        public static final ArmatureAccessor<HumanoidArmature> PLACEHOLDER_ARMATURE = ArmatureBuilder.newEntityArmature(EntityType.ZOMBIE, "epicfight:entity/biped", ArmatureType.HUMANOID);
         // Needs to be posted via FMLCommonSetupEvent
-        public static final ArmatureAccessor<HumanoidArmature> PLACEHOLDER_ARMATURE_NO_ENTITY = ArmatureBuilder.newArmature("epicfight:entity/biped", ArmatureTypes.HUMANOID);
+        public static final ArmatureAccessor<HumanoidArmature> PLACEHOLDER_ARMATURE_NO_ENTITY = ArmatureBuilder.newArmature("epicfight:entity/biped", ArmatureType.HUMANOID);
         // if you couldn't find what type you wish for, you could use the constructor as so:
-        public static final ArmatureAccessor<HumanoidArmature> PLACEHOLDER_ARMATURE_CUSTOM_CONSTRUCTOR = ArmatureBuilder.newArmature("epicfight:entity/biped", ArmatureTypes.of(HumanoidArmature::new));
+        public static final ArmatureAccessor<HumanoidArmature> PLACEHOLDER_ARMATURE_CUSTOM_CONSTRUCTOR = ArmatureBuilder.newArmature("epicfight:entity/biped", ArmatureType.of(HumanoidArmature::new));
 
     }
 
@@ -105,26 +96,6 @@ class XtraFightAPIExamples {
         public static final MeshAccessor<WitherMesh> PLACEHOLDER_MESH_CUSTOM_CONSTRUCTOR = MeshBuilder.newMesh("epicfight:entity/wither", MeshTypes.of(WitherMesh::new));
         // This automatically detects the mesh type inside the JSON file itself, check JsonAssetLoader#loadMesh()
         public static final MeshAccessor<SkinnedMesh> PLACEHOLDER_MESH_JSON_LOADER = MeshBuilder.newMesh("epicfight:layer/default_cape", MeshTypes.JSON_LOADER);
-    }
-
-    static class EntityPatch {
-
-        public static final EntityPatchBuilder HUMANOID_PATCH = EntityPatchBuilder.newEntityPatch(EntityType.ZOMBIE, ZombiePatch::new, (context, type) -> new PHumanoidRenderer<>(Meshes.BIPED ,context, type));
-        public static final EntityPatchBuilder NON_HUMANOID_PATCH = EntityPatchBuilder.newEntityPatch(EntityType.IRON_GOLEM, IronGolemPatch::new, PIronGolemRenderer::new);
-        public static final EntityPatchBuilder PLAYER_PATCH = EntityPatchBuilder.newEntityPatchUnsafe(EntityType.PLAYER, player -> new ServerPlayerPatch((ServerPlayer) player), PPlayerRenderer::new);
-
-
-        // you can either use ILoadableClass or call this in the modCommonEvents in your main class:
-        public static void registerPatches() {
-            // NEVER initialize them outside of this method if you're going to use ILoadableClass
-            // use Epic-API's event hooks to work, not epic fight's!
-            XtraFightAPIDispatchableEvents.Registry.ENTITY_PATCH.dispatchEvent(event -> {
-                event.registerFrom(HUMANOID_PATCH);
-                event.registerFrom(NON_HUMANOID_PATCH);
-                event.registerFrom(PLAYER_PATCH);
-            });
-        }
-
     }
 
     static class Items {

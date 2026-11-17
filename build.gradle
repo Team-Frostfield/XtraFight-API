@@ -89,16 +89,13 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     // the (:) represents (-) in the file's name, so we do "epicfight:21.17.3:sources"
+
     // 21.17.3
     implementation "curse.maven:epic-fight-mod-405076:8080214"
 
-    implementation "curse.maven:weapons-of-miracles-epicfight-918614:8829395"
     // 21.17.3 sources (raw code)
     compileOnlyApi "local:epicfight:21.17.3:sources"
-    compileOnlyApi "local:tome_randomizer:1.0"
 
-    // to apply skins in-game
-    implementation "local:skinrestorer:2.7.0"
 }
 
 // Fixed resource processing - This replaces the broken generateModMetadata task
