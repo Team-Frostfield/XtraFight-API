@@ -10,6 +10,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import java.util.ArrayList;
@@ -26,11 +27,12 @@ public class XtraFightAPIPacketsManager {
         String packetType = "";
         ICustomPacket<?> customPacket = CodeUtils.newInstance(packet, AccessType.DECLARED);
 
-        if (nameStartsOrContains(packetName, "SP", "SB", "STC", "ServerBound", "ServerPacket")) {
+        // these were flipped ClientBound is server > client
+        if (nameStartsOrContains(packetName, "SP", "CB", "STC", "ClientBound", "ServerPacket")) {
             SERVER_PACKETS.add(customPacket);
             packetType = "server";
         }
-        if (nameStartsOrContains(packetName, "CP", "CB", "CTS", "ClientBound", "ClientPacket")) {
+        if (nameStartsOrContains(packetName, "CP", "SB", "CTS", "ServerBound", "ClientPacket")) {
             CLIENT_PACKETS.add(customPacket);
             packetType = "client";
         }
@@ -47,26 +49,32 @@ public class XtraFightAPIPacketsManager {
         register(CPFreezeEntity.class);
     }
 
+    // the instances in these lists are just templates for the slop
+    // so handle the packet we actually got instead
     @SuppressWarnings("unchecked")
     public static <T extends CustomPacketPayload> void register(PayloadRegistrar registrar) {
         CLIENT_PACKETS.forEach(iCustomPacket ->
                 registrar.playToServer(
                         (Type<T>) iCustomPacket.type(),
                         (StreamCodec<? super RegistryFriendlyByteBuf, T>) iCustomPacket.codec(),
-                        (packet, context) -> iCustomPacket.handle(context))
+                        XtraFightAPIPacketsManager::handleDecoded)
         );
         SERVER_PACKETS.forEach(iCustomPacket ->
                 registrar.playToClient(
                         (Type<T>) iCustomPacket.type(),
                         (StreamCodec<? super RegistryFriendlyByteBuf, T>) iCustomPacket.codec(),
-                        (packet, context) -> iCustomPacket.handle(context))
+                        XtraFightAPIPacketsManager::handleDecoded)
         );
         BIDIRECTIONAL_PACKETS.forEach(iCustomPacket ->
                 registrar.playBidirectional(
                         (Type<T>) iCustomPacket.type(),
                         (StreamCodec<? super RegistryFriendlyByteBuf, T>) iCustomPacket.codec(),
-                        (packet, context) -> iCustomPacket.handle(context))
+                        XtraFightAPIPacketsManager::handleDecoded)
         );
+    }
+
+    private static <T extends CustomPacketPayload> void handleDecoded(T packet, IPayloadContext context) {
+        ((ICustomPacket<?>) packet).handle(context);
     }
 
     private static boolean nameStartsOrContains(String name, String... matchings) {
