@@ -76,7 +76,7 @@ public class ArmatureBuilder {
         public static final ArmatureType<SpiderArmature> SPIDER = new ArmatureType<>(SpiderArmature::new);
         public static final ArmatureType<VexArmature> VEX = new ArmatureType<>(VexArmature::new);
         public static final ArmatureType<WitherArmature> WITHER = new ArmatureType<>(WitherArmature::new);
-        public static final ArmatureType<?> EMPTY = new ArmatureType<>(null);
+        public static final ArmatureType<?> EMPTY = new ArmatureType<>((name, jointNumber, joint, jointMap) -> null);
 
         public T apply(String name, int jointNumber, Joint joint, Map<String, Joint> jointMap) {
             return this.constructor.invoke(name, jointNumber, joint, jointMap);

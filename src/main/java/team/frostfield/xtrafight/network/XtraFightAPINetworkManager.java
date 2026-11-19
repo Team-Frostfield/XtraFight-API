@@ -22,7 +22,7 @@ public class XtraFightAPINetworkManager implements ILoadableClass {
     }
 
     private void registerNetworking(final RegisterPayloadHandlersEvent event) {
-        XtraFightAPIPacketsManager.forEachPacketType(event.registrar("1.0"));
+        XtraFightAPIPacketsManager.register(event.registrar("1.0"));
     }
 
     public static void sendToServer(CustomPacketPayload payload) {

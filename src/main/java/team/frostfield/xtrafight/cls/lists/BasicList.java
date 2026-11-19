@@ -18,5 +18,7 @@ public interface BasicList<T> extends List<T> {
 
     Object[] getObjectArray();
 
+    T[] toArray();
+
     void forEach(Consumer<? super T> tConsumer);
 }

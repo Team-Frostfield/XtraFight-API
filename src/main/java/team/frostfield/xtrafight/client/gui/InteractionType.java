@@ -2,15 +2,14 @@ package team.frostfield.xtrafight.client.gui;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
-import java.util.Arrays;
 import java.util.List;
 
 public enum InteractionType {
@@ -23,29 +22,30 @@ public enum InteractionType {
     ),
 
     HEAL((player, target, ctx, args) -> {
-        float amount = args.isEmpty() ? 4.0F : (Float) args.getFirst();
+        float amount = args.isEmpty() ? 4.0F : ((Number) args.getFirst()).floatValue();
         if (target instanceof LivingEntity living) {
             living.heal(amount);
         }
     }),
 
     OPEN_TRADE((player, target, ctx) -> {
-        if (target instanceof Villager villager) {
+        if (target instanceof Villager villager && villager.getTradingPlayer() == null && !villager.isBaby()) {
             villager.setTradingPlayer(player);
-            player.openMenu(new SimpleMenuProvider(
-                    (containerId, playerInventory, p) -> new MerchantMenu(containerId, playerInventory, villager),
-                    villager.getDisplayName()
-            ));
+            villager.openTradingScreen(player, villager.getDisplayName(), villager.getVillagerData().getLevel());
         }
     }),
 
     GIVE_ITEM((player, target, ctx, args) -> {
         if (!args.isEmpty() && args.getFirst() instanceof ItemStack stack) {
-            player.addItem(stack.copy());
+            ItemHandlerHelper.giveItemToPlayer(player, stack.copy());
         }
     }),
 
     NONE((player, target, ctx) -> {});
+
+    private Object[] arguments;
+    // 6 blocks
+    public static final double MAX_INTERACTION_DISTANCE_SQR = 6.0 * 6.0;
 
     @FunctionalInterface
     public interface ParameterizedHandler {
@@ -70,8 +70,13 @@ public enum InteractionType {
         this.parameterizedHandler = null;
     }
 
-    public BoundInteraction withArgs(Object... arguments) {
-        return new BoundInteraction(this, Arrays.asList(arguments));
+    public void withArgs(Object... arguments) {
+        this.arguments = arguments;
+    }
+
+    @Internal
+    public Object[] getArguments() {
+        return this.arguments;
     }
 
     public void execute(ServerPlayer player, Entity target, IPayloadContext context) {
@@ -79,20 +84,14 @@ public enum InteractionType {
     }
 
     public void execute(ServerPlayer player, Entity target, IPayloadContext context, List<Object> args) {
+        if (!target.isAlive() || player.distanceToSqr(target) > MAX_INTERACTION_DISTANCE_SQR) {
+            return;
+        }
+
         if (this.parameterizedHandler != null) {
             this.parameterizedHandler.execute(player, target, context, args);
-            this.withArgs(args).execute(player, target, context);
-        }
-        if (this.interactionHandler != null) {
+        } else if (this.interactionHandler != null) {
             this.interactionHandler.handle(player, target, context);
-        }
-    }
-
-    public record BoundInteraction(InteractionType type, List<Object> arguments) {
-        public void execute(ServerPlayer player, Entity target, IPayloadContext context) {
-            if (this.type != null) {
-                this.type.execute(player, target, context, this.arguments);
-            }
         }
     }
 }

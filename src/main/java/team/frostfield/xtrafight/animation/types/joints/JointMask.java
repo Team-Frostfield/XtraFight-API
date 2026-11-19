@@ -6,7 +6,6 @@ import yesman.epicfight.api.utils.ExtensibleEnum;
 import yesman.epicfight.api.utils.ExtensibleEnumManager;
 
 public interface JointMask extends ExtensibleEnum {
-
     ExtensibleEnumManager<JointMask> ENUM_MANAGER = new ExtensibleEnumManager<>("joint_mask");
 
     Joint[] getJoints();

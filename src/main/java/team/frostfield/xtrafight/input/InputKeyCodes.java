@@ -1,11 +1,11 @@
 package team.frostfield.xtrafight.input;
 
-
+import team.frostfield.xtrafight.builders.minecraft.client.KeyMappingsBuilder.InputType;
 import team.frostfield.xtrafight.cls.lists.BasicArrayList;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.Collections;
 import java.util.List;
+
 public final class InputKeyCodes {
 
     private static final BasicArrayList<Integer> KEYBOARD_KEYS = new BasicArrayList<>();
@@ -15,149 +15,149 @@ public final class InputKeyCodes {
     private InputKeyCodes() {}
 
     // --- Digits ---
-    public static final int KEY_0 = GLFW.GLFW_KEY_0;
-    public static final int KEY_1 = GLFW.GLFW_KEY_1;
-    public static final int KEY_2 = GLFW.GLFW_KEY_2;
-    public static final int KEY_3 = GLFW.GLFW_KEY_3;
-    public static final int KEY_4 = GLFW.GLFW_KEY_4;
-    public static final int KEY_5 = GLFW.GLFW_KEY_5;
-    public static final int KEY_6 = GLFW.GLFW_KEY_6;
-    public static final int KEY_7 = GLFW.GLFW_KEY_7;
-    public static final int KEY_8 = GLFW.GLFW_KEY_8;
-    public static final int KEY_9 = GLFW.GLFW_KEY_9;
+    public static final int KEY_0 = 48;
+    public static final int KEY_1 = 49;
+    public static final int KEY_2 = 50;
+    public static final int KEY_3 = 51;
+    public static final int KEY_4 = 52;
+    public static final int KEY_5 = 53;
+    public static final int KEY_6 = 54;
+    public static final int KEY_7 = 55;
+    public static final int KEY_8 = 56;
+    public static final int KEY_9 = 57;
 
     // --- Letters ---
-    public static final int KEY_A = GLFW.GLFW_KEY_A;
-    public static final int KEY_B = GLFW.GLFW_KEY_B;
-    public static final int KEY_C = GLFW.GLFW_KEY_C;
-    public static final int KEY_D = GLFW.GLFW_KEY_D;
-    public static final int KEY_E = GLFW.GLFW_KEY_E;
-    public static final int KEY_F = GLFW.GLFW_KEY_F;
-    public static final int KEY_G = GLFW.GLFW_KEY_G;
-    public static final int KEY_H = GLFW.GLFW_KEY_H;
-    public static final int KEY_I = GLFW.GLFW_KEY_I;
-    public static final int KEY_J = GLFW.GLFW_KEY_J;
-    public static final int KEY_K = GLFW.GLFW_KEY_K;
-    public static final int KEY_L = GLFW.GLFW_KEY_L;
-    public static final int KEY_M = GLFW.GLFW_KEY_M;
-    public static final int KEY_N = GLFW.GLFW_KEY_N;
-    public static final int KEY_O = GLFW.GLFW_KEY_O;
-    public static final int KEY_P = GLFW.GLFW_KEY_P;
-    public static final int KEY_Q = GLFW.GLFW_KEY_Q;
-    public static final int KEY_R = GLFW.GLFW_KEY_R;
-    public static final int KEY_S = GLFW.GLFW_KEY_S;
-    public static final int KEY_T = GLFW.GLFW_KEY_T;
-    public static final int KEY_U = GLFW.GLFW_KEY_U;
-    public static final int KEY_V = GLFW.GLFW_KEY_V;
-    public static final int KEY_W = GLFW.GLFW_KEY_W;
-    public static final int KEY_X = GLFW.GLFW_KEY_X;
-    public static final int KEY_Y = GLFW.GLFW_KEY_Y;
-    public static final int KEY_Z = GLFW.GLFW_KEY_Z;
+    public static final int KEY_A = 65;
+    public static final int KEY_B = 66;
+    public static final int KEY_C = 67;
+    public static final int KEY_D = 68;
+    public static final int KEY_E = 69;
+    public static final int KEY_F = 70;
+    public static final int KEY_G = 71;
+    public static final int KEY_H = 72;
+    public static final int KEY_I = 73;
+    public static final int KEY_J = 74;
+    public static final int KEY_K = 75;
+    public static final int KEY_L = 76;
+    public static final int KEY_M = 77;
+    public static final int KEY_N = 78;
+    public static final int KEY_O = 79;
+    public static final int KEY_P = 80;
+    public static final int KEY_Q = 81;
+    public static final int KEY_R = 82;
+    public static final int KEY_S = 83;
+    public static final int KEY_T = 84;
+    public static final int KEY_U = 85;
+    public static final int KEY_V = 86;
+    public static final int KEY_W = 87;
+    public static final int KEY_X = 88;
+    public static final int KEY_Y = 89;
+    public static final int KEY_Z = 90;
 
     // --- Function Keys ---
-    public static final int KEY_F1 = GLFW.GLFW_KEY_F1;
-    public static final int KEY_F2 = GLFW.GLFW_KEY_F2;
-    public static final int KEY_F3 = GLFW.GLFW_KEY_F3;
-    public static final int KEY_F4 = GLFW.GLFW_KEY_F4;
-    public static final int KEY_F5 = GLFW.GLFW_KEY_F5;
-    public static final int KEY_F6 = GLFW.GLFW_KEY_F6;
-    public static final int KEY_F7 = GLFW.GLFW_KEY_F7;
-    public static final int KEY_F8 = GLFW.GLFW_KEY_F8;
-    public static final int KEY_F9 = GLFW.GLFW_KEY_F9;
-    public static final int KEY_F10 = GLFW.GLFW_KEY_F10;
-    public static final int KEY_F11 = GLFW.GLFW_KEY_F11;
-    public static final int KEY_F12 = GLFW.GLFW_KEY_F12;
-    public static final int KEY_F13 = GLFW.GLFW_KEY_F13;
-    public static final int KEY_F14 = GLFW.GLFW_KEY_F14;
-    public static final int KEY_F15 = GLFW.GLFW_KEY_F15;
-    public static final int KEY_F16 = GLFW.GLFW_KEY_F16;
-    public static final int KEY_F17 = GLFW.GLFW_KEY_F17;
-    public static final int KEY_F18 = GLFW.GLFW_KEY_F18;
-    public static final int KEY_F19 = GLFW.GLFW_KEY_F19;
-    public static final int KEY_F20 = GLFW.GLFW_KEY_F20;
-    public static final int KEY_F21 = GLFW.GLFW_KEY_F21;
-    public static final int KEY_F22 = GLFW.GLFW_KEY_F22;
-    public static final int KEY_F23 = GLFW.GLFW_KEY_F23;
-    public static final int KEY_F24 = GLFW.GLFW_KEY_F24;
-    public static final int KEY_F25 = GLFW.GLFW_KEY_F25;
+    public static final int KEY_F1 = 290;
+    public static final int KEY_F2 = 291;
+    public static final int KEY_F3 = 292;
+    public static final int KEY_F4 = 293;
+    public static final int KEY_F5 = 294;
+    public static final int KEY_F6 = 295;
+    public static final int KEY_F7 = 296;
+    public static final int KEY_F8 = 297;
+    public static final int KEY_F9 = 298;
+    public static final int KEY_F10 = 299;
+    public static final int KEY_F11 = 300;
+    public static final int KEY_F12 = 301;
+    public static final int KEY_F13 = 302;
+    public static final int KEY_F14 = 303;
+    public static final int KEY_F15 = 304;
+    public static final int KEY_F16 = 305;
+    public static final int KEY_F17 = 306;
+    public static final int KEY_F18 = 307;
+    public static final int KEY_F19 = 308;
+    public static final int KEY_F20 = 309;
+    public static final int KEY_F21 = 310;
+    public static final int KEY_F22 = 311;
+    public static final int KEY_F23 = 312;
+    public static final int KEY_F24 = 313;
+    public static final int KEY_F25 = 314;
 
     // --- Numpad ---
-    public static final int KEY_NUMLOCK = GLFW.GLFW_KEY_NUM_LOCK;
-    public static final int KEY_NUMPAD0 = GLFW.GLFW_KEY_KP_0;
-    public static final int KEY_NUMPAD1 = GLFW.GLFW_KEY_KP_1;
-    public static final int KEY_NUMPAD2 = GLFW.GLFW_KEY_KP_2;
-    public static final int KEY_NUMPAD3 = GLFW.GLFW_KEY_KP_3;
-    public static final int KEY_NUMPAD4 = GLFW.GLFW_KEY_KP_4;
-    public static final int KEY_NUMPAD5 = GLFW.GLFW_KEY_KP_5;
-    public static final int KEY_NUMPAD6 = GLFW.GLFW_KEY_KP_6;
-    public static final int KEY_NUMPAD7 = GLFW.GLFW_KEY_KP_7;
-    public static final int KEY_NUMPAD8 = GLFW.GLFW_KEY_KP_8;
-    public static final int KEY_NUMPAD9 = GLFW.GLFW_KEY_KP_9;
-    public static final int KEY_NUMPADCOMMA = GLFW.GLFW_KEY_KP_DECIMAL;
-    public static final int KEY_NUMPADENTER = GLFW.GLFW_KEY_KP_ENTER;
-    public static final int KEY_NUMPADEQUALS = GLFW.GLFW_KEY_KP_EQUAL;
+    public static final int KEY_NUMLOCK = 282;
+    public static final int KEY_NUMPAD0 = 320;
+    public static final int KEY_NUMPAD1 = 321;
+    public static final int KEY_NUMPAD2 = 322;
+    public static final int KEY_NUMPAD3 = 323;
+    public static final int KEY_NUMPAD4 = 324;
+    public static final int KEY_NUMPAD5 = 325;
+    public static final int KEY_NUMPAD6 = 326;
+    public static final int KEY_NUMPAD7 = 327;
+    public static final int KEY_NUMPAD8 = 328;
+    public static final int KEY_NUMPAD9 = 329;
+    public static final int KEY_NUMPADCOMMA = 330;
+    public static final int KEY_NUMPADENTER = 335;
+    public static final int KEY_NUMPADEQUALS = 336;
 
     // --- Navigation & Direction ---
-    public static final int KEY_DOWN = GLFW.GLFW_KEY_DOWN;
-    public static final int KEY_LEFT = GLFW.GLFW_KEY_LEFT;
-    public static final int KEY_RIGHT = GLFW.GLFW_KEY_RIGHT;
-    public static final int KEY_UP = GLFW.GLFW_KEY_UP;
+    public static final int KEY_DOWN = 264;
+    public static final int KEY_LEFT = 263;
+    public static final int KEY_RIGHT = 262;
+    public static final int KEY_UP = 265;
 
     // --- Symbols & Punctuation ---
-    public static final int KEY_ADD = GLFW.GLFW_KEY_KP_ADD;
-    public static final int KEY_APOSTROPHE = GLFW.GLFW_KEY_APOSTROPHE;
-    public static final int KEY_BACKSLASH = GLFW.GLFW_KEY_BACKSLASH;
-    public static final int KEY_COMMA = GLFW.GLFW_KEY_COMMA;
-    public static final int KEY_EQUALS = GLFW.GLFW_KEY_EQUAL;
-    public static final int KEY_GRAVE = GLFW.GLFW_KEY_GRAVE_ACCENT;
-    public static final int KEY_LBRACKET = GLFW.GLFW_KEY_LEFT_BRACKET;
-    public static final int KEY_MINUS = GLFW.GLFW_KEY_MINUS;
-    public static final int KEY_MULTIPLY = GLFW.GLFW_KEY_KP_MULTIPLY;
-    public static final int KEY_PERIOD = GLFW.GLFW_KEY_PERIOD;
-    public static final int KEY_RBRACKET = GLFW.GLFW_KEY_RIGHT_BRACKET;
-    public static final int KEY_SEMICOLON = GLFW.GLFW_KEY_SEMICOLON;
-    public static final int KEY_SLASH = GLFW.GLFW_KEY_SLASH;
-    public static final int KEY_SPACE = GLFW.GLFW_KEY_SPACE;
-    public static final int KEY_TAB = GLFW.GLFW_KEY_TAB;
+    public static final int KEY_ADD = 334;
+    public static final int KEY_APOSTROPHE = 39;
+    public static final int KEY_BACKSLASH = 92;
+    public static final int KEY_COMMA = 44;
+    public static final int KEY_EQUALS = 61;
+    public static final int KEY_GRAVE = 96;
+    public static final int KEY_LBRACKET = 91;
+    public static final int KEY_MINUS = 45;
+    public static final int KEY_MULTIPLY = 332;
+    public static final int KEY_PERIOD = 46;
+    public static final int KEY_RBRACKET = 93;
+    public static final int KEY_SEMICOLON = 59;
+    public static final int KEY_SLASH = 47;
+    public static final int KEY_SPACE = 32;
+    public static final int KEY_TAB = 258;
 
     // --- Modifiers & Utility ---
-    public static final int KEY_LALT = GLFW.GLFW_KEY_LEFT_ALT;
-    public static final int KEY_LCONTROL = GLFW.GLFW_KEY_LEFT_CONTROL;
-    public static final int KEY_LSHIFT = GLFW.GLFW_KEY_LEFT_SHIFT;
-    public static final int KEY_LWIN = GLFW.GLFW_KEY_LEFT_SUPER;
-    public static final int KEY_RALT = GLFW.GLFW_KEY_RIGHT_ALT;
-    public static final int KEY_RCONTROL = GLFW.GLFW_KEY_RIGHT_CONTROL;
-    public static final int KEY_RSHIFT = GLFW.GLFW_KEY_RIGHT_SHIFT;
-    public static final int KEY_RWIN = GLFW.GLFW_KEY_RIGHT_SUPER;
-    public static final int KEY_RETURN = GLFW.GLFW_KEY_ENTER;
-    public static final int KEY_ESCAPE = GLFW.GLFW_KEY_ESCAPE;
-    public static final int KEY_BACKSPACE = GLFW.GLFW_KEY_BACKSPACE;
-    public static final int KEY_DELETE = GLFW.GLFW_KEY_DELETE;
-    public static final int KEY_END = GLFW.GLFW_KEY_END;
-    public static final int KEY_HOME = GLFW.GLFW_KEY_HOME;
-    public static final int KEY_INSERT = GLFW.GLFW_KEY_INSERT;
-    public static final int KEY_PAGEDOWN = GLFW.GLFW_KEY_PAGE_DOWN;
-    public static final int KEY_PAGEUP = GLFW.GLFW_KEY_PAGE_UP;
-    public static final int KEY_CAPSLOCK = GLFW.GLFW_KEY_CAPS_LOCK;
-    public static final int KEY_PAUSE = GLFW.GLFW_KEY_PAUSE;
-    public static final int KEY_SCROLLLOCK = GLFW.GLFW_KEY_SCROLL_LOCK;
-    public static final int KEY_PRINTSCREEN = GLFW.GLFW_KEY_PRINT_SCREEN;
+    public static final int KEY_LALT = 342;
+    public static final int KEY_LCONTROL = 341;
+    public static final int KEY_LSHIFT = 340;
+    public static final int KEY_LWIN = 343;
+    public static final int KEY_RALT = 346;
+    public static final int KEY_RCONTROL = 345;
+    public static final int KEY_RSHIFT = 344;
+    public static final int KEY_RWIN = 347;
+    public static final int KEY_RETURN = 257;
+    public static final int KEY_ESCAPE = 256;
+    public static final int KEY_BACKSPACE = 259;
+    public static final int KEY_DELETE = 261;
+    public static final int KEY_END = 269;
+    public static final int KEY_HOME = 268;
+    public static final int KEY_INSERT = 260;
+    public static final int KEY_PAGEDOWN = 267;
+    public static final int KEY_PAGEUP = 266;
+    public static final int KEY_CAPSLOCK = 280;
+    public static final int KEY_PAUSE = 284;
+    public static final int KEY_SCROLLLOCK = 281;
+    public static final int KEY_PRINTSCREEN = 283;
 
     // --- Input Actions ---
-    public static final int PRESS = GLFW.GLFW_PRESS;
-    public static final int RELEASE = GLFW.GLFW_RELEASE;
-    public static final int REPEAT = GLFW.GLFW_REPEAT;
+    public static final int PRESS = 1;
+    public static final int RELEASE = 0;
+    public static final int REPEAT = 2;
 
     // --- Mouse Buttons ---
-    public static final int MOUSE_LEFT_CLICK = GLFW.GLFW_MOUSE_BUTTON_LEFT;
-    public static final int MOUSE_BUTTON_MIDDLE = GLFW.GLFW_MOUSE_BUTTON_MIDDLE;
-    public static final int MOUSE_RIGHT_CLICK = GLFW.GLFW_MOUSE_BUTTON_RIGHT;
+    public static final int MOUSE_LEFT_CLICK = 0;
+    public static final int MOUSE_BUTTON_MIDDLE = 2;
+    public static final int MOUSE_RIGHT_CLICK = 1;
 
     // --- Modifiers & Cursor modes ---
-    public static final int MOD_CONTROL = GLFW.GLFW_MOD_CONTROL;
-    public static final int CURSOR = GLFW.GLFW_CURSOR;
-    public static final int CURSOR_DISABLED = GLFW.GLFW_CURSOR_DISABLED;
-    public static final int CURSOR_NORMAL = GLFW.GLFW_CURSOR_NORMAL;
+    public static final int MOD_CONTROL = 2;
+    public static final int CURSOR = 208897;
+    public static final int CURSOR_DISABLED = 212995;
+    public static final int CURSOR_NORMAL = 212993;
 
     static {
         MOUSE_KEYS.addAsArray(
@@ -205,6 +205,34 @@ public final class InputKeyCodes {
 
     public static List<Integer> getInputActions() {
         return Collections.unmodifiableList(INPUT_ACTIONS);
+    }
+
+    public static int getFirstKey(InputType type) {
+        switch (type) {
+            case KEYBOARD -> {
+                return KEYBOARD_KEYS.getFirst();
+            }
+            case MOUSE -> {
+                return MOUSE_KEYS.getFirst();
+            }
+            case SCANCODE -> throw new IllegalArgumentException("No keys are present for scancode input type");
+        }
+        return KEYBOARD_KEYS.getFirst();
+    }
+
+    public static int getLastKey(InputType type) {
+        switch (type) {
+            case KEYBOARD -> {
+                return KEYBOARD_KEYS.getLast();
+            }
+            case MOUSE -> {
+                return MOUSE_KEYS.getLast();
+            }
+            case SCANCODE -> {
+                throw new IllegalArgumentException("No keys are present for scancode input type");
+            }
+        }
+        return KEYBOARD_KEYS.getFirst();
     }
 
     public static boolean isInputAction(int keyCode) {

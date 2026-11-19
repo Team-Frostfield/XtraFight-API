@@ -48,7 +48,7 @@ public class XtraFightAPIPacketsManager {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends CustomPacketPayload> void forEachPacketType(PayloadRegistrar registrar) {
+    public static <T extends CustomPacketPayload> void register(PayloadRegistrar registrar) {
         CLIENT_PACKETS.forEach(iCustomPacket ->
                 registrar.playToServer(
                         (Type<T>) iCustomPacket.type(),

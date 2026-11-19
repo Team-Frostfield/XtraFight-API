@@ -1,10 +1,5 @@
 package team.frostfield.xtrafight.network.packets.client;
 
-import team.frostfield.xtrafight.client.gui.InteractionType;
-import team.frostfield.xtrafight.main.XtraFightAPI;
-import team.frostfield.xtrafight.main.XtraFightAPIMod;
-import team.frostfield.xtrafight.network.interfaces.PacketBufHandler;
-import team.frostfield.xtrafight.network.packets.ICustomPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -13,6 +8,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
+import team.frostfield.xtrafight.client.gui.InteractionType;
+import team.frostfield.xtrafight.cls.Comment;
+import team.frostfield.xtrafight.main.XtraFightAPI;
+import team.frostfield.xtrafight.main.XtraFightAPIMod;
+import team.frostfield.xtrafight.network.interfaces.PacketBufHandler;
+import team.frostfield.xtrafight.network.packets.ICustomPacket;
+
+import java.util.List;
 
 public record CPEntityInteraction(int targetEntityId, InteractionType interactionType) implements ICustomPacket<CPEntityInteraction> {
 
@@ -25,6 +28,7 @@ public record CPEntityInteraction(int targetEntityId, InteractionType interactio
         return new CustomPacketPayload.Type<>(XtraFightAPI.getInstance().identifier("entity_interaction"));
     }
 
+    @Comment("Invoked by PacketBufHandler#codecOf")
     private CPEntityInteraction(FriendlyByteBuf byteBuf) {
         this(byteBuf.readInt(), byteBuf.readEnum(InteractionType.class));
     }
@@ -50,8 +54,12 @@ public record CPEntityInteraction(int targetEntityId, InteractionType interactio
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer player) {
                 Entity target = player.level().getEntity(this.targetEntityId);
-                if (target != null && target.isAlive() && player.distanceToSqr(target) <= 64.0) {
-                    this.interactionType.execute(player, target, context);
+                if (target != null && target.isAlive() && player.distanceToSqr(target) <= InteractionType.MAX_INTERACTION_DISTANCE_SQR) {
+                    if (this.interactionType.getArguments() != null) {
+                        this.interactionType.execute(player, target, context, List.of(this.interactionType.getArguments()));
+                    } else {
+                        this.interactionType.execute(player, target, context);
+                    }
                     XtraFightAPIMod.debugIfDevSide("Executed interaction: {}", this.interactionType.toString().toLowerCase());
                 }
             }

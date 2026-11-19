@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 public final class LoadableClassManager {
     private static final Logger LOGGER = LogManager.getLogger("LoadableClassManager");
     private static final BasicMap<String, Class<? extends ILoadableClass>> LOADED_CLASSES = new BasicHashMap<>();
+    private static final BasicMap<String, Class<? extends ILoadableClass>> PENDING_CLASSES = new BasicHashMap<>();
     private static final BasicMap<String, Class<? extends ILoadableClass>> ERRORED_CLASSES = new BasicHashMap<>();
 
     @SafeVarargs
@@ -51,7 +52,7 @@ public final class LoadableClassManager {
                 continue;
             }
 
-            if (LOADED_CLASSES.containsKey(className)) {
+            if (LOADED_CLASSES.containsKey(simpleClassName)) {
                 throw new ClassLoadingException("Class [" + className + "] is already loaded!");
             }
 
@@ -70,7 +71,7 @@ public final class LoadableClassManager {
                         if (compatibilityAnn.debug()) {
                             LOGGER.debug("Skipping Client-Only Compatibility Class [{}]: On Dedicated Server.", simpleClassName);
                         }
-                        LOADED_CLASSES.put(className, loadableClass);
+                        PENDING_CLASSES.put(loadableClass.getSimpleName(), loadableClass);
                         continue;
                     }
 
@@ -92,7 +93,7 @@ public final class LoadableClassManager {
                     }
 
                     if (!allModsLoaded) {
-                        LOADED_CLASSES.put(className, loadableClass);
+                        PENDING_CLASSES.put(simpleClassName, loadableClass);
                         continue;
                     }
                 }
@@ -128,7 +129,8 @@ public final class LoadableClassManager {
                     String availableTypes = allowedConstructorArgs.keySet().stream()
                             .map(Class::getSimpleName)
                             .collect(Collectors.joining(", "));
-                    ERRORED_CLASSES.put(className, loadableClass);
+                    ERRORED_CLASSES.put(simpleClassName, loadableClass);
+                    PENDING_CLASSES.removeIfPresent(simpleClassName, loadableClass);
                     IllegalArgumentException ex = new IllegalArgumentException(
                             "Failed to load Class [%s]: Must have exactly one valid constructor. Constructors can accept any combination of these injectable types: [%s]"
                                     .formatted(simpleClassName, availableTypes)
@@ -156,13 +158,13 @@ public final class LoadableClassManager {
                     LOGGER.info("Loaded class: [{}]", simpleClassName);
                 }
 
-                ERRORED_CLASSES.removeIfPresent(className, loadableClass);
-                LOADED_CLASSES.put(className, loadableClass);
-            } catch (DeveloperException devE) {
-                DeveloperException.throwExBoth(devE);
+                ERRORED_CLASSES.removeIfPresent(simpleClassName, loadableClass);
+                LOADED_CLASSES.put(simpleClassName, loadableClass);
             } catch (Exception e) {
-                XtraFightAPIMod.err("Failed to load class [{}], {}", className, e);
-                ERRORED_CLASSES.put(className, loadableClass);
+                XtraFightAPIMod.err("Failed to load class [{}], {}", simpleClassName, e);
+                ERRORED_CLASSES.put(simpleClassName, loadableClass);
+                PENDING_CLASSES.removeIfPresent(simpleClassName, loadableClass);
+                LOADED_CLASSES.removeIfPresent(simpleClassName, loadableClass);
                 e.printStackTrace();
             }
         }
@@ -177,6 +179,14 @@ public final class LoadableClassManager {
 
     public static Class<? extends ILoadableClass> getLoadedClassByName(String clsName) {
         return LOADED_CLASSES.get(clsName);
+    }
+
+    public static boolean isLoaded(Class<? extends ILoadableClass> loadableCls) {
+        return LOADED_CLASSES.containsValue(loadableCls);
+    }
+
+    public static boolean isPendingToLoad(Class<? extends ILoadableClass> loadableCls) {
+        return PENDING_CLASSES.containsValue(loadableCls);
     }
 
     public static boolean hadErrorsLoading(Class<? extends ILoadableClass> loadableCls) {

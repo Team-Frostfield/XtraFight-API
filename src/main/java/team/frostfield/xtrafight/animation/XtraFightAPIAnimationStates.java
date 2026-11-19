@@ -10,4 +10,5 @@ public class XtraFightAPIAnimationStates extends EntityState {
     public XtraFightAPIAnimationStates(ParameterizedHashMap<StateFactor<?>> states) {
         super(states);
     }
+
 }

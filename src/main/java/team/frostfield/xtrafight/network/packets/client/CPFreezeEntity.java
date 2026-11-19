@@ -1,5 +1,7 @@
 package team.frostfield.xtrafight.network.packets.client;
 
+import net.minecraft.world.entity.player.Player;
+import team.frostfield.xtrafight.cls.Comment;
 import team.frostfield.xtrafight.main.XtraFightAPI;
 import team.frostfield.xtrafight.network.interfaces.PacketBufHandler;
 import team.frostfield.xtrafight.network.packets.ICustomPacket;
@@ -19,6 +21,8 @@ public record CPFreezeEntity(int entityId, boolean freeze) implements ICustomPac
         this(0, false);
     }
 
+
+    @Comment("Invoked by PacketBufHandler#codecOf")
     private CPFreezeEntity(FriendlyByteBuf byteBuf) {
         this(byteBuf.readInt(), byteBuf.readBoolean());
     }
@@ -58,6 +62,11 @@ public record CPFreezeEntity(int entityId, boolean freeze) implements ICustomPac
                     } else {
                         mob.setNoAi(false);
                     }
+                }
+                if (target instanceof Player player) {
+                    player.stopUsingItem();
+                    player.setDeltaMovement(0, player.getDeltaMovement().y, 0);
+                    player.setSprinting(false);
                 }
             }
         });

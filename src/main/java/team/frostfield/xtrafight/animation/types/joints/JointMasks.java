@@ -1,5 +1,6 @@
 package team.frostfield.xtrafight.animation.types.joints;
 
+import team.frostfield.xtrafight.cls.functions.ArraySupplier;
 import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.client.animation.property.JointMask;
 import yesman.epicfight.api.client.animation.property.JointMaskEntry;
@@ -9,7 +10,7 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 
 public enum JointMasks implements team.frostfield.xtrafight.animation.types.joints.JointMask {
-    BIPED_ROOT_UPPER_JOINTS(() -> joints(
+    BIPED_ROOT_UPPER_JOINTS(
             Armatures.BIPED.get().torso,
             Armatures.BIPED.get().chest,
             Armatures.BIPED.get().head,
@@ -19,42 +20,41 @@ public enum JointMasks implements team.frostfield.xtrafight.animation.types.join
             // left arms
             Armatures.BIPED.get().shoulderL, Armatures.BIPED.get().armL,
             Armatures.BIPED.get().handL, Armatures.BIPED.get().toolL
-    )),
-    BIPED_LEFT_ARM(() -> joints(
+    ),
+    BIPED_LEFT_ARM(
             Armatures.BIPED.get().shoulderL, Armatures.BIPED.get().armL,
             Armatures.BIPED.get().handL, Armatures.BIPED.get().toolL
-    )),
-    BIPED_RIGHT_ARM(() -> joints(
+    ),
+    BIPED_RIGHT_ARM(
             Armatures.BIPED.get().shoulderR, Armatures.BIPED.get().armR,
             Armatures.BIPED.get().handR, Armatures.BIPED.get().toolR
-    )),
-    BIPED_LEGS(() -> joints(
+    ),
+    BIPED_LEGS(
             Armatures.BIPED.get().thighR, Armatures.BIPED.get().kneeR,
             Armatures.BIPED.get().legR, Armatures.BIPED.get().thighL,
             Armatures.BIPED.get().kneeL, Armatures.BIPED.get().legL
-    )),
-    NONE(JointMasks::joints);
+    ),
+    NONE;
 
-    private final Supplier<Joint[]> jointsSupplier;
+    private final Supplier<ArraySupplier<Joint>> jointsSupplier;
     private final int universalID;
 
-    JointMasks(Supplier<Joint[]> jointsSupplier) {
+    JointMasks(Joint... joints) {
+        this(() -> ArraySupplier.of(joints));
+    }
+
+    JointMasks(Supplier<ArraySupplier<Joint>> jointsSupplier) {
         this.jointsSupplier = jointsSupplier;
         this.universalID = team.frostfield.xtrafight.animation.types.joints.JointMask.ENUM_MANAGER.assign(this);
     }
 
-    /*
-      Internal helper to clean up enum definitions.
-    */
-    private static Joint[] joints(Joint... joints) {
-        return joints;
-    }
-
-    /*
-     * Static factory to create a custom JointMaskEntry.
-     * If no joints are passed, it effectively acts as an "EMPTY" mask.
-     */
     public static JointMaskEntry createEntry(Joint... joints) {
+        if (joints == null || joints.length == 0) {
+            return JointMaskEntry.builder()
+                    .defaultMask(JointMask.JointMaskSet.of())
+                    .create();
+        }
+
         JointMask[] masks = Arrays.stream(joints)
                 .map(j -> JointMask.of(j.getName()))
                 .toArray(JointMask[]::new);
@@ -64,17 +64,15 @@ public enum JointMasks implements team.frostfield.xtrafight.animation.types.join
                 .create();
     }
 
-    /*
-     Returns the pre-defined mask entry for this enum constant.
-    */
     @Override
     public JointMaskEntry getAsEntry() {
-        return createEntry(this.jointsSupplier.get());
+        return createEntry(this.getJoints());
     }
 
     @Override
     public Joint[] getJoints() {
-        return this.jointsSupplier.get();
+        ArraySupplier<Joint> supplier = this.jointsSupplier.get();
+        return supplier != null ? supplier.get() : new Joint[0];
     }
 
     @Override

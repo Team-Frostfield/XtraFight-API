@@ -15,7 +15,7 @@ import java.util.function.BooleanSupplier;
 
 public class EnvironmentHelper {
 
-    public static final Dist dist = FMLLoader.getDist();
+    public static final Dist DIST = FMLLoader.getDist();
     private static final boolean IS_DEVELOPER = !FMLLoader.isProduction();
 
     private static MinecraftServer currentServer;
@@ -36,7 +36,7 @@ public class EnvironmentHelper {
     }
 
     private static boolean isOfficialMC() {
-        if (!EnvironmentHelper.dist.isClient()) return false;
+        if (!EnvironmentHelper.DIST.isClient()) return false;
         User user = EnvironmentHelper.getClient().getUser();
         return !user.getAccessToken().equals("0") && !user.getAccessToken().equals("NotValid");
     }
@@ -57,19 +57,19 @@ public class EnvironmentHelper {
     }
 
     private static boolean isServerAuthenticated() {
-        if (EnvironmentHelper.dist.isClient()) return false;
+        if (EnvironmentHelper.DIST.isClient()) return false;
         MinecraftServer currentServer = getCurrentServer();
         return currentServer != null && currentServer.usesAuthentication();
     }
 
     public static boolean isLogicalServer() {
-        if (dist.isClient()) return false;
+        if (DIST.isClient()) return false;
         return currentServer != null && currentServer.isSameThread()
                 || EnvironmentHelper.getEnvironment().is(Environments.DEDICATED_SERVER, Environments.GAME_TEST_SERVER, Environments.LAN_SERVER);
     }
 
     public static boolean isLogicalClient() {
-        if (!dist.isClient()) return false;
+        if (!DIST.isClient()) return false;
         return currentServer == null
                 || !currentServer.isSameThread()
                 || EnvironmentHelper.getEnvironment().is(Environments.CLIENT);
@@ -78,7 +78,7 @@ public class EnvironmentHelper {
     public static Environments getEnvironment() {
         MinecraftServer server = EnvironmentHelper.getCurrentServer();
         ServerTypes type = EnvironmentHelper.getCurrentServerType();
-        if (EnvironmentHelper.dist.isDedicatedServer()) {
+        if (EnvironmentHelper.DIST.isDedicatedServer()) {
             if (server != null && type != null) {
                 if (server instanceof GameTestServer || type.is(ServerTypes.GAME_TEST)) {
                     return Environments.GAME_TEST_SERVER;
@@ -89,7 +89,7 @@ public class EnvironmentHelper {
             return Environments.DEDICATED_SERVER;
         }
 
-        if (EnvironmentHelper.dist.isClient()) {
+        if (EnvironmentHelper.DIST.isClient()) {
             if (type != null && server != null) {
                 if (server instanceof IntegratedServer || type.is(ServerTypes.INTEGRATED)) {
                     return Environments.LAN_SERVER;

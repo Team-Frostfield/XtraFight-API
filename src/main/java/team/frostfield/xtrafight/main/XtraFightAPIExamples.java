@@ -27,7 +27,7 @@ import team.frostfield.xtrafight.animation.types.joints.JointMasks;
 import team.frostfield.xtrafight.builders.epicfight.ArmatureBuilder;
 import team.frostfield.xtrafight.builders.epicfight.ArmatureBuilder.ArmatureType;
 import team.frostfield.xtrafight.builders.epicfight.MeshBuilder;
-import team.frostfield.xtrafight.builders.epicfight.MeshBuilder.MeshTypes;
+import team.frostfield.xtrafight.builders.epicfight.MeshBuilder.MeshType;
 import team.frostfield.xtrafight.builders.epicfight.excap.deferred.DeferredCapabilityBuilder;
 import team.frostfield.xtrafight.builders.minecraft.CommandsBuilder;
 import team.frostfield.xtrafight.builders.minecraft.GameRulesBuilder;
@@ -91,11 +91,11 @@ class XtraFightAPIExamples {
         // same thing as the armature path arguments, it accepts 3 arguments
 
         // MeshType is holding 4 types of mesh types: (SkinnedMesh, ClassicMesh, CompositeMesh, HumanoidMesh)
-        public static final MeshAccessor<HumanoidMesh> PLACEHOLDER_MESH = MeshBuilder.newMesh("epicfight:entity/biped", MeshTypes.HUMANOID);
+        public static final MeshAccessor<HumanoidMesh> PLACEHOLDER_MESH = MeshBuilder.newMesh("epicfight:entity/biped", MeshType.HUMANOID);
         // Or if you couldn't find what you wish for, you could use the constructor as so:
-        public static final MeshAccessor<WitherMesh> PLACEHOLDER_MESH_CUSTOM_CONSTRUCTOR = MeshBuilder.newMesh("epicfight:entity/wither", MeshTypes.of(WitherMesh::new));
+        public static final MeshAccessor<WitherMesh> PLACEHOLDER_MESH_CUSTOM_CONSTRUCTOR = MeshBuilder.newMesh("epicfight:entity/wither", MeshType.of(WitherMesh::new));
         // This automatically detects the mesh type inside the JSON file itself, check JsonAssetLoader#loadMesh()
-        public static final MeshAccessor<SkinnedMesh> PLACEHOLDER_MESH_JSON_LOADER = MeshBuilder.newMesh("epicfight:layer/default_cape", MeshTypes.JSON_LOADER);
+        public static final MeshAccessor<SkinnedMesh> PLACEHOLDER_MESH_JSON_LOADER = MeshBuilder.newMesh("epicfight:layer/default_cape", MeshType.FROM_JSON);
     }
 
     static class Items {
