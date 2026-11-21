@@ -54,7 +54,7 @@ public final class LoadableClassManager {
                 continue;
             }
 
-            if (LOADED_CLASSES.containsKey(simpleClassName)) {
+            if (LOADED_CLASSES.containsKey(className)) {
                 throw new ClassLoadingException("Class [" + className + "] is already loaded!");
             }
 
@@ -73,7 +73,7 @@ public final class LoadableClassManager {
                         if (compatibilityAnn.debug()) {
                             LOGGER.debug("Skipping Client-Only Compatibility Class [{}]: On Dedicated Server.", simpleClassName);
                         }
-                        PENDING_CLASSES.put(loadableClass.getSimpleName(), loadableClass);
+                        PENDING_CLASSES.put(className, loadableClass);
                         continue;
                     }
 
@@ -84,7 +84,7 @@ public final class LoadableClassManager {
                         if (!ModList.get().isLoaded(modid)) {
                             allModsLoaded = false;
                             if (compatibilityAnn.debug()) {
-                                LOGGER.info("Compatibility class [{}] skipped: Missing mod '{}'.", simpleClassName, modid);
+                                LOGGER.info("Compatibility class [{}] skipped: Missing mod '{}'.", className, modid);
                             }
                             break;
                         }
@@ -95,7 +95,7 @@ public final class LoadableClassManager {
                     }
 
                     if (!allModsLoaded) {
-                        PENDING_CLASSES.put(simpleClassName, loadableClass);
+                        PENDING_CLASSES.put(className, loadableClass);
                         continue;
                     }
                 }
@@ -131,8 +131,8 @@ public final class LoadableClassManager {
                     String availableTypes = allowedConstructorArgs.keySet().stream()
                             .map(Class::getSimpleName)
                             .collect(Collectors.joining(", "));
-                    ERRORED_CLASSES.put(simpleClassName, loadableClass);
-                    PENDING_CLASSES.removeIfPresent(simpleClassName, loadableClass);
+                    ERRORED_CLASSES.put(className, loadableClass);
+                    PENDING_CLASSES.removeIfPresent(className, loadableClass);
                     IllegalArgumentException ex = new IllegalArgumentException(
                             "Failed to load Class [%s]: Must have exactly one valid constructor. Constructors can accept any combination of these injectable types: [%s]"
                                     .formatted(simpleClassName, availableTypes)
@@ -160,13 +160,13 @@ public final class LoadableClassManager {
                     LOGGER.info("Loaded class: [{}]", simpleClassName);
                 }
 
-                ERRORED_CLASSES.removeIfPresent(simpleClassName, loadableClass);
-                LOADED_CLASSES.put(simpleClassName, loadableClass);
+                ERRORED_CLASSES.removeIfPresent(className, loadableClass);
+                LOADED_CLASSES.put(className, loadableClass);
             } catch (Exception e) {
                 XtraFightAPIMod.err("Failed to load class [{}], {}", simpleClassName, e);
-                ERRORED_CLASSES.put(simpleClassName, loadableClass);
-                PENDING_CLASSES.removeIfPresent(simpleClassName, loadableClass);
-                LOADED_CLASSES.removeIfPresent(simpleClassName, loadableClass);
+                ERRORED_CLASSES.put(className, loadableClass);
+                PENDING_CLASSES.removeIfPresent(className, loadableClass);
+                LOADED_CLASSES.removeIfPresent(className, loadableClass);
                 e.printStackTrace();
             }
         }
@@ -205,11 +205,12 @@ public final class LoadableClassManager {
 
         Set<String> loadedNames = LOADED_CLASSES.keySet();
         Set<String> errorClassNames = ERRORED_CLASSES.keySet();
+        Set<String> pendingClassnames = PENDING_CLASSES.keySet();
 
         scanData.getClasses().stream()
                 .filter(classData -> classData.interfaces().contains(loadableClsType))
                 .map(classData -> classData.clazz().getClassName())
-                .filter(className -> !loadedNames.contains(className) && !errorClassNames.contains(className))
+                .filter(className -> !loadedNames.contains(className) && !errorClassNames.contains(className) && pendingClassnames.contains(className))
                 .filter(className -> {
                     try {
                         Class<?> clazz = Class.forName(className, false, Thread.currentThread().getContextClassLoader());
@@ -248,7 +249,7 @@ public final class LoadableClassManager {
                     return true;
                 })
                 .forEach(className -> {
-                    if (!loadedNames.contains(className) && !errorClassNames.contains(className)) {
+                    if (!loadedNames.contains(className) && !errorClassNames.contains(className) && pendingClassnames.contains(className)) {
                         if (EnvironmentHelper.getEnvironment().isDevEnv()) {
                             throw new ClassLoadingException("Class [" + className + "] is never loaded!");
                         } else {
