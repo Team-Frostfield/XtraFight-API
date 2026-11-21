@@ -334,9 +334,9 @@ class XtraFightAPIExamples {
 
         // now you register the bus either by using ILoadableClass or calling the registries in the mod constructor
         @Override
-        public void onModConstruct(ModBus modBus) {
-            ITEM_REGISTRY.register(modBus);
-            MOVESET_REGISTRY.register(modBus);
+        public void onModConstruct(ModBus modBusImpl) {
+            ITEM_REGISTRY.register(modBusImpl);
+            MOVESET_REGISTRY.register(modBusImpl);
         }
 
         @Override
@@ -357,6 +357,7 @@ class XtraFightAPIExamples {
         // This event is empty, used to dispatch other events, posted in the mod's constructor
         public static void onDispatch(DispatchingEvent event) {
             MinecraftDispatchableEvents.Client.CLIENT_START_PRE.dispatchEvent(joinEvent -> XtraFightAPIMod.debugIfDevSide("Hello from [{}] subscribed!", event.getEventClsName()));
+
         }
         // IF the event is not hybrid and used in a subscriber, it'd do nothing
         // An event with the @HybridEvent annotation is automatically posted to neo's event bus API (based on the event bus passed in the annotation)
@@ -389,27 +390,27 @@ class XtraFightAPIExamples {
 
         // in this method, it passes the mod bus directly from the constructor, and running the method as well
         @Override
-        public void onModConstruct(ModBus modBus) {
-            ILoadableClass.super.onModConstruct(modBus);
+        public void onModConstruct(ModBus modBusImpl) {
+            ILoadableClass.super.onModConstruct(modBusImpl);
         }
 
         // in this method, it also passed a bus, but it's Neo's bus instead, same running logic
         @Override
-        public void onGameConstruct(NeoBus neoBus) {
-            ILoadableClass.super.onGameConstruct(neoBus);
+        public void onGameConstruct(NeoBus neoBusImpl) {
+            ILoadableClass.super.onGameConstruct(neoBusImpl);
         }
 
         // in this one though, it works the same way as ILoadableClass#onModConstruct, but it only runs on the client side
         // will not be invoked in the server side
         @Override
-        public void onModClientConstruct(ModBus modBus) {
-            ILoadableClass.super.onModClientConstruct(modBus);
+        public void onModClientConstruct(ModBus modBusImpl) {
+            ILoadableClass.super.onModClientConstruct(modBusImpl);
         }
 
         // same logic here, except it passes Neo's event bus
         @Override
-        public void onGameClientConstruct(NeoBus neoBus) {
-            ILoadableClass.super.onGameClientConstruct(neoBus);
+        public void onGameClientConstruct(NeoBus neoBusImpl) {
+            ILoadableClass.super.onGameClientConstruct(neoBusImpl);
         }
 
         // Ignores the log/exception if this class wasn't loaded, false by default
@@ -421,11 +422,11 @@ class XtraFightAPIExamples {
         // Or optionally, you can do everything inside it's constructor instead
         // As shown, these are the allowed constructor arguments:
         @Invoke // Don't forget the invoke annotation!
-        LoadableEnumsAndClasses(Environments environments, NeoBus neoBus, ModBus modBus) {
+        LoadableEnumsAndClasses(Environments environments, NeoBus neoBusImpl, ModBus modBusImpl) {
             // your logic here
         }
 
-        // The NeoBus and the ModBus above are impls from IEventBus, so they're the same
+        // The NeoBusImpl and the ModBusImpl above are impls from IEventBus, so they're the same
         // They are separate classes so the arguments does not copy an instance of IEventBus
 
         // To load this class, you call LoadableClassManager#loadClass(IEventBus, Class<? extends ILoadableClass>[]) in your mod's constructor
@@ -480,7 +481,7 @@ class XtraFightAPIExamples {
             }
             // The initialization of this plugin, it passes the mod's bus and Neo's bus, they're optional
             @Override
-            public void onInitialize(NeoBus neoBus, ModBus modBus) {}
+            public void onInitialize(NeoBus neoBusImpl, ModBus modBusImpl) {}
 
             // And to load this plugin, you call this in your mod's constructor:
             // CompatibilityPluginsManager.registerPlugins(null, SomePlugin.class);

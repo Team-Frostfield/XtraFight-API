@@ -10,7 +10,7 @@ import team.frostfield.xtrafight.cls.lists.BasicList;
 import team.frostfield.xtrafight.cls.lists.BasicArrayList;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
-import team.frostfield.xtrafight.events.bus.ModBus;
+import team.frostfield.xtrafight.events.bus.impl.ModBusImpl;
 import team.frostfield.xtrafight.input.InputKeyCodes;
 import team.frostfield.xtrafight.main.XtraFightAPIMod;
 import yesman.epicfight.client.input.CombatKeyMapping;
@@ -20,8 +20,8 @@ public class XtraFightAPIKeyMappings implements ILoadableClass {
     private static final BasicList<KeyMapping> KEY_MAPPINGS = new BasicArrayList<>();
 
     @Invoke
-    private XtraFightAPIKeyMappings(ModBus modBus) {
-        modBus.addListener(this::onKeysRegistry);
+    private XtraFightAPIKeyMappings(ModBusImpl modBusImpl) {
+        modBusImpl.addListener(this::onKeysRegistry);
     }
 
     public static final CombatKeyMapping HEAVY_ATTACK = XtraFightAPIKeyMappings.registerCombatKey(

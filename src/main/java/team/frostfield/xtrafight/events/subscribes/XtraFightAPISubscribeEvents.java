@@ -8,7 +8,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderFrameEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -16,13 +15,15 @@ import team.frostfield.xtrafight.animation.client.CameraAnimatorAPI;
 import team.frostfield.xtrafight.animation.client.CameraAnimatorAPI.CameraFOVHelper;
 import team.frostfield.xtrafight.client.gui.InteractionAPI;
 import team.frostfield.xtrafight.events.xtrafight_api.registry.CameraAnimationRegistryDispatchEvent;
-import team.frostfield.xtrafight.main.XtraFightAPIMod;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 import yesman.epicfight.api.client.event.EpicFightClientEventHooks;
 
 public class XtraFightAPISubscribeEvents {
-    @EventBusSubscriber(modid = XtraFightAPIMod.MOD_ID, value = Dist.CLIENT)
+    @EventBusSubscriber(
+            modid = XtraFightAPI.MOD_ID,
+            value = Dist.CLIENT
+    )
     public static class Client {
-
         private static long lastFrameNanos = 0L;
         @SubscribeEvent
         public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
@@ -68,42 +69,37 @@ public class XtraFightAPISubscribeEvents {
             event.setYaw(interpolatedYaw);
             event.setPitch(interpolatedPitch);
         }
-    }
-    @SubscribeEvent
-    public static void onClientTick(ClientTickEvent.Pre ignoredEvent) {
-        CameraAnimatorAPI.getInstance().tick();
-    }
-
-    //@SubscribeEvent
-    public static void computeFOV(ViewportEvent.ComputeFov event) {
-        if (CameraAnimatorAPI.getInstance().isPlaying()) {
-            CameraAnimatorAPI.CamAnim current = CameraAnimatorAPI.getInstance().getCurrentCamAnim();
-            //FIXME: This is calculated Default FOV from blender, do you guys really think it should be default
-            if (current != null) {
-                event.setFOV(CameraFOVHelper.focalLengthToFOV(10.3923f));
+        //@SubscribeEvent
+        public static void computeFOV(ViewportEvent.ComputeFov event) {
+            if (CameraAnimatorAPI.getInstance().isPlaying()) {
+                CameraAnimatorAPI.CamAnim current = CameraAnimatorAPI.getInstance().getCurrentCamAnim();
+                //FIXME: This is calculated Default FOV from blender, do you guys really think it should be default
+                if (current != null) {
+                    event.setFOV(CameraFOVHelper.focalLengthToFOV(10.3923f));
+                }
             }
         }
-    }
 
-    @SubscribeEvent
-    public static void onCameraBuild(FMLClientSetupEvent evt) {
-        EpicFightClientEventHooks.Camera.BUILD_TRANSFORM_PRE.registerContextAwareEvent((event, eventContext) -> {
-            if (!CameraAnimatorAPI.getInstance().isPlaying()) return;
+        @SubscribeEvent
+        public static void onCameraBuild(FMLClientSetupEvent evt) {
+            EpicFightClientEventHooks.Camera.BUILD_TRANSFORM_PRE.registerContextAwareEvent((event, eventContext) -> {
+                if (!CameraAnimatorAPI.getInstance().isPlaying()) return;
 
-            // Apply Camera animation
-            CameraAnimatorAPI.getInstance().applyToCamera(
-                    event.getCamera(),
-                    event.getPartialTick()
-            );
+                // Apply Camera animation
+                CameraAnimatorAPI.getInstance().applyToCamera(
+                        event.getCamera(),
+                        event.getPartialTick()
+                );
 
-            // Take full control of camera during animation
-            event.setVanillaCameraSetupCanceled(true);
+                // Take full control of camera during animation
+                event.setVanillaCameraSetupCanceled(true);
 
-        });
+            });
 
-        evt.enqueueWork(() -> {
-            new CameraAnimationRegistryDispatchEvent().post();
-        });
+            evt.enqueueWork(() -> {
+                new CameraAnimationRegistryDispatchEvent().post();
+            });
 
+        }
     }
 }

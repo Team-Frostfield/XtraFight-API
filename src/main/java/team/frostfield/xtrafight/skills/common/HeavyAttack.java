@@ -1,11 +1,5 @@
 package team.frostfield.xtrafight.skills.common;
 
-import team.frostfield.xtrafight.builders.epicfight.excap.deferred.DeferredCapabilityBuilder;
-import team.frostfield.xtrafight.events.xtrafight_api.player.HeavyAttackDispatchEvent;
-import team.frostfield.xtrafight.exception.DeveloperException;
-import team.frostfield.xtrafight.gameassets.XtraFightAPISkillDataKeys;
-import team.frostfield.xtrafight.network.XtraFightAPINetworkManager;
-import team.frostfield.xtrafight.skills.XtraFightAPISkillCategories;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -13,6 +7,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import team.frostfield.xtrafight.builders.epicfight.excap.deferred.DeferredCapabilityBuilder;
+import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
+import team.frostfield.xtrafight.events.xtrafight_api.player.HeavyAttackDispatchEvent;
+import team.frostfield.xtrafight.exception.DeveloperException;
+import team.frostfield.xtrafight.gameassets.XtraFightAPISkillDataKeys;
+import team.frostfield.xtrafight.network.XtraFightAPINetworkManager;
+import team.frostfield.xtrafight.skills.XtraFightAPISkillCategories;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.AnimationManager.AnimationAccessor;
 import yesman.epicfight.api.animation.AnimationVariables;
@@ -98,7 +99,7 @@ public class HeavyAttack extends Skill {
             skillConsumeEvent.getResourceType().consumer.consume(skillContainer, executor, skillConsumeEvent.getAmount());
         }
 
-        if (!heavyAttackEvent.isCanceledAfterPosting()) {
+        if (!XtraFightAPIDispatchableEvents.Player.HEAVY_ATTACK.postAndCheckCanceled(heavyAttackEvent)) {
             CapabilityItem cap = executor.getHoldingItemCapability(InteractionHand.MAIN_HAND);
             AnimationAccessor<? extends AttackAnimation> attackMotion;
             ServerPlayer player = executor.getOriginal();
@@ -196,7 +197,7 @@ public class HeavyAttack extends Skill {
     private static void setHeavyCounter(ModifyComboCounter.Causal reason, ServerPlayerPatch playerpatch, SkillContainer container, AnimationManager.AnimationAccessor<? extends StaticAnimation> causalAnimation, int value) {
         int prevValue = container.getDataManager().getDataValue(XtraFightAPISkillDataKeys.HEAVY_COUNTER);
         ModifyComboCounter comboResetEvent = new ModifyComboCounter(reason, playerpatch, causalAnimation, prevValue, value);
-        EpicFightEventHooks.Player.MODIFY_COMBO_COUNTER.post(comboResetEvent);
+        EpicFightEventHooks.Player.MODIFY_COMBO_COUNTER.postWithListener(comboResetEvent, playerpatch.getEventListener());
         container.getDataManager().setData(XtraFightAPISkillDataKeys.HEAVY_COUNTER, comboResetEvent.getNextValue());
     }
 

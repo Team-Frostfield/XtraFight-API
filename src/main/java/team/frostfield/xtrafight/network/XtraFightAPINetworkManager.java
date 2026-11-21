@@ -9,7 +9,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
-import team.frostfield.xtrafight.events.bus.ModBus;
+import team.frostfield.xtrafight.events.bus.impl.ModBusImpl;
 import team.frostfield.xtrafight.network.packets.XtraFightAPIPacketsManager;
 import yesman.epicfight.network.EntityPairingPacketType;
 import yesman.epicfight.network.server.SPEntityPairingPacket;
@@ -17,8 +17,8 @@ import yesman.epicfight.network.server.SPEntityPairingPacket;
 public class XtraFightAPINetworkManager implements ILoadableClass {
 
     @Invoke
-    private XtraFightAPINetworkManager(ModBus modBus) {
-        modBus.addListener(this::registerNetworking);
+    private XtraFightAPINetworkManager(ModBusImpl modBusImpl) {
+        modBusImpl.addListener(this::registerNetworking);
     }
 
     private void registerNetworking(final RegisterPayloadHandlersEvent event) {

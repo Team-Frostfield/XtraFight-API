@@ -10,5 +10,5 @@ public interface CompatibilityPlugin {
     // ONLY runs on the client side if the compatibility is client-side
     boolean isClientOnly();
 
-    void onInitialize(NeoBus neoBus, ModBus modBus);
+    void onInitialize(NeoBus neoBusImpl, ModBus modBusImpl);
 }

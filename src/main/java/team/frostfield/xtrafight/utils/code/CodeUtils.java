@@ -42,7 +42,9 @@ public class CodeUtils {
     public static <T> T newEmptyInstance(Class<T> instanceCls, AccessType accessType) {
         try {
             Constructor<T> constructor = accessType == AccessType.PUBLIC ? instanceCls.getConstructor() : instanceCls.getDeclaredConstructor();
-            constructor.setAccessible(true);
+            if (accessType == AccessType.DECLARED) {
+                constructor.setAccessible(true);
+            }
             return constructor.newInstance();
         } catch (Exception e) {
             throw new RuntimeException("Failed to instantiate " + instanceCls.getName() + ", " + e.getMessage());
@@ -134,6 +136,10 @@ public class CodeUtils {
 
     public static boolean hasAnnotationSuper(Class<? extends Annotation> annotationCls) {
         return hasAnnotationSuper(getCallerClass(), annotationCls);
+    }
+
+    public static boolean isInstanceOf(Object val, Class<?> instanceCls) {
+        return val.getClass().isInstance(instanceCls);
     }
 
     public static Class<?> getSuperClass(Class<?> cls) {

@@ -100,7 +100,7 @@ public record CPFreezeEntity(int entityId, boolean freeze) implements ICustomPac
         }
     }
 
-    // if someone logs off mid dialogue the mob gets saved frozen, so let it go when it loads back in
+    // if someone logs off mid-dialogue the mob gets saved frozen, so let it go when it loads back in
     @EventBusSubscriber(modid = XtraFightAPI.MOD_ID)
     public static final class FrozenMobCleanup {
         @SubscribeEvent

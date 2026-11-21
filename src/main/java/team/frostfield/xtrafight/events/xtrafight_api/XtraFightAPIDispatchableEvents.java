@@ -19,7 +19,7 @@ public class XtraFightAPIDispatchableEvents {
     public XtraFightAPIDispatchableEvents() {}
 
     public static class Player {
-        private Player() {}
+        private Player(){}
 
         // Adds more default motions for the player, specifically in the tail of PlayerPatch#initAnimation();
         public static final EventDispatch<AddPlayerMotionsDispatchEvent> ADD_MOTIONS = EventDispatch.createDispatchable();

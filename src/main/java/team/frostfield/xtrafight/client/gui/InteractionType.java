@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public enum InteractionType {
 
     NONE((player, target, ctx) -> {});
 
+    @Nullable
     private Object[] arguments;
     // 6 blocks
     public static final double MAX_INTERACTION_DISTANCE_SQR = 6.0 * 6.0;
@@ -74,7 +76,7 @@ public enum InteractionType {
         this.arguments = arguments;
     }
 
-    @Internal
+    @Internal @Nullable
     public Object[] getArguments() {
         return this.arguments;
     }
@@ -88,7 +90,7 @@ public enum InteractionType {
             return;
         }
 
-        if (this.parameterizedHandler != null) {
+        if (this.parameterizedHandler != null && this.arguments != null) {
             this.parameterizedHandler.execute(player, target, context, args);
         } else if (this.interactionHandler != null) {
             this.interactionHandler.handle(player, target, context);

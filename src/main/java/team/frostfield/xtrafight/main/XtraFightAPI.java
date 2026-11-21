@@ -1,14 +1,13 @@
 package team.frostfield.xtrafight.main;
 
-import team.frostfield.xtrafight.events.bus.ModBus;
-import team.frostfield.xtrafight.events.bus.NeoBus;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModContainer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import team.frostfield.xtrafight.events.bus.ModBus;
 
 public sealed interface XtraFightAPI permits XtraFightAPIMod {
-    String MOD_ID = "xtrafight_api";
+    String MOD_ID = "xtrafight";
     String MOD_NAME = "XtraFight-API";
     Logger LOGGER = LogManager.getLogger(MOD_NAME);
 
@@ -23,7 +22,5 @@ public sealed interface XtraFightAPI permits XtraFightAPIMod {
     boolean isDeveloperEnvironment();
 
     ResourceLocation identifier(String path);
-
-    NeoBus getNeoBus();
 
 }

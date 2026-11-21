@@ -1,13 +1,13 @@
 package team.frostfield.xtrafight.skills.common;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
 import team.frostfield.xtrafight.animation.XtraFightAPIAnimationStates;
 import team.frostfield.xtrafight.builders.epicfight.excap.deferred.DeferredCapabilityBuilder;
 import team.frostfield.xtrafight.events.xtrafight_api.player.CounterAttackDispatchEvent;
 import team.frostfield.xtrafight.gameassets.XtraFightAPISkillDataKeys;
 import team.frostfield.xtrafight.network.XtraFightAPINetworkManager;
 import team.frostfield.xtrafight.skills.XtraFightAPISkillCategories;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionHand;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
@@ -21,6 +21,7 @@ import yesman.epicfight.skill.SkillBuilder;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.skill.guard.GuardSkill;
+import yesman.epicfight.skill.guard.ParryingSkill;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
@@ -55,10 +56,10 @@ public class CounterAttack extends Skill {
 
         CounterAttackDispatchEvent counterAttackEvent = new CounterAttackDispatchEvent(container);
         SkillConsumeEvent skillConsumeEvent = new SkillConsumeEvent(executor, this, this.resource, null);
+        ParryingSkill parryingSkill = EpicFightSkills.PARRYING.get();
+        boolean canParry = parryingSkill.isHoldingWeaponAvailable(executor, mainHand, GuardSkill.BlockType.ADVANCED_GUARD);
 
-        boolean canParry = EpicFightSkills.PARRYING.get().isHoldingWeaponAvailable(executor, mainHand, GuardSkill.BlockType.ADVANCED_GUARD);
-
-        CounterTypes counterType = canParry ? CounterTypes.PARRY : CounterTypes.NORMAL;
+        CounterType counterType = canParry ? CounterType.PARRY : CounterType.NORMAL;
 
         AnimationManager.AnimationAccessor<? extends StaticAnimation> animation = this.getCounterMotion(container, mainHand, counterType);
         if (animation == null) {
@@ -75,10 +76,10 @@ public class CounterAttack extends Skill {
         }
     }
 
-    protected AnimationManager.AnimationAccessor<? extends StaticAnimation> getCounterMotion(SkillContainer container, CapabilityItem itemCapability, CounterTypes counterType) {
+    protected AnimationManager.AnimationAccessor<? extends StaticAnimation> getCounterMotion(SkillContainer container, CapabilityItem itemCapability, CounterType counterType) {
         WeaponCategory category = itemCapability.getWeaponCategory();
 
-        if (counterType == CounterTypes.PARRY) {
+        if (counterType == CounterType.PARRY) {
             // Fetch list via getParryingCounterAttacks getter
             List<AnimationManager.AnimationAccessor<? extends AttackAnimation>> parryList = DeferredCapabilityBuilder.getParryingCounterAttacks(category);
 
@@ -108,7 +109,7 @@ public class CounterAttack extends Skill {
     }
 
 
-    public enum CounterTypes {
+    public enum CounterType {
         NORMAL,
         PARRY
     }

@@ -12,7 +12,6 @@ import team.frostfield.xtrafight.network.XtraFightAPINetworkManager;
 @Internal
 public enum XtraFightLoadableEnums implements LoadableEnum {
     NETWORK_MANAGER(XtraFightAPINetworkManager.class),
-    // GAME_RULES(XtraFightAPIGameRules.class),
     CONFIG(XtraFightAPIConfigs.class),
     SOUND_MANAGER(XtraFightAPISoundsManager.class),
     SKILLS(XtraFightAPISkills.class),

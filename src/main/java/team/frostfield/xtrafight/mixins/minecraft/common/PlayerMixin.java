@@ -24,7 +24,6 @@ public abstract class PlayerMixin {
             method = "tick",
             remap = false
     )
-
     private void injectEventHookPost(CallbackInfo ci) {
         PlayerTickDispatchEvent.Post tickPostEH = new PlayerTickDispatchEvent.Post((Player) (Object) this);
         tickPostEH.post();

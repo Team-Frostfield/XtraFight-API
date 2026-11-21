@@ -6,10 +6,11 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import team.frostfield.xtrafight.cls.loadable.LoadableClassManager;
 import team.frostfield.xtrafight.cls.loadable.enums.XtraFightLoadableEnums;
+import team.frostfield.xtrafight.compat.plugin.CompatibilityPlugin;
 import team.frostfield.xtrafight.compat.plugin.CompatibilityPluginsManager;
-import team.frostfield.xtrafight.compat.plugin.ExamplePlugin;
+import team.frostfield.xtrafight.compat.plugin.xtrafight.XtraFightAPIPlugins;
 import team.frostfield.xtrafight.events.bus.ModBus;
-import team.frostfield.xtrafight.events.bus.NeoBus;
+import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.dispatch.DispatchingEvent;
 import team.frostfield.xtrafight.input.XtraFightAPIInputActions;
 import team.frostfield.xtrafight.skills.XtraFightAPISkillCategories;
@@ -18,6 +19,8 @@ import team.frostfield.xtrafight.utils.EnvironmentHelper;
 import yesman.epicfight.api.client.input.action.InputAction;
 import yesman.epicfight.skill.SkillCategory;
 import yesman.epicfight.skill.SkillSlot;
+
+import java.util.Arrays;
 
 @Mod(XtraFightAPI.MOD_ID)
 public final class XtraFightAPIMod implements XtraFightAPI {
@@ -29,13 +32,20 @@ public final class XtraFightAPIMod implements XtraFightAPI {
         instance = this;
         this.modBus = ModBus.from(modBus);
         this.container = container;
+        this.modBus.register(this);
         this.doEpicAPIStuff();
+        LOGGER.debug("hello");
+        MinecraftDispatchableEvents.Client.CLIENT_START_POST_P.dispatchEvent(() -> info("Hello from Client parameterized Event!"));
+        MinecraftDispatchableEvents.Client.CLIENT_START_POST.dispatchEvent(postEvent -> info("Hello from Client parameterized Event!"));
     }
 
     private void doEpicAPIStuff() {
         DispatchingEvent.postEvent();
         LoadableClassManager.loadEnum(this.modBus, XtraFightLoadableEnums.values());
-        CompatibilityPluginsManager.registerPlugins(this.modBus, ExamplePlugin.class);
+        Class<? extends CompatibilityPlugin>[] plugins = Arrays.stream(XtraFightAPIPlugins.values()).map(XtraFightAPIPlugins::getPluginCls).<Class<? extends CompatibilityPlugin>>toArray(Class[]::new);
+        if (plugins.length != 0) {
+            CompatibilityPluginsManager.registerPlugins(this.modBus, plugins);
+        }
         SkillSlot.ENUM_MANAGER.registerEnumCls(XtraFightAPI.MOD_ID, XtraFightSkillSlots.class);
         SkillCategory.ENUM_MANAGER.registerEnumCls(XtraFightAPI.MOD_ID, XtraFightAPISkillCategories.class);
         InputAction.ENUM_MANAGER.registerEnumCls(XtraFightAPI.MOD_ID, XtraFightAPIInputActions.class);
@@ -56,11 +66,6 @@ public final class XtraFightAPIMod implements XtraFightAPI {
 
     public ResourceLocation identifier(String path) {
         return ResourceLocation.fromNamespaceAndPath(XtraFightAPI.MOD_ID, path);
-    }
-
-    @Override
-    public NeoBus getNeoBus() {
-        return NeoBus.EVENT_BUS;
     }
 
     // Logger helpers

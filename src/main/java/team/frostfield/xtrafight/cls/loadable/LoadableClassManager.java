@@ -16,6 +16,8 @@ import team.frostfield.xtrafight.cls.maps.BasicHashMap;
 import team.frostfield.xtrafight.cls.maps.BasicMap;
 import team.frostfield.xtrafight.events.bus.ModBus;
 import team.frostfield.xtrafight.events.bus.NeoBus;
+import team.frostfield.xtrafight.events.bus.impl.ModBusImpl;
+import team.frostfield.xtrafight.events.bus.impl.NeoBusImpl;
 import team.frostfield.xtrafight.exception.ClassLoadingException;
 import team.frostfield.xtrafight.exception.DeveloperException;
 import team.frostfield.xtrafight.main.XtraFightAPI;
@@ -58,8 +60,8 @@ public final class LoadableClassManager {
 
             Map<Class<?>, Object> allowedConstructorArgs = Map.of(
                     Environments.class, EnvironmentHelper.getEnvironment(),
-                    ModBus.class, bus,
-                    NeoBus.class, NeoBus.EVENT_BUS
+                    ModBusImpl.class, bus,
+                    NeoBusImpl.class, NeoBusImpl.EVENT_BUS
             );
 
             try {
@@ -260,13 +262,13 @@ public final class LoadableClassManager {
         return !clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers());
     }
 
-    public static void loadEnum(ModBus modBus, LoadableEnum[] loadableEnumValues) {
+    public static void loadEnum(ModBus bus, LoadableEnum[] loadableEnumValues) {
         Class<? extends ILoadableClass>[] commonClasses = Arrays.stream(loadableEnumValues)
                 .filter(loadableEnum -> !loadableEnum.isClientOnly())
                 .map(LoadableEnum::getLoadableClass)
                 .<Class<? extends ILoadableClass>>toArray(Class[]::new);
 
-        loadClass(modBus, commonClasses);
+        loadClass(bus, commonClasses);
 
         if (EnvironmentHelper.getEnvironment().isClient()) {
             Class<? extends ILoadableClass>[] clientClasses = Arrays.stream(loadableEnumValues)
@@ -274,7 +276,7 @@ public final class LoadableClassManager {
                     .map(LoadableEnum::getLoadableClass)
                     .<Class<? extends ILoadableClass>>toArray(Class[]::new);
 
-            loadClass(modBus, clientClasses);
+            loadClass(bus, clientClasses);
         }
 
         runUnloadedCheck();

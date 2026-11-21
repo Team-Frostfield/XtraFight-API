@@ -16,7 +16,5 @@ public class ExamplePlugin implements CompatibilityPlugin {
     }
 
     @Override
-    public void onInitialize(NeoBus neoBus, ModBus modBus) {
-
-    }
+    public void onInitialize(NeoBus neoBusImpl, ModBus modBusImpl) {}
 }

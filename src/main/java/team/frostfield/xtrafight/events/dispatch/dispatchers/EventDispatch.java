@@ -1,11 +1,14 @@
 package team.frostfield.xtrafight.events.dispatch.dispatchers;
 
+import team.frostfield.xtrafight.events.bus.NeoBus;
 import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.entires.ListenerEntry;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventBusType;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventDispatcher;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventPriority;
 import team.frostfield.xtrafight.events.dispatch.marks.HybridEvent;
 import team.frostfield.xtrafight.events.dispatch.side.EventSide;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 import team.frostfield.xtrafight.utils.code.CodeUtils;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForge;
@@ -21,7 +24,7 @@ public class EventDispatch<T extends DispatchEvent> {
     protected final EventSide side;
     protected T event;
     protected final List<ListenerEntry<T>> entries = new CopyOnWriteArrayList<>();
-    private final AtomicInteger sequenceGenerator = new AtomicInteger();
+    protected final AtomicInteger sequenceGenerator = new AtomicInteger();
 
     protected EventDispatch(EventSide side) {
         this.side = side;
@@ -56,7 +59,6 @@ public class EventDispatch<T extends DispatchEvent> {
                         .reversed()
                         .thenComparingInt(ListenerEntry::sequence)
         );
-        this.event.onDispatch();
         return this;
     }
 
@@ -86,16 +88,21 @@ public class EventDispatch<T extends DispatchEvent> {
         if (hasHybrid && CodeUtils.getSuperClass(eventClass) != DispatchEvent.class) {
             HybridEvent hybridEvent = eventClass.getAnnotation(HybridEvent.class);
             if (hybridEvent != null) {
-                switch (hybridEvent.value()) {
-                    case MOD -> ModLoader.postEvent(dispatchableEvent);
-                    case GAME -> NeoForge.EVENT_BUS.post(dispatchableEvent);
-                    case BOTH -> this.postToAllBuses(dispatchableEvent);
+                if (hybridEvent.value() != EventBusType.BOTH) {
+                    switch (hybridEvent.value()) {
+                        case MOD -> ModLoader.postEvent(dispatchableEvent);
+                        case GAME -> NeoBus.EVENT_BUS.post(dispatchableEvent);
+                    }
+                } else {
+                    XtraFightAPI.LOGGER.warn("@HybridEvent value for {} is already defaulted to BOTH!", dispatchableEvent.getEventClsName());
                 }
+                this.postToAllBuses(dispatchableEvent);
             }
         }
 
         if (!this.entries.isEmpty() && this.side.shouldDispatch()) {
             for (ListenerEntry<T> entry : this.entries) {
+                dispatchableEvent.onDispatch();
                 dispatchableEvent.setPriority(entry.priority());
                 entry.dispatcher().dispatch(dispatchableEvent);
                 dispatchableEvent.onPost();

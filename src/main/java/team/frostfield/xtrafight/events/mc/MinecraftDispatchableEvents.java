@@ -2,8 +2,10 @@ package team.frostfield.xtrafight.events.mc;
 
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.EventDispatch;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.parameterized.ParameterizedEventDispatch;
 import team.frostfield.xtrafight.events.dispatch.side.EventSide;
 import team.frostfield.xtrafight.events.mc.client.ClientInitializeDispatchEvent;
+import team.frostfield.xtrafight.events.mc.client.ClientInitializeDispatchEvent.Post.ClientStartPostParams;
 import team.frostfield.xtrafight.events.mc.client.ClientTickDispatchEvent;
 import team.frostfield.xtrafight.events.mc.client.WorldLoadDispatchEvent;
 import team.frostfield.xtrafight.events.mc.entity.EntitySummonDispatchEvent;
@@ -48,6 +50,7 @@ public class MinecraftDispatchableEvents {
         // both fired when the player initializes the client
         public static final EventDispatch<ClientInitializeDispatchEvent.Pre> CLIENT_START_PRE = EventDispatch.createDispatchable(EventSide.CLIENT);
         public static final EventDispatch<ClientInitializeDispatchEvent.Post> CLIENT_START_POST = EventDispatch.createDispatchable(EventSide.CLIENT);
+        public static final ParameterizedEventDispatch<ClientInitializeDispatchEvent.Post, ClientStartPostParams> CLIENT_START_POST_P = ParameterizedEventDispatch.createParameterized(EventSide.CLIENT);
         // fired when the client is initialized and ticking
         public static final EventDispatch<ClientTickDispatchEvent> CLIENT_TICK = EventDispatch.createDispatchable(EventSide.CLIENT);
     }

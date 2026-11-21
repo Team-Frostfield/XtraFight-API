@@ -55,8 +55,10 @@ public record CPEntityInteraction(int targetEntityId, InteractionType interactio
             if (context.player() instanceof ServerPlayer player) {
                 Entity target = player.level().getEntity(this.targetEntityId);
                 if (target != null && target.isAlive() && player.distanceToSqr(target) <= InteractionType.MAX_INTERACTION_DISTANCE_SQR) {
+                    // We don't call this.interactionType.getArguments(); here, so it doesn't throw a null pointer exception
                     if (this.interactionType.getArguments() != null) {
-                        this.interactionType.execute(player, target, context, List.of(this.interactionType.getArguments()));
+                        Object[] args = this.interactionType.getArguments();
+                        this.interactionType.execute(player, target, context, List.of(args));
                     } else {
                         this.interactionType.execute(player, target, context);
                     }

@@ -4,7 +4,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
-import team.frostfield.xtrafight.events.bus.ModBus;
+import team.frostfield.xtrafight.events.bus.impl.ModBusImpl;
 import team.frostfield.xtrafight.skills.common.CounterAttack;
 import team.frostfield.xtrafight.skills.common.HeavyAttack;
 import team.frostfield.xtrafight.utils.registry.DeferredRegistryUtil;
@@ -20,8 +20,8 @@ public class XtraFightAPISkills implements ILoadableClass {
     public static final DeferredHolder<Skill, CounterAttack> COUNTER_ATTACK = XtraFightAPISkills.register("counter_attack", CounterAttack::createCounterAttackBuilder);
 
     @Invoke
-    private XtraFightAPISkills(ModBus modBus) {
-        SKILLS.register(modBus);
+    private XtraFightAPISkills(ModBusImpl modBusImpl) {
+        SKILLS.register(modBusImpl);
     }
 
     private static <T extends SkillBuilder<?>, S extends Skill> DeferredHolder<Skill, S> register(String name, Supplier<T> supplier) {

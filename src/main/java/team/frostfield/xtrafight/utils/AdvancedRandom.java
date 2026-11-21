@@ -8,7 +8,7 @@ public class AdvancedRandom extends Random {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    // 10^0 .. 10^9 (10^9 is the largest power of ten that fits in an int)
+    // 10^0 . 10^9 (10^9 is the largest power of ten that fits in an int)
     private static final int[] POW10 = {
             1, 10, 100, 1_000, 10_000, 100_000, 1_000_000,
             10_000_000, 100_000_000, 1_000_000_000

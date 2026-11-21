@@ -2,6 +2,8 @@ package team.frostfield.xtrafight.events.mc.client;
 
 import team.frostfield.xtrafight.events.dispatch.IDispatchableEvent;
 import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameterize;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 import team.frostfield.xtrafight.events.dispatch.marks.HybridEvent;
 import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import net.minecraft.client.Minecraft;
@@ -33,7 +35,7 @@ public abstract class ClientInitializeDispatchEvent extends DispatchEvent implem
         }
     }
 
-    public static class Post extends ClientInitializeDispatchEvent {
+    public static class Post extends ClientInitializeDispatchEvent implements ParameterizedEvent {
 
         public Post(Minecraft minecraft) {
             super(minecraft);
@@ -42,6 +44,10 @@ public abstract class ClientInitializeDispatchEvent extends DispatchEvent implem
         @Override
         public ClientInitializeDispatchEvent post() {
             return MinecraftDispatchableEvents.Client.CLIENT_START_POST.postEvent(this);
+        }
+
+        public interface ClientStartPostParams extends EventParameterize<Post> {
+            void onStart();
         }
     }
 }

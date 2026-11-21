@@ -105,8 +105,10 @@ public class CancelableEventDispatch<T extends DispatchEvent> extends EventDispa
 
         if (!this.cancelableEntries.isEmpty() && this.side.shouldDispatch()) {
             for (CancelableListenerEntry<T> cancelableEntry : this.cancelableEntries) {
+                dispatchableEvent.onDispatch();
                 if (!dispatchableEvent.isCanceled() || cancelableEntry.receiveCanceled()) {
                     cancelableEntry.dispatcher().dispatch(dispatchableEvent);
+                    dispatchableEvent.onPost();
                 }
             }
         }
