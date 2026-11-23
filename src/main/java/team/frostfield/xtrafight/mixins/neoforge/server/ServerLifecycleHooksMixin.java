@@ -1,5 +1,6 @@
 package team.frostfield.xtrafight.mixins.neoforge.server;
 
+import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import team.frostfield.xtrafight.events.mc.server.ServerInitializeDispatchEvent;
 import team.frostfield.xtrafight.events.mc.server.ServerStopDispatchEvent;
 import net.minecraft.server.MinecraftServer;
@@ -19,7 +20,7 @@ public class ServerLifecycleHooksMixin {
     )
     private static void injectEventHookPre(MinecraftServer server, CallbackInfo ci) {
         ServerInitializeDispatchEvent.Pre serverInitPre = new ServerInitializeDispatchEvent.Pre(server);
-        serverInitPre.post();
+        MinecraftDispatchableEvents.Server.START_PRE.postEventWithParams(serverInitPre, params -> params.onInitialize(server));
     }
     @Inject(
             at = @At(value = "HEAD"),
@@ -28,7 +29,7 @@ public class ServerLifecycleHooksMixin {
     )
     private static void injectEventHookPost(MinecraftServer server, CallbackInfo ci) {
         ServerInitializeDispatchEvent.Post serverInitPost = new ServerInitializeDispatchEvent.Post(server);
-        serverInitPost.post();
+        MinecraftDispatchableEvents.Server.START_POST.postEventWithParams(serverInitPost, params -> params.onInitialize(server));
     }
 
     @Inject(
@@ -38,7 +39,7 @@ public class ServerLifecycleHooksMixin {
     )
     private static void injectEventHookStop(MinecraftServer server, CallbackInfo callbackInfo) {
         ServerStopDispatchEvent stopEvent = new ServerStopDispatchEvent(server);
-        stopEvent.post();
+        MinecraftDispatchableEvents.Server.STOP.postEventWithParams(stopEvent, params -> params.onServerStop(server));
     }
 
 }

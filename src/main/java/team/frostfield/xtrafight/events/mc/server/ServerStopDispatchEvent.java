@@ -1,11 +1,11 @@
 package team.frostfield.xtrafight.events.mc.server;
 
-import team.frostfield.xtrafight.events.dispatch.IDispatchableEvent;
-import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
-import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import net.minecraft.server.MinecraftServer;
+import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 
-public class ServerStopDispatchEvent extends DispatchEvent implements IDispatchableEvent<ServerStopDispatchEvent> {
+public class ServerStopDispatchEvent extends DispatchEvent implements ParameterizedEvent {
     private final MinecraftServer server;
 
     public ServerStopDispatchEvent(MinecraftServer server) {
@@ -16,8 +16,9 @@ public class ServerStopDispatchEvent extends DispatchEvent implements IDispatcha
         return this.server;
     }
 
-    @Override
-    public ServerStopDispatchEvent post() {
-        return MinecraftDispatchableEvents.Server.SERVER_STOP.postEvent(this);
+    @FunctionalInterface
+    public interface ServerStopParams extends EventParameters {
+        void onServerStop(MinecraftServer server);
     }
+
 }

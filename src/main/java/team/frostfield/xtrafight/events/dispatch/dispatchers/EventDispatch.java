@@ -48,6 +48,9 @@ public class EventDispatch<T extends DispatchEvent> {
 
     public EventDispatch<T> dispatchEvent(EventDispatcher<T> listener, EventPriority priority) {
         if (priority == EventPriority.OVERRIDE && this.event != null) {
+            if (!this.event.canBeOverridden()) {
+                XtraFightAPI.LOGGER.error("Cannot override event {}, not overridable!", this.event.getEventClsName());
+            }
             this.entries.removeIf(entry -> entry.priority() != priority && this.event.canBeOverridden());
         }
 

@@ -3,8 +3,9 @@ package team.frostfield.xtrafight.events.xtrafight_api.entity;
 import team.frostfield.xtrafight.client.gui.InteractionAPI;
 import team.frostfield.xtrafight.client.gui.InteractionType;
 import team.frostfield.xtrafight.client.gui.data.OptionStyle;
-import team.frostfield.xtrafight.events.dispatch.IDispatchableEvent;
 import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 import team.frostfield.xtrafight.events.dispatch.marks.HybridEvent;
 import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import net.minecraft.network.chat.Component;
@@ -12,7 +13,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 @HybridEvent
-public class EntityInteractDispatchEvent extends DispatchEvent implements IDispatchableEvent<EntityInteractDispatchEvent> {
+public class EntityInteractDispatchEvent extends DispatchEvent implements IDispatchableEvent<EntityInteractDispatchEvent>, ParameterizedEvent {
 
     private final Player interactor;
     private final Entity interactedTarget;
@@ -94,6 +95,11 @@ public class EntityInteractDispatchEvent extends DispatchEvent implements IDispa
 
     public EntityInteractDispatchEvent addOption(String label, InteractionType interactionType) {
         return this.addOption(Component.literal(label), interactionType, () -> {});
+    }
+
+    @FunctionalInterface
+    public interface EntityInteractParams extends EventParameters {
+        void onInteract(Player player, Entity entity, InteractionAPI interactionAPI);
     }
 
     @Override

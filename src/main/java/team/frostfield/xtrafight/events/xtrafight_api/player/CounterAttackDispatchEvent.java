@@ -1,13 +1,13 @@
 package team.frostfield.xtrafight.events.xtrafight_api.player;
 
-import team.frostfield.xtrafight.events.dispatch.IDispatchableEvent;
 import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 import team.frostfield.xtrafight.events.dispatch.marks.HybridEvent;
-import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import yesman.epicfight.skill.SkillContainer;
 
 @HybridEvent
-public class CounterAttackDispatchEvent extends DispatchEvent implements IDispatchableEvent<CounterAttackDispatchEvent> {
+public class CounterAttackDispatchEvent extends DispatchEvent implements ParameterizedEvent {
     private final SkillContainer skillContainer;
 
     public CounterAttackDispatchEvent(SkillContainer skillContainer) {
@@ -18,9 +18,10 @@ public class CounterAttackDispatchEvent extends DispatchEvent implements IDispat
         return this.skillContainer;
     }
 
-
-    @Override
-    public CounterAttackDispatchEvent post() {
-       return XtraFightAPIDispatchableEvents.Player.COUNTER_ATTACK.postEvent(this);
+    @FunctionalInterface
+    public interface CounterAttackParams extends EventParameters {
+        void onCounter(SkillContainer container);
     }
+
+
 }

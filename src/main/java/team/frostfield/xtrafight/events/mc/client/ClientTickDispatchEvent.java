@@ -1,11 +1,11 @@
 package team.frostfield.xtrafight.events.mc.client;
 
-import team.frostfield.xtrafight.events.dispatch.IDispatchableEvent;
-import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
-import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import net.minecraft.client.Minecraft;
+import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 
-public class ClientTickDispatchEvent extends DispatchEvent implements IDispatchableEvent<ClientTickDispatchEvent> {
+public class ClientTickDispatchEvent extends DispatchEvent implements ParameterizedEvent {
 
     private final Minecraft minecraft;
 
@@ -13,12 +13,14 @@ public class ClientTickDispatchEvent extends DispatchEvent implements IDispatcha
         this.minecraft = minecraft;
     }
 
+    @FunctionalInterface
+    public interface ClientTickParams extends EventParameters {
+        void onTick(Minecraft mc);
+    }
+
     public Minecraft getMinecraft() {
         return this.minecraft;
     }
 
-    @Override
-    public ClientTickDispatchEvent post() {
-        return MinecraftDispatchableEvents.Client.CLIENT_TICK.postEvent(this);
-    }
+
 }

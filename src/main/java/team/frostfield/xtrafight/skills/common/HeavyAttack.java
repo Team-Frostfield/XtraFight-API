@@ -99,7 +99,10 @@ public class HeavyAttack extends Skill {
             skillConsumeEvent.getResourceType().consumer.consume(skillContainer, executor, skillConsumeEvent.getAmount());
         }
 
-        if (!XtraFightAPIDispatchableEvents.Player.HEAVY_ATTACK.postAndCheckCanceled(heavyAttackEvent)) {
+        if (!XtraFightAPIDispatchableEvents.Player.HEAVY_ATTACK.postEventWithParamsAndCheckCanceled(heavyAttackEvent, heavyAttackParams -> {
+            heavyAttackParams.onHeavyAttack(skillContainer);
+            return !heavyAttackEvent.isCanceled();
+        })) {
             CapabilityItem cap = executor.getHoldingItemCapability(InteractionHand.MAIN_HAND);
             AnimationAccessor<? extends AttackAnimation> attackMotion;
             ServerPlayer player = executor.getOriginal();

@@ -3,6 +3,7 @@ package team.frostfield.xtrafight.client.gui;
 import team.frostfield.xtrafight.client.gui.data.DialogueData;
 import team.frostfield.xtrafight.client.gui.data.OptionStyle;
 import team.frostfield.xtrafight.client.gui.screens.InteractionMiniScreen;
+import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.entity.EntityInteractDispatchEvent;
 import team.frostfield.xtrafight.network.XtraFightAPINetworkManager;
 import team.frostfield.xtrafight.network.packets.client.CPFreezeEntity;
@@ -83,6 +84,7 @@ public final class InteractionAPI {
 
         EntityInteractDispatchEvent entityInteractDE = new EntityInteractDispatchEvent(interacter, interactedEntity, this);
         entityInteractDE.post();
+        XtraFightAPIDispatchableEvents.Entity.ENTITY_INTERACT.postEventParameterized(params -> params.onInteract(interacter, interactedEntity, this));
 
         if (entityInteractDE.isCanceled()) {
             this.pendingDialogueBuilder = null;
@@ -139,6 +141,7 @@ public final class InteractionAPI {
 
         EntityInteractDispatchEvent entityInteractDE = new EntityInteractDispatchEvent(interacter, interactedEntity, this);
         entityInteractDE.post();
+        XtraFightAPIDispatchableEvents.Entity.ENTITY_INTERACT.postEventParameterized(params -> params.onInteract(interacter, interactedEntity, this));
 
         if (entityInteractDE.isCanceled()) {
             this.pendingDialogueBuilder = null;

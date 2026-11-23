@@ -1,5 +1,7 @@
 package team.frostfield.xtrafight.mixins.epicfight.common;
 
+import org.spongepowered.asm.mixin.Unique;
+import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.player.AddPlayerMotionsDispatchEvent;
 import team.frostfield.xtrafight.gameassets.XtraFightAPISkills;
 import team.frostfield.xtrafight.skills.XtraFightSkillSlots;
@@ -17,20 +19,22 @@ import yesman.epicfight.world.capabilities.skill.PlayerSkills;
 
 @Mixin(value = PlayerPatch.class, remap = false)
 public abstract class PlayerPatchMixin<T extends Player> extends LivingEntityPatch<T> {
-    public PlayerPatchMixin(T entity) {
+    @Unique
+    private final PlayerPatch<?> self = (PlayerPatch<?>) (Object) this;
+
+    private PlayerPatchMixin(T entity) {
         super(entity);
     }
 
     @Shadow
     public abstract PlayerSkills getPlayerSkills();
 
-
     @Inject(
             at = @At(value = "HEAD"),
             method = "onJoinWorld(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/Level;Z)V",
             remap = false
     )
-    public void epicAPI$onJoinWorld(T entity, Level level, boolean worldgenSpawn, CallbackInfo ci) {
+    private void epicAPI$onJoinWorld(T entity, Level level, boolean worldgenSpawn, CallbackInfo ci) {
         // add HeavyAttack and CounterAttack as a default skill
         PlayerSkills skillCapability = this.getPlayerSkills();
         skillCapability.getSkillContainerFor(XtraFightSkillSlots.HEAVY_ATTACK).setSkill(XtraFightAPISkills.HEAVY_ATTACKS.get());
@@ -42,9 +46,8 @@ public abstract class PlayerPatchMixin<T extends Player> extends LivingEntityPat
             method = "initAnimator",
             remap = false
     )
-
-    public void injectAddMotionsEH(Animator animator, CallbackInfo ci) {
-        AddPlayerMotionsDispatchEvent addPlayerMotionsEH = new AddPlayerMotionsDispatchEvent(animator, (PlayerPatch<?>) (Object) this);
-        addPlayerMotionsEH.post();
+    private void injectAddMotionsEH(Animator animator, CallbackInfo ci) {
+        AddPlayerMotionsDispatchEvent addPlayerMotionsEH = new AddPlayerMotionsDispatchEvent(animator, this.self);
+        XtraFightAPIDispatchableEvents.Player.ADD_MOTIONS.postEventWithParams(addPlayerMotionsEH, params -> params.onAddMotions(animator, this.self));
     }
 }

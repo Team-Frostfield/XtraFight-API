@@ -1,5 +1,6 @@
 package team.frostfield.xtrafight.mixins.epicfight.common;
 
+import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.skill.AddGuardMotionsDispatchEvent;
 import team.frostfield.xtrafight.events.xtrafight_api.skill.AddGuardMotionsDispatchEvent.Parry;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,8 +21,8 @@ public class ParrySkillMixin {
     )
 
     private static void injectEvent(CallbackInfoReturnable<Builder> cir) {
-        AddGuardMotionsDispatchEvent.Parry parryEH = new Parry(cir.getReturnValue());
-        parryEH.post();
+        AddGuardMotionsDispatchEvent.Parry parryDE = new Parry(cir.getReturnValue());
+        XtraFightAPIDispatchableEvents.Skill.ADD_PARRY_GUARD_MOTIONS.postEventWithParams(parryDE, params -> params.onAddMotions(parryDE.getBuilder()));
     }
 
 }

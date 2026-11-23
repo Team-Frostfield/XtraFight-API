@@ -1,11 +1,11 @@
 package team.frostfield.xtrafight.events.mc.server;
 
-import team.frostfield.xtrafight.events.dispatch.IDispatchableEvent;
-import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
-import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import net.minecraft.server.MinecraftServer;
+import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 
-public abstract class ServerInitializeDispatchEvent extends DispatchEvent implements IDispatchableEvent<ServerInitializeDispatchEvent> {
+public abstract class ServerInitializeDispatchEvent extends DispatchEvent implements ParameterizedEvent {
 
     protected final MinecraftServer server;
 
@@ -17,18 +17,16 @@ public abstract class ServerInitializeDispatchEvent extends DispatchEvent implem
         return this.server;
     }
 
-
-    public abstract ServerInitializeDispatchEvent post();
+    @FunctionalInterface
+    public interface ServerInitParams extends EventParameters {
+        void onInitialize(MinecraftServer server);
+    }
 
     public static class Pre extends ServerInitializeDispatchEvent {
         public Pre(MinecraftServer server) {
             super(server);
         }
 
-        @Override
-        public Pre post() {
-            return MinecraftDispatchableEvents.Server.SERVER_START_PRE.postEvent(this);
-        }
     }
 
     public static class Post extends ServerInitializeDispatchEvent {
@@ -36,10 +34,6 @@ public abstract class ServerInitializeDispatchEvent extends DispatchEvent implem
             super(server);
         }
 
-        @Override
-        public Post post() {
-            return MinecraftDispatchableEvents.Server.SERVER_START_POST.postEvent(this);
-        }
     }
 
 }

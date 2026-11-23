@@ -1,42 +1,34 @@
 package team.frostfield.xtrafight.events.mc.player;
 
-import team.frostfield.xtrafight.events.dispatch.IDispatchableEvent;
-import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
-import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import net.minecraft.world.entity.player.Player;
+import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 
-public abstract class PlayerTickDispatchEvent extends DispatchEvent implements IDispatchableEvent<PlayerTickDispatchEvent> {
+public abstract class PlayerTickDispatchEvent extends DispatchEvent implements ParameterizedEvent {
     private final Player player;
     public PlayerTickDispatchEvent(Player player) {
         this.player = player;
+    }
+
+    @FunctionalInterface
+    public interface PlayerTickParams extends EventParameters {
+        void onPlayerTick(Player player);
     }
 
     public Player getPlayer() {
         return this.player;
     }
 
-    @Override
-    public abstract PlayerTickDispatchEvent post();
-
     public static class Pre extends PlayerTickDispatchEvent {
         public Pre(Player player) {
             super(player);
-        }
-
-        @Override
-        public Pre post() {
-            return MinecraftDispatchableEvents.Player.TICK_PRE.postEvent(this);
         }
     }
 
     public static class Post extends PlayerTickDispatchEvent {
         public Post(Player player) {
             super(player);
-        }
-
-        @Override
-        public Post post() {
-            return MinecraftDispatchableEvents.Player.TICK_POST.postEvent(this);
         }
     }
 }

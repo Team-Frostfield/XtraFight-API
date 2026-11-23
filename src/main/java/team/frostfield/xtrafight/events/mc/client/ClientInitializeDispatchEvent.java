@@ -1,17 +1,13 @@
 package team.frostfield.xtrafight.events.mc.client;
 
-import team.frostfield.xtrafight.events.dispatch.IDispatchableEvent;
+import net.minecraft.client.Minecraft;
 import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
-import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameterize;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 import team.frostfield.xtrafight.events.dispatch.marks.HybridEvent;
-import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
-import net.minecraft.client.Minecraft;
 
 @HybridEvent
-public abstract class ClientInitializeDispatchEvent extends DispatchEvent implements IDispatchableEvent<ClientInitializeDispatchEvent> {
-    @Override
-    public abstract ClientInitializeDispatchEvent post();
+public abstract class ClientInitializeDispatchEvent extends DispatchEvent implements ParameterizedEvent {
 
     protected final Minecraft minecraft;
 
@@ -23,15 +19,14 @@ public abstract class ClientInitializeDispatchEvent extends DispatchEvent implem
         return this.minecraft;
     }
 
-    public static class Pre extends ClientInitializeDispatchEvent {
+    @FunctionalInterface
+    public interface ClientInitParams extends EventParameters {
+        void onInitialize(Minecraft mc);
+    }
 
+    public static class Pre extends ClientInitializeDispatchEvent {
         public Pre(Minecraft minecraft) {
             super(minecraft);
-        }
-
-        @Override
-        public ClientInitializeDispatchEvent post() {
-            return MinecraftDispatchableEvents.Client.CLIENT_START_PRE.postEvent(this);
         }
     }
 
@@ -39,15 +34,6 @@ public abstract class ClientInitializeDispatchEvent extends DispatchEvent implem
 
         public Post(Minecraft minecraft) {
             super(minecraft);
-        }
-
-        @Override
-        public ClientInitializeDispatchEvent post() {
-            return MinecraftDispatchableEvents.Client.CLIENT_START_POST.postEvent(this);
-        }
-
-        public interface ClientStartPostParams extends EventParameterize<Post> {
-            void onStart();
         }
     }
 }

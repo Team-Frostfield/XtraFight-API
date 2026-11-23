@@ -1,5 +1,6 @@
 package team.frostfield.xtrafight.mixins.epicfight.common;
 
+import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.skill.AddGuardMotionsDispatchEvent;
 import team.frostfield.xtrafight.events.xtrafight_api.skill.AddGuardMotionsDispatchEvent.Normal;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,8 +22,8 @@ public class GuardSkillMixin {
     )
 
     private static void injectEvent(Function<Builder, GuardSkill> constructor, CallbackInfoReturnable<Builder> cir) {
-        AddGuardMotionsDispatchEvent.Normal normalEH = new Normal(cir.getReturnValue());
-        normalEH.post();
+        AddGuardMotionsDispatchEvent.Normal normalDE = new Normal(cir.getReturnValue());
+        XtraFightAPIDispatchableEvents.Skill.ADD_NORMAL_GUARD_MOTIONS.postEventWithParams(normalDE, params -> params.onAddMotions(normalDE.getBuilder()));
     }
 
 }

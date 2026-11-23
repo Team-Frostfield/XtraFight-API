@@ -1,14 +1,16 @@
 package team.frostfield.xtrafight.events.mc.client;
 
-import team.frostfield.xtrafight.events.dispatch.IDispatchableEvent;
-import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
-import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import net.minecraft.server.WorldStem;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.LevelStorageSource.LevelStorageAccess;
+import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
+import team.frostfield.xtrafight.events.dispatch.marks.HybridEvent;
 
-public abstract class WorldLoadDispatchEvent extends DispatchEvent implements IDispatchableEvent<WorldLoadDispatchEvent> {
+@HybridEvent
+public abstract class WorldLoadDispatchEvent extends DispatchEvent implements ParameterizedEvent {
     protected final LevelStorageSource.LevelStorageAccess levelStorageAccess;
     protected final PackRepository packRepository;
     protected final WorldStem stem;
@@ -37,9 +39,10 @@ public abstract class WorldLoadDispatchEvent extends DispatchEvent implements ID
         return this.isNewWorld;
     }
 
-
-    public abstract WorldLoadDispatchEvent post();
-
+    @FunctionalInterface
+    public interface WorldLoadParams extends EventParameters {
+        void onWorldLoading(LevelStorageAccess storageAccess, PackRepository repository, WorldStem stem, boolean isNewWorld);
+    }
 
     // fires if the player is initializing a world
     public static class Initialize extends WorldLoadDispatchEvent {
@@ -47,10 +50,6 @@ public abstract class WorldLoadDispatchEvent extends DispatchEvent implements ID
             super(levelStorage, packRepository, worldStem, newWorld);
         }
 
-        @Override
-        public Initialize post() {
-            return MinecraftDispatchableEvents.Client.WORLD_INIT.postEvent(this);
-        }
     }
 
     // fires if the player joins an already existing world
@@ -59,10 +58,6 @@ public abstract class WorldLoadDispatchEvent extends DispatchEvent implements ID
             super(levelStorage, packRepository, worldStem, false);
         }
 
-        @Override
-        public Join post() {
-            return MinecraftDispatchableEvents.Client.WORLD_JOIN.postEvent(this);
-        }
     }
 
     // fires if the player creates a new world
@@ -71,9 +66,5 @@ public abstract class WorldLoadDispatchEvent extends DispatchEvent implements ID
             super(levelStorage, packRepository, worldStem, true);
         }
 
-        @Override
-        public Create post() {
-            return MinecraftDispatchableEvents.Client.WORLD_CREATE.postEvent(this);
-        }
     }
 }

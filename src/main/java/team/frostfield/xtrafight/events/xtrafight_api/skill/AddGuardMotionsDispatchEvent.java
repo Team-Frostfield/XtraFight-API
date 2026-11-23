@@ -1,8 +1,8 @@
 package team.frostfield.xtrafight.events.xtrafight_api.skill;
 
-import team.frostfield.xtrafight.events.dispatch.IDispatchableEvent;
 import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
-import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.skill.guard.GuardSkill.Builder;
 import yesman.epicfight.skill.guard.ParryingSkill;
@@ -13,7 +13,7 @@ import yesman.epicfight.world.capabilities.item.WeaponCategory;
 import java.util.function.BiFunction;
 
 
-public abstract class AddGuardMotionsDispatchEvent extends DispatchEvent implements IDispatchableEvent<AddGuardMotionsDispatchEvent> {
+public abstract class AddGuardMotionsDispatchEvent extends DispatchEvent implements ParameterizedEvent {
 
     protected final GuardSkill.Builder builder;
 
@@ -25,8 +25,10 @@ public abstract class AddGuardMotionsDispatchEvent extends DispatchEvent impleme
         return this.builder;
     }
 
-    public abstract AddGuardMotionsDispatchEvent post();
-
+    @FunctionalInterface
+    public interface AddGuardMotionParams extends EventParameters {
+        void onAddMotions(GuardSkill.Builder builder);
+    }
 
     public static class Normal extends AddGuardMotionsDispatchEvent {
 
@@ -42,11 +44,6 @@ public abstract class AddGuardMotionsDispatchEvent extends DispatchEvent impleme
         public void addGuardBreakMotion(WeaponCategory category, BiFunction<CapabilityItem, PlayerPatch<?>, ?> function) {
             this.builder.addGuardBreakMotion(category, function);
         }
-
-        @Override
-        public AddGuardMotionsDispatchEvent.Normal post() {
-            return XtraFightAPIDispatchableEvents.Skill.ADD_NORMAL_GUARD_MOTIONS.postEvent(this);
-        }
     }
 
 
@@ -59,11 +56,6 @@ public abstract class AddGuardMotionsDispatchEvent extends DispatchEvent impleme
 
         public void addAdvancedGuardMotion(WeaponCategory category, BiFunction<CapabilityItem, PlayerPatch<?>, ?> function) {
             this.builder.addAdvancedGuardMotion(category, function);
-        }
-
-        @Override
-        public AddGuardMotionsDispatchEvent.Parry post() {
-            return XtraFightAPIDispatchableEvents.Skill.ADD_PARRY_GUARD_MOTIONS.postEvent(this);
         }
     }
 }

@@ -6,6 +6,7 @@ import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventDispatc
 import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventPriority;
 import team.frostfield.xtrafight.events.dispatch.marks.HybridEvent;
 import team.frostfield.xtrafight.events.dispatch.side.EventSide;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 import team.frostfield.xtrafight.utils.code.CodeUtils;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.neoforge.common.NeoForge;
@@ -51,6 +52,9 @@ public class CancelableEventDispatch<T extends DispatchEvent> extends EventDispa
 
     public CancelableEventDispatch<T> dispatchEvent(EventDispatcher<T> dispatcher, EventPriority priority, boolean receiveCanceled) {
         if (priority == EventPriority.OVERRIDE) {
+            if (!this.event.canBeOverridden()) {
+                XtraFightAPI.LOGGER.error("Cannot override event {}, not overridable!", this.event.getEventClsName());
+            }
             this.cancelableEntries.removeIf(entry -> entry.priority() != priority && this.event.canBeOverridden());
         }
 

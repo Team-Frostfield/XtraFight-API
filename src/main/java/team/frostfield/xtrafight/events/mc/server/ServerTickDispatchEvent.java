@@ -1,13 +1,13 @@
 package team.frostfield.xtrafight.events.mc.server;
 
-import team.frostfield.xtrafight.events.dispatch.IDispatchableEvent;
-import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
-import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import net.minecraft.server.MinecraftServer;
+import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 
 import java.util.function.BooleanSupplier;
 
-public class ServerTickDispatchEvent extends DispatchEvent implements IDispatchableEvent<ServerTickDispatchEvent> {
+public class ServerTickDispatchEvent extends DispatchEvent implements ParameterizedEvent {
     private final MinecraftServer server;
     private final BooleanSupplier boolSupplier;
 
@@ -24,8 +24,9 @@ public class ServerTickDispatchEvent extends DispatchEvent implements IDispatcha
         return this.boolSupplier.getAsBoolean();
     }
 
-    @Override
-    public ServerTickDispatchEvent post() {
-        return MinecraftDispatchableEvents.Server.SERVER_TICK.postEvent(this);
+    @FunctionalInterface
+    public interface ServerTickParams extends EventParameters {
+        void onServerTick(MinecraftServer server);
     }
+
 }

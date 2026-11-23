@@ -5,55 +5,57 @@ import team.frostfield.xtrafight.cls.functions.Action;
 import team.frostfield.xtrafight.cls.lists.BasicArrayList;
 import team.frostfield.xtrafight.cls.lists.BasicList;
 import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.EventDispatch;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.entires.ParameterizedListenerEntry;
-import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameterize;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventPriority;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 import team.frostfield.xtrafight.events.dispatch.side.EventSide;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 @Experimental
-public class ParameterizedEventDispatch<T extends DispatchEvent & ParameterizedEvent, P extends EventParameterize<T>> {
-    protected final BasicList<ParameterizedListenerEntry<T>> parameterizedEntries = new BasicArrayList<>();
-    protected final EventSide side;
-    protected final AtomicInteger sequenceGenerator = new AtomicInteger();
+public class ParameterizedEventDispatch<T extends DispatchEvent & ParameterizedEvent, P extends EventParameters> extends EventDispatch<T> {
+    protected final BasicList<ParameterizedListenerEntry> parameterizedEntries = new BasicArrayList<>();
 
     protected ParameterizedEventDispatch() {
-        this(EventSide.BOTH);
+        super(EventSide.BOTH);
     }
 
     protected ParameterizedEventDispatch(EventSide side) {
-        this.side = Objects.requireNonNull(side, "EventSide cannot be null");
+        super(side);
     }
 
-    public static <T extends DispatchEvent & ParameterizedEvent, P extends EventParameterize<T>> ParameterizedEventDispatch<T, P> createParameterized() {
+    public static <T extends DispatchEvent & ParameterizedEvent, P extends EventParameters> ParameterizedEventDispatch<T, P> createParameterized() {
         return new ParameterizedEventDispatch<>();
     }
 
-    public static <T extends DispatchEvent & ParameterizedEvent, P extends EventParameterize<T>> ParameterizedEventDispatch<T, P> createParameterized(EventSide side) {
+    public static <T extends DispatchEvent & ParameterizedEvent, P extends EventParameters> ParameterizedEventDispatch<T, P> createParameterized(EventSide side) {
         return new ParameterizedEventDispatch<>(side);
     }
 
-    public ParameterizedEventDispatch<T, P> dispatchEvent(P listener) {
-        return this.dispatchEvent(listener, EventPriority.MIDDLE);
+    public ParameterizedEventDispatch<T, P> dispatchParameters(P listener) {
+        return this.dispatchParameters(listener, EventPriority.MIDDLE);
     }
 
-    public ParameterizedEventDispatch<T, P> dispatchEvent(P listener, EventPriority priority) {
+    public ParameterizedEventDispatch<T, P> dispatchParameters(P listener, EventPriority priority) {
         Objects.requireNonNull(listener, "Listener cannot be null");
 
         if (priority == EventPriority.OVERRIDE) {
-            this.parameterizedEntries.removeIf(entry -> entry.priority() != EventPriority.OVERRIDE);
+            if (!this.event.canBeOverridden()) {
+                XtraFightAPI.LOGGER.error("Cannot override event {}, not overridable!", this.event.getEventClsName());
+            }
+            this.parameterizedEntries.removeIf(entry -> entry.priority() != EventPriority.OVERRIDE && this.event.canBeOverridden());
         }
 
         int sequence = this.sequenceGenerator.incrementAndGet();
-        this.addListener(new ParameterizedListenerEntry<>(listener, priority, sequence));
+        this.addListener(new ParameterizedListenerEntry(listener, priority, sequence));
 
         this.parameterizedEntries.sort(
-                Comparator.<ParameterizedListenerEntry<T>>comparingInt(entry -> entry.priority().ordinal())
+                Comparator.<ParameterizedListenerEntry>comparingInt(entry -> entry.priority().ordinal())
                         .reversed()
                         .thenComparingInt(ParameterizedListenerEntry::sequence)
         );
@@ -68,9 +70,18 @@ public class ParameterizedEventDispatch<T extends DispatchEvent & ParameterizedE
             return;
         }
 
-        for (ParameterizedListenerEntry<T> entry : this.parameterizedEntries) {
+        for (ParameterizedListenerEntry entry : this.parameterizedEntries) {
             action.act((P) entry.params());
         }
+    }
+
+    public void postEventWithParams(T dispatchableEvent, Action<P> params) {
+        super.postEvent(dispatchableEvent);
+        this.postEventParameterized(params);
+    }
+
+    public boolean postEventWithParamsAndCheckCanceled(T dispatchableEvent, Predicate<P> params) {
+        return super.postAndCheckCanceled(dispatchableEvent) && this.postAndCheckCanceled(params);
     }
 
 
@@ -81,7 +92,7 @@ public class ParameterizedEventDispatch<T extends DispatchEvent & ParameterizedE
             return false;
         }
 
-        for (ParameterizedListenerEntry<T> entry : this.parameterizedEntries) {
+        for (ParameterizedListenerEntry entry : this.parameterizedEntries) {
             if (action.test((P) entry.params())) {
                 return true;
             }
@@ -90,7 +101,13 @@ public class ParameterizedEventDispatch<T extends DispatchEvent & ParameterizedE
         return false;
     }
 
-    public void addListener(ParameterizedListenerEntry<T> entry) {
+
+    @Override
+    public void clearListeners() {
+        this.parameterizedEntries.clear();
+    }
+
+    public void addListener(ParameterizedListenerEntry entry) {
         this.parameterizedEntries.add(entry);
     }
 }

@@ -6,35 +6,33 @@ import team.frostfield.xtrafight.cls.lists.BasicArrayList;
 import team.frostfield.xtrafight.cls.lists.BasicList;
 import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.entires.CancelableParameterizedListenerEntry;
-import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameterize;
+import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventPriority;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 import team.frostfield.xtrafight.events.dispatch.side.EventSide;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 @Experimental
-public class CancelableParameterizedEventDispatch<T extends DispatchEvent & ParameterizedEvent, P extends EventParameterize<T>> {
-    protected final BasicList<CancelableParameterizedListenerEntry<T>> cancelableEntries = new BasicArrayList<>();
-    protected final EventSide side;
-    protected final AtomicInteger sequenceGenerator = new AtomicInteger();
+public class CancelableParameterizedEventDispatch<T extends DispatchEvent & ParameterizedEvent, P extends EventParameters> extends ParameterizedEventDispatch<T, P> {
+    protected final BasicList<CancelableParameterizedListenerEntry> cancelableEntries = new BasicArrayList<>();
 
     private CancelableParameterizedEventDispatch() {
-        this(EventSide.BOTH);
+        super(EventSide.BOTH);
     }
 
     private CancelableParameterizedEventDispatch(EventSide side) {
-        this.side = Objects.requireNonNull(side, "EventSide cannot be null");
+        super(side);
     }
 
-    public static <T extends DispatchEvent & ParameterizedEvent, P extends EventParameterize<T>> CancelableParameterizedEventDispatch<T, P> createCancelable() {
+    public static <T extends DispatchEvent & ParameterizedEvent, P extends EventParameters> CancelableParameterizedEventDispatch<T, P> createCancelable() {
         return new CancelableParameterizedEventDispatch<>();
     }
 
-    public static <T extends DispatchEvent & ParameterizedEvent, P extends EventParameterize<T>> CancelableParameterizedEventDispatch<T, P> createCancelable(EventSide side) {
+    public static <T extends DispatchEvent & ParameterizedEvent, P extends EventParameters> CancelableParameterizedEventDispatch<T, P> createCancelable(EventSide side) {
         return new CancelableParameterizedEventDispatch<>(side);
     }
 
@@ -55,14 +53,17 @@ public class CancelableParameterizedEventDispatch<T extends DispatchEvent & Para
         Objects.requireNonNull(priority, "Priority cannot be null");
 
         if (priority == EventPriority.OVERRIDE) {
-            this.cancelableEntries.removeIf(entry -> entry.priority() != EventPriority.OVERRIDE);
+            if (!this.event.canBeOverridden()) {
+                XtraFightAPI.LOGGER.error("Cannot override event {}, not overridable!", this.event.getEventClsName());
+            }
+            this.cancelableEntries.removeIf(entry -> entry.priority() != EventPriority.OVERRIDE && this.event.canBeOverridden());
         }
 
         int sequence = this.sequenceGenerator.incrementAndGet();
-        this.addListener(new CancelableParameterizedListenerEntry<>(listener, priority, sequence, receiveCancelled));
+        this.addListener(new CancelableParameterizedListenerEntry(listener, priority, sequence, receiveCancelled));
 
         this.cancelableEntries.sort(
-                Comparator.<CancelableParameterizedListenerEntry<T>>comparingInt(entry -> entry.priority().ordinal())
+                Comparator.<CancelableParameterizedListenerEntry>comparingInt(entry -> entry.priority().ordinal())
                         .reversed()
                         .thenComparingInt(CancelableParameterizedListenerEntry::sequence)
         );
@@ -78,7 +79,7 @@ public class CancelableParameterizedEventDispatch<T extends DispatchEvent & Para
             return;
         }
 
-        for (CancelableParameterizedListenerEntry<T> entry : this.cancelableEntries) {
+        for (CancelableParameterizedListenerEntry entry : this.cancelableEntries) {
             action.act((P) entry.params());
         }
     }
@@ -92,7 +93,7 @@ public class CancelableParameterizedEventDispatch<T extends DispatchEvent & Para
         }
 
         boolean canceled = false;
-        for (CancelableParameterizedListenerEntry<T> entry : this.cancelableEntries) {
+        for (CancelableParameterizedListenerEntry entry : this.cancelableEntries) {
             if (canceled && !entry.receiveCancelled()) {
                 continue;
             }
@@ -104,7 +105,7 @@ public class CancelableParameterizedEventDispatch<T extends DispatchEvent & Para
         return canceled;
     }
 
-    public void addListener(CancelableParameterizedListenerEntry<T> entry) {
+    public void addListener(CancelableParameterizedListenerEntry entry) {
         this.cancelableEntries.add(entry);
     }
 }

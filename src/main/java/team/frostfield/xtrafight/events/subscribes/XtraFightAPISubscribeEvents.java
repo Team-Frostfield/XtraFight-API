@@ -14,6 +14,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import team.frostfield.xtrafight.animation.client.CameraAnimatorAPI;
 import team.frostfield.xtrafight.animation.client.CameraAnimatorAPI.CameraFOVHelper;
 import team.frostfield.xtrafight.client.gui.InteractionAPI;
+import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.registry.CameraAnimationRegistryDispatchEvent;
 import team.frostfield.xtrafight.main.XtraFightAPI;
 import yesman.epicfight.api.client.event.EpicFightClientEventHooks;
@@ -97,7 +98,8 @@ public class XtraFightAPISubscribeEvents {
             });
 
             evt.enqueueWork(() -> {
-                new CameraAnimationRegistryDispatchEvent().post();
+                XtraFightAPIDispatchableEvents.Registry.CAMERA_ANIMATIONS.postEvent(new CameraAnimationRegistryDispatchEvent());
+                XtraFightAPIDispatchableEvents.Registry.CAMERA_ANIMATIONS.postEventParameterized(param -> param.onRegister(CameraAnimatorAPI.getInstance()));
             });
 
         }

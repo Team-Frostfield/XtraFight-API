@@ -73,6 +73,7 @@ import java.util.Collection;
 import java.util.function.Supplier;
 
 // This class shows how this API is used, no more!
+@SuppressWarnings("removal")
 class XtraFightAPIExamples {
     static class Armature {
         // these methods can accept 3 types of paths:
@@ -356,7 +357,7 @@ class XtraFightAPIExamples {
         @SubscribeEvent
         // This event is empty, used to dispatch other events, posted in the mod's constructor
         public static void onDispatch(DispatchingEvent event) {
-            MinecraftDispatchableEvents.Client.CLIENT_START_PRE.dispatchEvent(joinEvent -> XtraFightAPIMod.debugIfDevSide("Hello from [{}] subscribed!", event.getEventClsName()));
+            MinecraftDispatchableEvents.Client.START_PRE.dispatchEvent(joinEvent -> XtraFightAPIMod.debugIfDevSide("Hello from [{}] subscribed!", event.getEventClsName()));
 
         }
         // IF the event is not hybrid and used in a subscriber, it'd do nothing
@@ -366,21 +367,24 @@ class XtraFightAPIExamples {
         // now, we cover the priority system
         private static void onClientStart() {
             // By default, the priority is always middle if left empty
-            MinecraftDispatchableEvents.Client.CLIENT_START_PRE.dispatchEvent(event ->
+            MinecraftDispatchableEvents.Client.START_PRE.dispatchEvent(event ->
                     XtraFightAPIMod.debugIfDevSide("Hello from client start with the {} priority", event.getPriority().toString().toLowerCase())
             );
             // But here, we make it the highest, so it dispatches before the event above
-            MinecraftDispatchableEvents.Client.CLIENT_START_PRE.dispatchEvent(event ->
+            MinecraftDispatchableEvents.Client.START_PRE.dispatchEvent(event ->
                     XtraFightAPIMod.debugIfDevSide("Hello from client start with the {} priority", event.getPriority().toString().toLowerCase())
             , EventPriority.HIGHEST
             );
             // But here, if we put the override priority, it cancels the 2 above and overrides them, completely changing the result of the event itself
             // Note that it can be only overridden if the boolean DispatchableEvent#canBeOverridden is true
             // The only un-overridable event is DispatchEvent used above
-            MinecraftDispatchableEvents.Client.CLIENT_START_PRE.dispatchEvent(event ->
+            MinecraftDispatchableEvents.Client.START_PRE.dispatchEvent(event ->
                      XtraFightAPIMod.debugIfDevSide("Hello from client start with the {} priority", event.getPriority().toString().toLowerCase())
             , EventPriority.OVERRIDE
             );
+            // Now, we move on the parameterized types
+            // instead of passing the event instance, it passes the parameters from the event itself
+            MinecraftDispatchableEvents.Client.START_POST.dispatchParameters(minecraft -> XtraFightAPI.LOGGER.debug("Hello from parameterized event!"));
         }
     }
 

@@ -1,5 +1,7 @@
 package team.frostfield.xtrafight.mixins.minecraft.server;
 
+import org.spongepowered.asm.mixin.Unique;
+import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import team.frostfield.xtrafight.events.mc.entity.EntitySummonDispatchEvent;
 import team.frostfield.xtrafight.events.mc.player.PlayerJoinDispatchEvent;
 import net.minecraft.server.MinecraftServer;
@@ -18,6 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ServerLevelMixin {
     // every event here is only posted if it was in a dedicated server
     @Shadow @Final private MinecraftServer server;
+    @Unique
+    private final ServerLevel self = (ServerLevel) (Object) this;
 
     @Inject(
             at = @At("HEAD"),
@@ -26,8 +30,8 @@ public class ServerLevelMixin {
     )
     public void injectSummonEventHook(Entity entity, CallbackInfoReturnable<Boolean> cir) {
         if (!this.server.isDedicatedServer()) return;
-        EntitySummonDispatchEvent.Server serverSummonEH = new EntitySummonDispatchEvent.Server(entity, (ServerLevel) (Object) this);
-        serverSummonEH.post();
+        EntitySummonDispatchEvent.Server serverSummonEH = new EntitySummonDispatchEvent.Server(entity, this.self);
+        MinecraftDispatchableEvents.Entity.SUMMON_SERVER.postEventWithParams(serverSummonEH, params -> params.onEntitySummon(entity, this.self));
     }
 
     @Inject(
@@ -37,8 +41,8 @@ public class ServerLevelMixin {
     )
     public void injectPlayerJoinEventHook(ServerPlayer player, CallbackInfo ci) {
         if (!this.server.isDedicatedServer()) return;
-        PlayerJoinDispatchEvent.Server serverPlayerJoinEH = new PlayerJoinDispatchEvent.Server(player, (ServerLevel) (Object) this);
-        serverPlayerJoinEH.post();
+        PlayerJoinDispatchEvent.Server serverPlayerJoinEH = new PlayerJoinDispatchEvent.Server(player, this.self);
+        MinecraftDispatchableEvents.Player.JOIN_SERVER.postEventWithParams(serverPlayerJoinEH, params -> params.onPlayerJoin(player, this.self));
     }
 
 }

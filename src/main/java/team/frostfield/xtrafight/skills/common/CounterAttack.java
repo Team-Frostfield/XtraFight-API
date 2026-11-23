@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import team.frostfield.xtrafight.animation.XtraFightAPIAnimationStates;
 import team.frostfield.xtrafight.builders.epicfight.excap.deferred.DeferredCapabilityBuilder;
+import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.player.CounterAttackDispatchEvent;
 import team.frostfield.xtrafight.gameassets.XtraFightAPISkillDataKeys;
 import team.frostfield.xtrafight.network.XtraFightAPINetworkManager;
@@ -66,7 +67,10 @@ public class CounterAttack extends Skill {
             return;
         }
 
-        if (!counterAttackEvent.isCanceledAfterPosting()) {
+        if (!XtraFightAPIDispatchableEvents.Player.COUNTER_ATTACK.postEventWithParamsAndCheckCanceled(counterAttackEvent, params -> {
+            params.onCounter(container);
+            return !counterAttackEvent.isCanceled();
+        })) {
             if (!EpicFightEventHooks.Player.CONSUME_SKILL.postWithListener(skillConsumeEvent, executor.getEventListener()).isCanceled()) {
                 skillConsumeEvent.getResourceType().consumer.consume(container, serverExecutor, this.counterConsumption);
             }

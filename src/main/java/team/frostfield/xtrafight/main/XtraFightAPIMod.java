@@ -10,7 +10,6 @@ import team.frostfield.xtrafight.compat.plugin.CompatibilityPlugin;
 import team.frostfield.xtrafight.compat.plugin.CompatibilityPluginsManager;
 import team.frostfield.xtrafight.compat.plugin.xtrafight.XtraFightAPIPlugins;
 import team.frostfield.xtrafight.events.bus.ModBus;
-import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.dispatch.DispatchingEvent;
 import team.frostfield.xtrafight.input.XtraFightAPIInputActions;
 import team.frostfield.xtrafight.skills.XtraFightAPISkillCategories;
@@ -32,11 +31,7 @@ public final class XtraFightAPIMod implements XtraFightAPI {
         instance = this;
         this.modBus = ModBus.from(modBus);
         this.container = container;
-        this.modBus.register(this);
         this.doEpicAPIStuff();
-        LOGGER.debug("hello");
-        MinecraftDispatchableEvents.Client.CLIENT_START_POST_P.dispatchEvent(() -> info("Hello from Client parameterized Event!"));
-        MinecraftDispatchableEvents.Client.CLIENT_START_POST.dispatchEvent(postEvent -> info("Hello from Client parameterized Event!"));
     }
 
     private void doEpicAPIStuff() {
