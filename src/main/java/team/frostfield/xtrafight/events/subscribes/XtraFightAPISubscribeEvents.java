@@ -98,8 +98,7 @@ public class XtraFightAPISubscribeEvents {
             });
 
             evt.enqueueWork(() -> {
-                XtraFightAPIDispatchableEvents.Registry.CAMERA_ANIMATIONS.postEvent(new CameraAnimationRegistryDispatchEvent());
-                XtraFightAPIDispatchableEvents.Registry.CAMERA_ANIMATIONS.postEventParameterized(param -> param.onRegister(CameraAnimatorAPI.getInstance()));
+                XtraFightAPIDispatchableEvents.Registry.CAMERA_ANIMATIONS.postEventWithParams(new CameraAnimationRegistryDispatchEvent(), param -> param.onRegister(CameraAnimatorAPI.getInstance()));
             });
 
         }

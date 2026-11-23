@@ -47,6 +47,7 @@ public class ParameterizedEventDispatch<T extends DispatchEvent & ParameterizedE
         if (priority == EventPriority.OVERRIDE) {
             if (!this.event.canBeOverridden()) {
                 XtraFightAPI.LOGGER.error("Cannot override event {}, not overridable!", this.event.getEventClsName());
+                return this;
             }
             this.parameterizedEntries.removeIf(entry -> entry.priority() != EventPriority.OVERRIDE && this.event.canBeOverridden());
         }
