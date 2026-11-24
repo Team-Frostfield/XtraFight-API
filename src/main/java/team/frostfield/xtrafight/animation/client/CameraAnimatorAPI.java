@@ -88,7 +88,7 @@ public class CameraAnimatorAPI {
     public void registerAnimation(CamAnim camAnim) {
         try {
             Minecraft mc = Minecraft.getInstance();
-            ExtendedJsonAssetLoader loader = new ExtendedJsonAssetLoader(mc.getResourceManager(), camAnim.jsonLocation());
+            CameraAssetLoader loader = new CameraAssetLoader(mc.getResourceManager(), camAnim.jsonLocation());
             CameraAnimation animation = this.loadAnimation(loader);
             ResourceLocation name = camAnim.id();
             if (this.animations.containsKey(name)) {
@@ -101,7 +101,7 @@ public class CameraAnimatorAPI {
         }
     }
 
-    private CameraAnimation loadAnimation(ExtendedJsonAssetLoader loader) {
+    private CameraAnimation loadAnimation(CameraAssetLoader loader) {
         JsonObject rootJson = loader.getRootJson();
         JsonObject cameraObject = rootJson.getAsJsonObject("camera");
         if (cameraObject == null) throw new IllegalArgumentException("JSON must contain 'camera' object");
@@ -112,8 +112,8 @@ public class CameraAnimatorAPI {
         convertedJson.add("transform", cameraObject.get("transform"));
         convertedJson.addProperty("name", "camera");
 
-        TransformSheet sheet = ExtendedJsonAssetLoader.getTransformSheet(
-                convertedJson, null, false, ExtendedJsonAssetLoader.TransformFormat.ATTRIBUTES
+        TransformSheet sheet = CameraAssetLoader.getTransformSheet(
+                convertedJson, null, false, CameraAssetLoader.TransformFormat.ATTRIBUTES
         );
 
         FovTrack fovTrak = loader.getFovTrack();
@@ -181,7 +181,7 @@ public class CameraAnimatorAPI {
         this.worldSpace = useWorldSpace;
 
         if (useWorldSpace && worldSpaceOrigin == null && originEntity == null) {
-            LOGGER.warn("[CameraAnimator] useWorldSpace=true but BOTH origin and originEntity are null — " +
+            LOGGER.warn("useWorldSpace=true but BOTH origin and originEntity are null — " +
                     "falling back to local player. This is a bug at the call site.");
         }
 

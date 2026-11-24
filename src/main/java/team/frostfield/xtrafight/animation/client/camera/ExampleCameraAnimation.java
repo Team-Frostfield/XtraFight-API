@@ -15,32 +15,27 @@ import java.util.List;
 @EventBusSubscriber(value = Dist.CLIENT, modid = XtraFightAPIMod.MOD_ID)
 public final class ExampleCameraAnimation {
 
-    public static final List<CameraAnimatorAPI.CamAnim> CAM_ANIM_LIST = new ArrayList<>();
+    private static final List<CameraAnimatorAPI.CamAnim> CAM_ANIM_LIST = new ArrayList<>();
 
-    public static CameraAnimatorAPI.CamAnim register(String name, ResourceLocation path) {
-
+    private static CameraAnimatorAPI.CamAnim register(String name, ResourceLocation path) {
         // ResourceLocation, ResourceLocation?
         CameraAnimatorAPI.CamAnim anim = new CameraAnimatorAPI.CamAnim(XtraFightAPI.getInstance().identifier(name), path);
-
-        for (CameraAnimatorAPI.CamAnim existing : CAM_ANIM_LIST) {
-            if (existing.animationName().equals(anim.animationName())) {
-                throw new IllegalStateException("CamAnimation named " + anim.animationName() + " already registered.");
-            }
+        if (CAM_ANIM_LIST.contains(anim)) {
+            throw new IllegalStateException("CamAnimation " + anim.animationName() + " is already registered.");
         }
-
         CAM_ANIM_LIST.add(anim);
 
         return anim;
     }
 
-    public static CameraAnimatorAPI.CamAnim register(ResourceLocation id) {
+    private static CameraAnimatorAPI.CamAnim register(ResourceLocation id) {
         return register(id.getPath(), ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "camera/" + id.getPath() + ".json"));
     }
 
-    public static final CameraAnimatorAPI.CamAnim TEST2 = register(XtraFightAPI.getInstance().identifier("testcam"));
+    private static final CameraAnimatorAPI.CamAnim TEST2 = register(XtraFightAPI.getInstance().identifier("testcam"));
 
 
-    public static final CameraAnimatorAPI.CamAnim TEST = new CameraAnimatorAPI.CamAnim(XtraFightAPI.getInstance().identifier("testcamera_2"));
+    private static final CameraAnimatorAPI.CamAnim TEST = new CameraAnimatorAPI.CamAnim(XtraFightAPI.getInstance().identifier("testcamera_2"));
 
 
     @SubscribeEvent

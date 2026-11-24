@@ -82,7 +82,9 @@ public class ParameterizedEventDispatch<T extends DispatchEvent & ParameterizedE
     }
 
     public boolean postWithParamsAndCheckCanceled(T dispatchableEvent, Action<P> params) {
-        this.postEventParameterized(params);
+        if (!super.postAndCheckCanceled(dispatchableEvent)) {
+            this.postEventParameterized(params);
+        }
         return super.postAndCheckCanceled(dispatchableEvent);
     }
 

@@ -20,7 +20,7 @@ public class WeaponTypeReloadListenerMixin {
             at = @At(value = "RETURN"),
             remap = false
     )
-    private static void epicAPI$injectHeavyCombos(ResourceLocation rl, CompoundTag tag, CallbackInfoReturnable<WeaponCapability.Builder> cir) {
+    private static void xtrafight$InjectExtraCapabilities(ResourceLocation rl, CompoundTag tag, CallbackInfoReturnable<WeaponCapability.Builder> cir) {
         // make HeavyAttack and CounterAttack datapack friendly too!
         DeferredCapabilityBuilder.registerHeavyComboFromTag(rl, tag);
         DeferredCapabilityBuilder.registerCounterFromTag(rl, tag);

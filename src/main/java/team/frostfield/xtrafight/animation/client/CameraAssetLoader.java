@@ -11,14 +11,14 @@ import yesman.epicfight.api.utils.ParseUtil;
 
 import javax.annotation.Nullable;
 
-public class ExtendedJsonAssetLoader extends JsonAssetLoader {
+public class CameraAssetLoader extends JsonAssetLoader {
 
-    public ExtendedJsonAssetLoader(JsonObject rootJson, ResourceLocation rl) {
+    public CameraAssetLoader(JsonObject rootJson, ResourceLocation rl) {
         super(rootJson, rl);
         // TODO Auto-generated constructor stub
     }
 
-    public ExtendedJsonAssetLoader(ResourceManager manager, ResourceLocation rl) throws AssetLoadingException {
+    public CameraAssetLoader(ResourceManager manager, ResourceLocation rl) throws AssetLoadingException {
         super(manager, rl);
     }
 

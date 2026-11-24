@@ -37,11 +37,11 @@ public abstract class CrashReportMixin {
     @Unique
     private static final String[] RANDOM_MESSAGES = {
             "XtraFight-API is not epic after all huh?",
-            "This crash is definitely from XtraFight API. Go yell at M6FGR here: https://github.com/M6FGR/Epic-API/issues",
-            "An animation frame tried to divide by zero. Please hand this log over to the authorities: https://github.com/M6FGR/Epic-API/issues",
-            "The combos were too epic for the engine to handle. Report this absolute disaster!: https://github.com/M6FGR/Epic-API/issues",
-            "Don't panic, but a compiler gremlin just broke the combat pipeline. Open an issue at https://github.com/M6FGR/Epic-API/issues!",
-            "Local developer forgets how index boundaries work. Go roast them on GitHub: https://github.com/M6FGR/Epic-API/issues"
+            "This crash is definitely from XtraFight API. Go yell at the team here: https://github.com/Team-Frostfield/XtraFight-API/issues",
+            "An animation frame tried to divide by zero. Please hand this log over to the authorities: https://github.com/Team-Frostfield/XtraFight-API/issues",
+            "The combos were too epic for the engine to handle. Report this absolute disaster!: https://github.com/Team-Frostfield/XtraFight-API/issues",
+            "Don't panic, but a compiler gremlin just broke the combat pipeline. Open an issue at https://github.com/Team-Frostfield/XtraFight-API/issues!",
+            "Local developer forgets how index boundaries work. Go roast them on GitHub: https://github.com/Team-Frostfield/XtraFight-API/issues"
     };
 
     @Inject(method = "saveToFile(Ljava/nio/file/Path;Lnet/minecraft/ReportType;)Z", at = @At("HEAD"))
@@ -55,7 +55,7 @@ public abstract class CrashReportMixin {
                 Throwable currentThrowable = report.getException();
                 while (currentThrowable != null) {
                     for (StackTraceElement element : currentThrowable.getStackTrace()) {
-                        if (element.getClassName().contains("team_frostfield.xtrafight_api")) {
+                        if (element.getClassName().contains("team.frostfield.xtrafight")) {
                             isXtraAtFault = true;
                             break;
                         }
@@ -71,7 +71,7 @@ public abstract class CrashReportMixin {
                 if (this.details != null) {
                     for (CrashReportCategory category : this.details) {
                         String catTitle = ((CrashReportCategoryAccessor) category).xtrafightAPI$getTitle();
-                        if (catTitle != null && catTitle.contains("xtrafight_api")) {
+                        if (catTitle != null && catTitle.contains("xtrafight")) {
                             isXtraAtFault = true;
                             break;
                         }

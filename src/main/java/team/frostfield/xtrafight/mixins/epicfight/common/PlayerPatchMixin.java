@@ -1,17 +1,17 @@
 package team.frostfield.xtrafight.mixins.epicfight.common;
 
-import org.spongepowered.asm.mixin.Unique;
-import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
-import team.frostfield.xtrafight.events.xtrafight_api.player.AddPlayerMotionsDispatchEvent;
-import team.frostfield.xtrafight.gameassets.XtraFightAPISkills;
-import team.frostfield.xtrafight.skills.XtraFightSkillSlots;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
+import team.frostfield.xtrafight.events.xtrafight_api.player.AddPlayerMotionsDispatchEvent;
+import team.frostfield.xtrafight.gameassets.XtraFightAPISkills;
+import team.frostfield.xtrafight.skills.XtraFightSkillSlots;
 import yesman.epicfight.api.animation.Animator;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
@@ -34,7 +34,7 @@ public abstract class PlayerPatchMixin<T extends Player> extends LivingEntityPat
             method = "onJoinWorld(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/Level;Z)V",
             remap = false
     )
-    private void epicAPI$onJoinWorld(T entity, Level level, boolean worldgenSpawn, CallbackInfo ci) {
+    private void xtrafight$onJoinWorld(T entity, Level level, boolean worldgenSpawn, CallbackInfo ci) {
         // add HeavyAttack and CounterAttack as a default skill
         PlayerSkills skillCapability = this.getPlayerSkills();
         skillCapability.getSkillContainerFor(XtraFightSkillSlots.HEAVY_ATTACK).setSkill(XtraFightAPISkills.HEAVY_ATTACKS.get());
