@@ -25,7 +25,7 @@ public abstract class GuardAnimationMixin {
                 .addState(EntityState.MOVEMENT_LOCKED, true)
                 .addState(EntityState.UPDATE_LIVING_MOTION, false)
                 .addState(EntityState.COMBO_ATTACKS_DOABLE, false)
-                .addState(XtraFightAPIAnimationStates.CAN_COUNTER, true)
+                .addState(XtraFightAPIAnimationStates.CAN_COUNTER_ATTACK, true)
                 .newTimePair(start, Float.MAX_VALUE)
                 .addState(EntityState.INACTION, true);
     }

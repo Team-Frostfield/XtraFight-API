@@ -20,7 +20,7 @@ public class ServerLifecycleHooksMixin {
     )
     private static void injectEventHookPre(MinecraftServer server, CallbackInfo ci) {
         ServerInitializeDispatchEvent.Pre serverInitPre = new ServerInitializeDispatchEvent.Pre(server);
-        MinecraftDispatchableEvents.Server.START_PRE.postEventWithParams(serverInitPre, params -> params.onInitialize(server));
+        MinecraftDispatchableEvents.Server.START_PRE.postWithParams(serverInitPre, params -> params.onInitialize(server));
     }
     @Inject(
             at = @At(value = "HEAD"),
@@ -29,7 +29,7 @@ public class ServerLifecycleHooksMixin {
     )
     private static void injectEventHookPost(MinecraftServer server, CallbackInfo ci) {
         ServerInitializeDispatchEvent.Post serverInitPost = new ServerInitializeDispatchEvent.Post(server);
-        MinecraftDispatchableEvents.Server.START_POST.postEventWithParams(serverInitPost, params -> params.onInitialize(server));
+        MinecraftDispatchableEvents.Server.START_POST.postWithParams(serverInitPost, params -> params.onInitialize(server));
     }
 
     @Inject(
@@ -39,7 +39,7 @@ public class ServerLifecycleHooksMixin {
     )
     private static void injectEventHookStop(MinecraftServer server, CallbackInfo callbackInfo) {
         ServerStopDispatchEvent stopEvent = new ServerStopDispatchEvent(server);
-        MinecraftDispatchableEvents.Server.STOP.postEventWithParams(stopEvent, params -> params.onServerStop(server));
+        MinecraftDispatchableEvents.Server.STOP.postWithParams(stopEvent, params -> params.onServerStop(server));
     }
 
 }

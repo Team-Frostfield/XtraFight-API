@@ -70,7 +70,7 @@ public record SPGameRuleSync(String ruleName, int value) implements ICustomPacke
                             case GameRules.IntegerValue intRule -> intRule.set(packet.value(), null);
                             default -> throw new IllegalStateException("Unexpected game rule type: " + rule);
                         }
-                        XtraFightAPIMod.debugIfDevSide("Synced rule {}", key.getId());
+                        XtraFightAPI.LOGGER.debugIfDevSide("Synced rule {}", key.getId());
                     }
                 }
             });

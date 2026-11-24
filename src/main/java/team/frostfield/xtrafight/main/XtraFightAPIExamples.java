@@ -285,7 +285,7 @@ class XtraFightAPIExamples {
 
         // then we build a capability
         // (it has to be a supplier because this runs before epic fight's animation registry?, odd):
-        static final Supplier<DeferredCapabilityBuilder> BOKKEN_2H = () -> DeferredCapabilityBuilder.newBuilder()
+        static final Supplier<DeferredCapabilityBuilder> BOKKEN_2H = () -> DeferredCapabilityBuilder.builder()
                 .newMoveSet(
                         Styles.TWO_HAND,
                         XtraFightAPI.getInstance().identifier("bokken_2h"),
@@ -350,14 +350,14 @@ class XtraFightAPIExamples {
     static class DispatchableEvents {
         // a dispatchable event is almost like an event hook, but more flexible, as so:
         private static void onDispatch() {
-            MinecraftDispatchableEvents.Player.JOIN_CLIENT.dispatchEvent(event -> XtraFightAPIMod.debugIfDevSide("Hello from [{}]", event.getEventClsName()));
+            MinecraftDispatchableEvents.Player.JOIN_CLIENT.dispatchEvent(event -> XtraFightAPI.LOGGER.debugIfDevSide("Hello from [{}]", event.getEventClsName()));
         }
         // the method above can be called anywhere, but it's best to call it in a life cycle event, or the mod's constructor
         // or if needed, and the event is hybrid (having the @HybridEvent annotation), you can use neo's event subscribers
         @SubscribeEvent
         // This event is empty, used to dispatch other events, posted in the mod's constructor
         public static void onDispatch(DispatchingEvent event) {
-            MinecraftDispatchableEvents.Client.START_PRE.dispatchEvent(joinEvent -> XtraFightAPIMod.debugIfDevSide("Hello from [{}] subscribed!", event.getEventClsName()));
+            MinecraftDispatchableEvents.Client.START_PRE.dispatchEvent(startPreEvent -> XtraFightAPI.LOGGER.debugIfDevSide("Hello from [{}] subscribed!", event.getEventClsName()));
 
         }
         // IF the event is not hybrid and used in a subscriber, it'd do nothing
@@ -368,23 +368,23 @@ class XtraFightAPIExamples {
         private static void onClientStart() {
             // By default, the priority is always middle if left empty
             MinecraftDispatchableEvents.Client.START_PRE.dispatchEvent(event ->
-                    XtraFightAPIMod.debugIfDevSide("Hello from client start with the {} priority", event.getPriority().toString().toLowerCase())
+                    XtraFightAPI.LOGGER.debugIfDevSide("Hello from client start with the {} priority", event.getPriority().toString())
             );
             // But here, we make it the highest, so it dispatches before the event above
             MinecraftDispatchableEvents.Client.START_PRE.dispatchEvent(event ->
-                    XtraFightAPIMod.debugIfDevSide("Hello from client start with the {} priority", event.getPriority().toString().toLowerCase())
+                            XtraFightAPI.LOGGER.debugIfDevSide("Hello from client start with the {} priority", event.getPriority().toString())
             , EventPriority.HIGHEST
             );
             // But here, if we put the override priority, it cancels the 2 above and overrides them, completely changing the result of the event itself
             // Note that it can be only overridden if the boolean DispatchableEvent#canBeOverridden is true
             // The only un-overridable event is DispatchEvent used above
             MinecraftDispatchableEvents.Client.START_PRE.dispatchEvent(event ->
-                     XtraFightAPIMod.debugIfDevSide("Hello from client start with the {} priority", event.getPriority().toString().toLowerCase())
+                            XtraFightAPI.LOGGER.debugIfDevSide("Hello from client start with the {} priority", event.getPriority().toString())
             , EventPriority.OVERRIDE
             );
             // Now, we move on the parameterized types
             // instead of passing the event instance, it passes the parameters from the event itself
-            MinecraftDispatchableEvents.Client.START_POST.dispatchParameters(minecraft -> XtraFightAPI.LOGGER.debug("Hello from parameterized event!"));
+            MinecraftDispatchableEvents.Client.START_POST.dispatchParameters(minecraft -> XtraFightAPI.LOGGER.debugIfDevSide("Hello from parameterized event!"));
         }
     }
 
@@ -485,10 +485,10 @@ class XtraFightAPIExamples {
             }
             // The initialization of this plugin, it passes the mod's bus and Neo's bus, they're optional
             @Override
-            public void onInitialize(NeoBus neoBusImpl, ModBus modBusImpl) {}
+            public void onInitialize(NeoBus neoBus, ModBus modBus) {}
 
             // And to load this plugin, you call this in your mod's constructor:
-            // CompatibilityPluginsManager.registerPlugins(null, SomePlugin.class);
+            // CompatibilityPluginsManager.registerPlugins(modBus, SomePlugin.class);
         }
     }
 

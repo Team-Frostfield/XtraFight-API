@@ -1,11 +1,6 @@
 package team.frostfield.xtrafight.animation.client;
 
 import com.google.gson.JsonObject;
-import team.frostfield.xtrafight.cls.maps.BasicHashMap;
-import team.frostfield.xtrafight.cls.maps.BasicMap;
-import team.frostfield.xtrafight.config.XtraFightAPIConfigs;
-import team.frostfield.xtrafight.main.XtraFightAPIMod;
-import team.frostfield.xtrafight.mixins.minecraft.client.CameraAccessor;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -17,6 +12,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import team.frostfield.xtrafight.cls.maps.BasicHashMap;
+import team.frostfield.xtrafight.cls.maps.BasicMap;
+import team.frostfield.xtrafight.config.XtraFightAPIConfigs;
+import team.frostfield.xtrafight.main.XtraFightAPI;
+import team.frostfield.xtrafight.mixins.minecraft.client.CameraAccessor;
 import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.TransformSheet;
 import yesman.epicfight.api.client.event.EpicFightClientEventHooks;
@@ -52,7 +52,7 @@ public class CameraAnimatorAPI {
     private boolean hasEventRegistered;
     private boolean paused;
 
-    private float FovModifier = 0.0f;
+    private float fovModifier = 0.0f;
   
 
     private boolean lockMousePanning;
@@ -97,7 +97,7 @@ public class CameraAnimatorAPI {
             this.animations.put(name, animation);
             LOGGER.info("Registered camera animation: {}, ({}s) ", name, animation.getDuration());
         } catch (Exception e) {
-            XtraFightAPIMod.err("Failed to load camera animation '" + camAnim.animationName() + "': " + e.getMessage());
+            XtraFightAPI.LOGGER.error("Failed to load camera animation '{}': {}", camAnim.animationName(), e.getMessage());
         }
     }
 
@@ -266,7 +266,7 @@ public class CameraAnimatorAPI {
 
         if(hasFovTrack()) FovFloat = this.currentAnimation.fovTrack.getFovFloatAtTime(animTime);
 
-        this.FovModifier = FovFloat;
+        this.fovModifier = FovFloat;
 
         float baseYaw = this.lockMousePanning ? this.lockedYaw : this.originEntity.getViewYRot(partialTick);
 
@@ -316,7 +316,7 @@ public class CameraAnimatorAPI {
     }
 
     public double getCamAnimFovModifier(){
-        return CameraFOVHelper.focalLengthToFOV(FovModifier);
+        return CameraFOVHelper.focalLengthToFOV(fovModifier);
     } 
 
     private @NotNull Vector3f getDesiredPos(float partialTick, Minecraft mc, Vector3f animOffset) {
@@ -391,7 +391,7 @@ public class CameraAnimatorAPI {
     }
 
     public boolean hasFovTrack(){
-        return this.currentAnimation.FovTrackPresent();
+        return this.currentAnimation.isFovTrackPresent();
     }
 
     public float getCurrentTime() {
@@ -422,10 +422,12 @@ public class CameraAnimatorAPI {
             this.duration = sheet.maxFrameTime();
             this.fovTrack = fovTrack;
         }
+
         public float getDuration() {
             return this.duration;
         }
-        public boolean FovTrackPresent(){
+
+        public boolean isFovTrackPresent(){
             return this.fovTrack != null;
         }
     }
@@ -453,7 +455,7 @@ public class CameraAnimatorAPI {
 
         private static double focalLengthToHorizontalFOV(double focalLengthMM, SensorSize sensor) {
             if (focalLengthMM <= 0) {
-                XtraFightAPIMod.err("focalLength is lower than or equal to 0 : {}", focalLengthMM);
+                XtraFightAPI.LOGGER.error("focalLength is lower than or equal to 0 : {}", focalLengthMM);
                 return 70.0d; // Default fallback
             }
 
@@ -480,7 +482,6 @@ public class CameraAnimatorAPI {
         }
 
     }
-
 
 
     public record CameraTransform(Vector3f location, Quaternionf rotation) {}

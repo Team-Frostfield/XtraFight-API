@@ -24,10 +24,10 @@ public abstract class ClientLevelMixin {
         // we put it in an "if-else" block, so we avoid firing both events if the entity was an instance of a player
         if (entity instanceof Player player) {
             PlayerJoinDispatchEvent.Client playerJoinClientEH = new PlayerJoinDispatchEvent.Client(player, this.self);
-            MinecraftDispatchableEvents.Player.JOIN_CLIENT.postEventWithParams(playerJoinClientEH, params -> params.onPlayerJoin(player, this.self));
+            MinecraftDispatchableEvents.Player.JOIN_CLIENT.postWithParams(playerJoinClientEH, params -> params.onPlayerJoin(player, this.self));
         } else {
             EntitySummonDispatchEvent.Client entitySummonClientEH = new EntitySummonDispatchEvent.Client(entity, this.self);
-            MinecraftDispatchableEvents.Entity.SUMMON_CLIENT.postEventWithParams(entitySummonClientEH, params -> params.onEntitySummon(entity, this.self));
+            MinecraftDispatchableEvents.Entity.SUMMON_CLIENT.postWithParams(entitySummonClientEH, params -> params.onEntitySummon(entity, this.self));
         }
     }
 }

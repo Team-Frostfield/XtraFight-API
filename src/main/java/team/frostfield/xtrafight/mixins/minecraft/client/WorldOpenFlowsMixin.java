@@ -30,7 +30,7 @@ public abstract class WorldOpenFlowsMixin {
 
     public void injectEventHookJoin(LevelStorageAccess levelStorage, WorldStem worldStem, PackRepository packRepository, CallbackInfo ci) {
         WorldLoadDispatchEvent.Join worldJoinEventHook = new WorldLoadDispatchEvent.Join(levelStorage, packRepository, worldStem);
-        MinecraftDispatchableEvents.Client.WORLD_JOIN.postEventWithParams(worldJoinEventHook, params -> params.onWorldLoading(levelStorage, packRepository, worldStem, false));
+        MinecraftDispatchableEvents.Client.WORLD_JOIN.postWithParams(worldJoinEventHook, params -> params.onWorldLoading(levelStorage, packRepository, worldStem, false));
     }
 
     @Inject(
@@ -50,6 +50,6 @@ public abstract class WorldOpenFlowsMixin {
             @Local WorldStem worldstem
     ) {
         WorldLoadDispatchEvent.Create worldCreateEventHook = new WorldLoadDispatchEvent.Create(levelstoragesource$levelstorageaccess, packrepository, worldstem);
-        MinecraftDispatchableEvents.Client.WORLD_CREATE.postEventWithParams(worldCreateEventHook, params -> params.onWorldLoading(levelstoragesource$levelstorageaccess, packrepository, worldstem, true));
+        MinecraftDispatchableEvents.Client.WORLD_CREATE.postWithParams(worldCreateEventHook, params -> params.onWorldLoading(levelstoragesource$levelstorageaccess, packrepository, worldstem, true));
     }
 }

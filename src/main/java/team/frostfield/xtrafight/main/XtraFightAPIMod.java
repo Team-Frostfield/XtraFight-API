@@ -37,6 +37,7 @@ public final class XtraFightAPIMod implements XtraFightAPI {
     private void doEpicAPIStuff() {
         DispatchingEvent.postEvent();
         LoadableClassManager.loadEnum(this.modBus, XtraFightLoadableEnums.values());
+
         Class<? extends CompatibilityPlugin>[] plugins = Arrays.stream(XtraFightAPIPlugins.values()).map(XtraFightAPIPlugins::getPluginCls).<Class<? extends CompatibilityPlugin>>toArray(Class[]::new);
         if (plugins.length != 0) {
             CompatibilityPluginsManager.registerPlugins(this.modBus, plugins);
@@ -61,34 +62,5 @@ public final class XtraFightAPIMod implements XtraFightAPI {
 
     public ResourceLocation identifier(String path) {
         return ResourceLocation.fromNamespaceAndPath(XtraFightAPI.MOD_ID, path);
-    }
-
-    // Logger helpers
-    public static void err(String message, Object... args) {
-        XtraFightAPI.LOGGER.error(message, args);
-    }
-
-    public static void errIfDevSide(String message, Object... args) {
-        if (EnvironmentHelper.getEnvironment().isDevEnv()) {
-            XtraFightAPI.LOGGER.error(message, args);
-        }
-    }
-
-    public static void warn(String message, Object... args) {
-        XtraFightAPI.LOGGER.warn(message, args);
-    }
-
-    public static void debug(String message, Object... args) {
-        XtraFightAPI.LOGGER.debug(message, args);
-    }
-
-    public static void debugIfDevSide(String message, Object... args) {
-        if (EnvironmentHelper.getEnvironment().isDevEnv()) {
-            XtraFightAPI.LOGGER.debug(message, args);
-        }
-    }
-
-    public static void info(String message, Object... args) {
-        XtraFightAPI.LOGGER.info(message, args);
     }
 }

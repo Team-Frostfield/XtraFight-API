@@ -12,7 +12,7 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
 import team.frostfield.xtrafight.events.bus.impl.NeoBusImpl;
-import team.frostfield.xtrafight.main.XtraFightAPIMod;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class XtraFightAPISoundsManager extends SimpleJsonResourceReloadListener 
 
                         ResourceLocation soundId = ResourceLocation.tryParse(key);
                         if (soundId == null) {
-                            XtraFightAPIMod.warn("Invalid sound entry key '{}' in file {}", key, location);
+                            XtraFightAPI.LOGGER.warn("Invalid sound entry key '{}' in file {}", key, location);
                             continue;
                         }
 
@@ -58,7 +58,7 @@ public class XtraFightAPISoundsManager extends SimpleJsonResourceReloadListener 
                     this.parseAndRegister(location, root);
                 }
             } catch (Exception e) {
-                XtraFightAPIMod.err("Failed to load Sound API data file: {} ", location, e);
+                XtraFightAPI.LOGGER.warn("Failed to load Sound API data file: {} ", location, e);
             }
         });
     }
@@ -67,17 +67,17 @@ public class XtraFightAPISoundsManager extends SimpleJsonResourceReloadListener 
         AtomicInteger integer = new AtomicInteger();
         int sequence = integer.incrementAndGet();
         if (!soundEntry.has("sound_event")) {
-            XtraFightAPIMod.warn("Missing 'sound_event' field for sound entry '{}'", soundId);
+            XtraFightAPI.LOGGER.warn("Missing 'sound_event' field for sound entry '{}'", soundId);
             return;
         }
 
         ResourceLocation soundEvent = ResourceLocation.tryParse(soundEntry.get("sound_event").getAsString());
         if (soundEvent == null) {
-            XtraFightAPIMod.warn("Invalid 'sound_event' ResourceLocation in sound entry '{}'", soundId);
+            XtraFightAPI.LOGGER.warn("Invalid 'sound_event' ResourceLocation in sound entry '{}'", soundId);
             return;
         }
         if (!BuiltInRegistries.SOUND_EVENT.containsKey(soundEvent)) {
-            XtraFightAPIMod.warn("No sound {} in the sound entry {}", soundEvent, soundEntry);
+            XtraFightAPI.LOGGER.warn("No sound {} in the sound entry {}", soundEvent, soundEntry);
         }
 
         String category = soundEntry.has("category") ? soundEntry.get("category").getAsString() : "master";
@@ -97,7 +97,7 @@ public class XtraFightAPISoundsManager extends SimpleJsonResourceReloadListener 
 
         SoundDataDefinition def = new SoundDataDefinition(soundEvent, soundId, category, volume, pitch, speed, fadeInSpeed, start, end);
         if (containsSoundName(soundId) || containsSoundID(sequence)) {
-            XtraFightAPIMod.err("a JSON with the name: {} already exists!", soundId);
+            XtraFightAPI.LOGGER.error("a JSON with the name: {} already exists!", soundId);
         }
         SOUND_BY_NAME.put(soundId, def);
         SOUND_BY_ID.put(sequence, def);

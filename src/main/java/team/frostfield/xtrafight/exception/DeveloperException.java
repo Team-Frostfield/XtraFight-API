@@ -1,6 +1,6 @@
 package team.frostfield.xtrafight.exception;
 
-import team.frostfield.xtrafight.main.XtraFightAPIMod;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 import team.frostfield.xtrafight.utils.EnvironmentHelper;
 
 public class DeveloperException extends RuntimeException {
@@ -42,7 +42,7 @@ public class DeveloperException extends RuntimeException {
         if (EnvironmentHelper.getEnvironment().isDevEnv()) {
             throw new DeveloperException(loggedMessage);
         } else {
-            XtraFightAPIMod.err(loggedMessage);
+            XtraFightAPI.LOGGER.error(loggedMessage);
         }
     }
 

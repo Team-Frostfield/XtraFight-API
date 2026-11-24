@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 public class XtraFightAPISkills implements ILoadableClass {
     private static final DeferredRegister<Skill> SKILLS = DeferredRegistryUtil.createDefaultSkills();
 
-    public static final DeferredHolder<Skill, HeavyAttack> HEAVY_ATTACKS = XtraFightAPISkills.register("heavy_attack", HeavyAttack::createHeavyAttackBuilder);
-    public static final DeferredHolder<Skill, CounterAttack> COUNTER_ATTACK = XtraFightAPISkills.register("counter_attack", CounterAttack::createCounterAttackBuilder);
+    public static final DeferredHolder<Skill, HeavyAttack> HEAVY_ATTACKS = register("heavy_attack", HeavyAttack::createHeavyAttackBuilder);
+    public static final DeferredHolder<Skill, CounterAttack> COUNTER_ATTACK = register("counter_attack", CounterAttack::createCounterAttackBuilder);
 
     @Invoke
     private XtraFightAPISkills(ModBusImpl modBusImpl) {

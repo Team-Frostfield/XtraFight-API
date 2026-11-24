@@ -31,7 +31,7 @@ public class ServerLevelMixin {
     public void injectSummonEventHook(Entity entity, CallbackInfoReturnable<Boolean> cir) {
         if (!this.server.isDedicatedServer()) return;
         EntitySummonDispatchEvent.Server serverSummonEH = new EntitySummonDispatchEvent.Server(entity, this.self);
-        MinecraftDispatchableEvents.Entity.SUMMON_SERVER.postEventWithParams(serverSummonEH, params -> params.onEntitySummon(entity, this.self));
+        MinecraftDispatchableEvents.Entity.SUMMON_SERVER.postWithParams(serverSummonEH, params -> params.onEntitySummon(entity, this.self));
     }
 
     @Inject(
@@ -42,7 +42,7 @@ public class ServerLevelMixin {
     public void injectPlayerJoinEventHook(ServerPlayer player, CallbackInfo ci) {
         if (!this.server.isDedicatedServer()) return;
         PlayerJoinDispatchEvent.Server serverPlayerJoinEH = new PlayerJoinDispatchEvent.Server(player, this.self);
-        MinecraftDispatchableEvents.Player.JOIN_SERVER.postEventWithParams(serverPlayerJoinEH, params -> params.onPlayerJoin(player, this.self));
+        MinecraftDispatchableEvents.Player.JOIN_SERVER.postWithParams(serverPlayerJoinEH, params -> params.onPlayerJoin(player, this.self));
     }
 
 }

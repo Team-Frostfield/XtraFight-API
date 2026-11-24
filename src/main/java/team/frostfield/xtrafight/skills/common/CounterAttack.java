@@ -67,10 +67,7 @@ public class CounterAttack extends Skill {
             return;
         }
 
-        if (!XtraFightAPIDispatchableEvents.Player.COUNTER_ATTACK.postEventWithParamsAndCheckCanceled(counterAttackEvent, params -> {
-            params.onCounter(container);
-            return !counterAttackEvent.isCanceled();
-        })) {
+        if (!XtraFightAPIDispatchableEvents.Player.COUNTER_ATTACK.postWithParamsAndCheckCanceled(counterAttackEvent, params -> params.onCounter(container))) {
             if (!EpicFightEventHooks.Player.CONSUME_SKILL.postWithListener(skillConsumeEvent, executor.getEventListener()).isCanceled()) {
                 skillConsumeEvent.getResourceType().consumer.consume(container, serverExecutor, this.counterConsumption);
             }
@@ -84,7 +81,6 @@ public class CounterAttack extends Skill {
         WeaponCategory category = itemCapability.getWeaponCategory();
 
         if (counterType == CounterType.PARRY) {
-            // Fetch list via getParryingCounterAttacks getter
             List<AnimationManager.AnimationAccessor<? extends AttackAnimation>> parryList = DeferredCapabilityBuilder.getParryingCounterAttacks(category);
 
             if (parryList != null && !parryList.isEmpty()) {
@@ -107,7 +103,7 @@ public class CounterAttack extends Skill {
     public boolean isExecutableState(PlayerPatch<?> executor) {
         boolean baseExecutable = super.isExecutableState(executor);
         boolean hasStamina = executor.getStamina() >= this.counterConsumption;
-        boolean canCounter = executor.getEntityState().getState(XtraFightAPIAnimationStates.CAN_COUNTER);
+        boolean canCounter = executor.getEntityState().getState(XtraFightAPIAnimationStates.CAN_COUNTER_ATTACK);
 
         return baseExecutable && hasStamina && canCounter;
     }

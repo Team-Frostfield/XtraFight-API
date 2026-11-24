@@ -23,7 +23,7 @@ public class GuardSkillMixin {
 
     private static void injectEvent(Function<Builder, GuardSkill> constructor, CallbackInfoReturnable<Builder> cir) {
         AddGuardMotionsDispatchEvent.Normal normalDE = new Normal(cir.getReturnValue());
-        XtraFightAPIDispatchableEvents.Skill.ADD_NORMAL_GUARD_MOTIONS.postEventWithParams(normalDE, params -> params.onAddMotions(normalDE.getBuilder()));
+        XtraFightAPIDispatchableEvents.Skill.ADD_NORMAL_GUARD_MOTIONS.postWithParams(normalDE, params -> params.onAddMotions(normalDE.getBuilder()));
     }
 
 }

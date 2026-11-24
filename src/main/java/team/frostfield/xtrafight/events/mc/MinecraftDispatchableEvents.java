@@ -30,7 +30,7 @@ public class MinecraftDispatchableEvents {
         public static final ParameterizedEventDispatch<ServerInitializeDispatchEvent.Pre, ServerInitParams> START_PRE = ParameterizedEventDispatch.createParameterized(EventSide.SERVER);
         // fired when the server is started and running
         public static final ParameterizedEventDispatch<ServerInitializeDispatchEvent.Post, ServerInitParams> START_POST = ParameterizedEventDispatch.createParameterized(EventSide.SERVER);
-        // fired when the server shuts off (maybe when it crashes too
+        // fired when the server shuts off (maybe when it crashes too)
         public static final ParameterizedEventDispatch<ServerStopDispatchEvent, ServerStopParams> STOP = ParameterizedEventDispatch.createParameterized(EventSide.SERVER);
         // fired when the server is online and ticking
         public static final ParameterizedEventDispatch<ServerTickDispatchEvent, ServerTickParams> TICK = ParameterizedEventDispatch.createParameterized(EventSide.SERVER);
@@ -44,7 +44,6 @@ public class MinecraftDispatchableEvents {
         public static final ParameterizedEventDispatch<PlayerJoinDispatchEvent.Client, PlayerJoinWorldParams> JOIN_CLIENT = ParameterizedEventDispatch.createParameterized(EventSide.CLIENT);
         // fired when the player joins on a public server
         public static final ParameterizedEventDispatch<PlayerJoinDispatchEvent.Server, PlayerJoinWorldParams> JOIN_SERVER = ParameterizedEventDispatch.createParameterized(EventSide.SERVER);
-
     }
 
     public static class Client {

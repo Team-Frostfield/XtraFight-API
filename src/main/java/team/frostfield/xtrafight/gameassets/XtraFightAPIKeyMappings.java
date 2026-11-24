@@ -6,13 +6,13 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import team.frostfield.xtrafight.builders.minecraft.client.KeyMappingsBuilder;
 import team.frostfield.xtrafight.builders.minecraft.client.KeyMappingsBuilder.InputType;
 import team.frostfield.xtrafight.builders.minecraft.client.KeyMappingsBuilder.KeyCategory;
-import team.frostfield.xtrafight.cls.lists.BasicList;
 import team.frostfield.xtrafight.cls.lists.BasicArrayList;
+import team.frostfield.xtrafight.cls.lists.BasicList;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
 import team.frostfield.xtrafight.events.bus.impl.ModBusImpl;
 import team.frostfield.xtrafight.input.InputKeyCodes;
-import team.frostfield.xtrafight.main.XtraFightAPIMod;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 import yesman.epicfight.client.input.CombatKeyMapping;
 
 
@@ -39,7 +39,7 @@ public class XtraFightAPIKeyMappings implements ILoadableClass {
     private static KeyMapping registerKey(Component name, InputType inputType, int keyCode, KeyCategory category) {
         KeyMapping keyMapping = KeyMappingsBuilder.newKeyMapping(name.getString(), keyCode, inputType, category);
         if (KEY_MAPPINGS.contains(keyMapping)) {
-            XtraFightAPIMod.errIfDevSide("Keymapping: [{}] is already registered!", name.getString());
+            XtraFightAPI.LOGGER.errorIfDevSide("Keymapping: [{}] is already registered!", name.getString());
             return null;
         }
         KEY_MAPPINGS.add(keyMapping);
@@ -49,7 +49,7 @@ public class XtraFightAPIKeyMappings implements ILoadableClass {
     private static CombatKeyMapping registerCombatKey(Component name, InputType inputType, int keyCode) {
         CombatKeyMapping keyMapping = KeyMappingsBuilder.newCombatKeyMapping(name.getString(), inputType, keyCode, KeyCategory.EPICFIGHT_COMBAT);
         if (KEY_MAPPINGS.contains(keyMapping)) {
-            XtraFightAPIMod.errIfDevSide("Keymapping: [{}] is already registered!", name.getString());
+            XtraFightAPI.LOGGER.errorIfDevSide("Keymapping: [{}] is already registered!", name.getString());
             return null;
         }
         KEY_MAPPINGS.add(keyMapping);

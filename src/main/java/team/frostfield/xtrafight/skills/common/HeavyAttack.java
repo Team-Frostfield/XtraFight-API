@@ -7,6 +7,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import team.frostfield.xtrafight.animation.XtraFightAPIAnimationStates;
 import team.frostfield.xtrafight.builders.epicfight.excap.deferred.DeferredCapabilityBuilder;
 import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.player.HeavyAttackDispatchEvent;
@@ -91,7 +92,7 @@ public class HeavyAttack extends Skill {
         SkillConsumeEvent skillConsumeEvent = new SkillConsumeEvent(executor, this, this.resource, null);
         HeavyAttackDispatchEvent heavyAttackEvent = new HeavyAttackDispatchEvent(skillContainer);
 
-        if (!executor.getEntityState().canBasicAttack()) {
+        if (!executor.getEntityState().getState(XtraFightAPIAnimationStates.CAN_HEAVY_ATTACK)) {
             return;
         }
 
@@ -99,10 +100,7 @@ public class HeavyAttack extends Skill {
             skillConsumeEvent.getResourceType().consumer.consume(skillContainer, executor, skillConsumeEvent.getAmount());
         }
 
-        if (!XtraFightAPIDispatchableEvents.Player.HEAVY_ATTACK.postEventWithParamsAndCheckCanceled(heavyAttackEvent, heavyAttackParams -> {
-            heavyAttackParams.onHeavyAttack(skillContainer);
-            return !heavyAttackEvent.isCanceled();
-        })) {
+        if (!XtraFightAPIDispatchableEvents.Player.HEAVY_ATTACK.postWithParamsAndCheckCanceled(heavyAttackEvent, heavyAttackParams -> heavyAttackParams.onHeavyAttack(skillContainer))) {
             CapabilityItem cap = executor.getHoldingItemCapability(InteractionHand.MAIN_HAND);
             AnimationAccessor<? extends AttackAnimation> attackMotion;
             ServerPlayer player = executor.getOriginal();

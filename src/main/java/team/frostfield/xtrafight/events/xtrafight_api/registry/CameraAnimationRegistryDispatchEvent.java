@@ -5,7 +5,7 @@ import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
 import team.frostfield.xtrafight.events.dispatch.marks.HybridEvent;
-import team.frostfield.xtrafight.main.XtraFightAPIMod;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -36,7 +36,7 @@ public class CameraAnimationRegistryDispatchEvent extends DispatchEvent implemen
                         this.register(camAnim);
                     }
                 } catch (Exception e) {
-                    XtraFightAPIMod.err("Failed to register animation from field [{}] in class [{}]: {}",
+                    XtraFightAPI.LOGGER.error("Failed to register animation from field [{}] in class [{}]: {}",
                             field.getName(), cls.getName(), e.getMessage());
                     e.printStackTrace();
                 }

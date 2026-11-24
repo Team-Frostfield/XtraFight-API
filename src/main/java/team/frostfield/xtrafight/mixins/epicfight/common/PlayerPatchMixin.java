@@ -48,6 +48,6 @@ public abstract class PlayerPatchMixin<T extends Player> extends LivingEntityPat
     )
     private void injectAddMotionsEH(Animator animator, CallbackInfo ci) {
         AddPlayerMotionsDispatchEvent addPlayerMotionsEH = new AddPlayerMotionsDispatchEvent(animator, this.self);
-        XtraFightAPIDispatchableEvents.Player.ADD_MOTIONS.postEventWithParams(addPlayerMotionsEH, params -> params.onAddMotions(animator, this.self));
+        XtraFightAPIDispatchableEvents.Player.ADD_MOTIONS.postWithParams(addPlayerMotionsEH, params -> params.onAddMotions(animator, this.self));
     }
 }

@@ -1,6 +1,5 @@
 package team.frostfield.xtrafight.builders.epicfight.excap.deferred;
 
-import team.frostfield.xtrafight.main.XtraFightAPIMod;
 import com.google.common.collect.Maps;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleType;
@@ -11,6 +10,7 @@ import net.minecraft.sounds.SoundEvent;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.AnimationManager.AnimationAccessor;
 import yesman.epicfight.api.animation.LivingMotion;
@@ -67,7 +67,7 @@ public class DeferredCapabilityBuilder {
         this.weaponCapabilityBuilder = WeaponCapability.builder();
     }
 
-    public static DeferredCapabilityBuilder newBuilder() {
+    public static DeferredCapabilityBuilder builder() {
         return new DeferredCapabilityBuilder();
     }
 
@@ -141,9 +141,9 @@ public class DeferredCapabilityBuilder {
             AnimationAccessor<? extends StaticAnimation> animation = (AnimationAccessor<? extends StaticAnimation>) pairs[i + 1];
             if (animation != null) {
                 this.addLivingMotion(motion, animation);
-                XtraFightAPIMod.debugIfDevSide("Registered animation pairs of: [{}, {}] for moveset ID: [{}]", motion.toString(), animation.registryName().toString(), this.currentMoveSetID.toString());
+                XtraFightAPI.LOGGER.debugIfDevSide("Registered animation pairs of: [{}, {}] for moveset ID: [{}]", motion.toString(), animation.registryName().toString(), this.currentMoveSetID.toString());
             } else {
-                XtraFightAPIMod.err("Animation for motion [{}] is not found for moveset: [{}]!, animation slot in pair: {}", motion.toString(), this.currentMoveSetID.toString(), i + 1);
+                XtraFightAPI.LOGGER.error("Animation for motion [{}] is not found for moveset: [{}]!, animation slot in pair: {}", motion.toString(), this.currentMoveSetID.toString(), i + 1);
             }
         }
         this.currentMotionsPair = pairs;
@@ -224,7 +224,7 @@ public class DeferredCapabilityBuilder {
                     if (animation != null) {
                         anims.add(animation);
                     } else {
-                        XtraFightAPIMod.err("Missing animation {} in {}", animId, rl);
+                        XtraFightAPI.LOGGER.error("Missing animation {} in {}", animId, rl);
                     }
                 }
 
@@ -257,7 +257,7 @@ public class DeferredCapabilityBuilder {
             if (animation != null) {
                 globalNormalCounters.put(category, animation);
             } else {
-                XtraFightAPIMod.err("Missing normal counter animation [{}] for category [{}] in file [{}]", animId, categoryStr, rl);
+                XtraFightAPI.LOGGER.error("Missing normal counter animation [{}] for category [{}] in file [{}]", animId, categoryStr, rl);
             }
         }
 
@@ -272,7 +272,7 @@ public class DeferredCapabilityBuilder {
                 if (animation != null) {
                     counters.add(animation);
                 } else {
-                    XtraFightAPIMod.err("Missing parry counter animation sequence index [{}] -> [{}] for category [{}] in file [{}]", i, animId, categoryStr, rl);
+                    XtraFightAPI.LOGGER.error("Missing parry counter animation sequence index [{}] -> [{}] for category [{}] in file [{}]", i, animId, categoryStr, rl);
                 }
             }
 
@@ -300,7 +300,7 @@ public class DeferredCapabilityBuilder {
             }
         }
 
-        XtraFightAPIMod.debugIfDevSide("Registered moveset: [{}], with combo: {}", this.currentMoveSetID, this.currentCombo);
+        XtraFightAPI.LOGGER.debugIfDevSide("Registered moveset: [{}], with combo: {}", this.currentMoveSetID, this.currentCombo);
         return this.moveSetBuilder;
     }
 
@@ -311,7 +311,7 @@ public class DeferredCapabilityBuilder {
                 this.currentInnate,
                 this.currentPassive,
         };
-        XtraFightAPIMod.debugIfDevSide("Registered preset with properties: {}", this.currentPresetProperties);
+        XtraFightAPI.LOGGER.debugIfDevSide("Registered preset with properties: {}", this.currentPresetProperties);
         return this.weaponCapabilityBuilder;
     }
 }

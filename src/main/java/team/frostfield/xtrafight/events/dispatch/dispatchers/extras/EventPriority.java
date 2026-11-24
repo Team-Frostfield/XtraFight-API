@@ -28,4 +28,8 @@ public enum EventPriority {
         return this == otherPriority;
     }
 
+    public String toString() {
+        return this.name().toLowerCase();
+    }
+
 }

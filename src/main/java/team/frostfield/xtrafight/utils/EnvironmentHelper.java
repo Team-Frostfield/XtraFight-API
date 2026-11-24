@@ -1,6 +1,5 @@
 package team.frostfield.xtrafight.utils;
 
-import team.frostfield.xtrafight.main.XtraFightAPIMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import net.minecraft.client.server.IntegratedServer;
@@ -10,6 +9,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLLoader;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 
 import java.util.function.BooleanSupplier;
 
@@ -45,7 +45,7 @@ public class EnvironmentHelper {
     public static void setServerAndType(MinecraftServer server, ServerTypes type) {
         EnvironmentHelper.currentServer = server;
         EnvironmentHelper.serverType = type;
-        XtraFightAPIMod.debugIfDevSide("Set the server and it's type: {}, {}", type.is(ServerTypes.SINGLE_PLAYER) ? "SinglePlayerServer" : server.getClass().getSimpleName(), type.getDisplayName());
+        XtraFightAPI.LOGGER.debugIfDevSide("Set the server and it's type: {}, {}", type.is(ServerTypes.SINGLE_PLAYER) ? "SinglePlayerServer" : server.getClass().getSimpleName(), type.getDisplayName());
     }
 
     private static boolean isDevAndOfficialMC() {

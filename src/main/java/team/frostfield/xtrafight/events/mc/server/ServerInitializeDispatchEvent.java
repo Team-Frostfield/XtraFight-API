@@ -26,14 +26,12 @@ public abstract class ServerInitializeDispatchEvent extends DispatchEvent implem
         public Pre(MinecraftServer server) {
             super(server);
         }
-
     }
 
     public static class Post extends ServerInitializeDispatchEvent {
         public Post(MinecraftServer server) {
             super(server);
         }
-
     }
 
 }

@@ -76,15 +76,15 @@ public class ParameterizedEventDispatch<T extends DispatchEvent & ParameterizedE
         }
     }
 
-    public void postEventWithParams(T dispatchableEvent, Action<P> params) {
+    public void postWithParams(T dispatchableEvent, Action<P> params) {
         super.postEvent(dispatchableEvent);
         this.postEventParameterized(params);
     }
 
-    public boolean postEventWithParamsAndCheckCanceled(T dispatchableEvent, Predicate<P> params) {
-        return super.postAndCheckCanceled(dispatchableEvent) && this.postAndCheckCanceled(params);
+    public boolean postWithParamsAndCheckCanceled(T dispatchableEvent, Action<P> params) {
+        this.postEventParameterized(params);
+        return super.postAndCheckCanceled(dispatchableEvent);
     }
-
 
     public boolean postAndCheckCanceled(Predicate<P> action) {
         Objects.requireNonNull(action, "Action cannot be null");

@@ -86,7 +86,7 @@ public class XtraFightAPISubscribeEvents {
 
         @SubscribeEvent
         public static void onCameraBuild(FMLClientSetupEvent evt) {
-            EpicFightClientEventHooks.Camera.BUILD_TRANSFORM_PRE.registerContextAwareEvent((event, eventContext) -> {
+            EpicFightClientEventHooks.Camera.BUILD_TRANSFORM_PRE.registerEvent(event -> {
                 if (!CameraAnimatorAPI.getInstance().isPlaying()) return;
 
                 // Apply Camera animation
@@ -100,9 +100,7 @@ public class XtraFightAPISubscribeEvents {
 
             });
 
-            evt.enqueueWork(() -> {
-                XtraFightAPIDispatchableEvents.Registry.CAMERA_ANIMATIONS.postEventWithParams(new CameraAnimationRegistryDispatchEvent(), param -> param.onRegister(CameraAnimatorAPI.getInstance()));
-            });
+            evt.enqueueWork(() -> XtraFightAPIDispatchableEvents.Registry.CAMERA_ANIMATIONS.postWithParams(new CameraAnimationRegistryDispatchEvent(), param -> param.onRegister(CameraAnimatorAPI.getInstance())));
 
         }
     }

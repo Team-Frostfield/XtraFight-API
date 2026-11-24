@@ -21,7 +21,6 @@ import team.frostfield.xtrafight.events.bus.impl.NeoBusImpl;
 import team.frostfield.xtrafight.exception.ClassLoadingException;
 import team.frostfield.xtrafight.exception.DeveloperException;
 import team.frostfield.xtrafight.main.XtraFightAPI;
-import team.frostfield.xtrafight.main.XtraFightAPIMod;
 import team.frostfield.xtrafight.utils.EnvironmentHelper;
 import team.frostfield.xtrafight.utils.EnvironmentHelper.Environments;
 
@@ -163,7 +162,7 @@ public final class LoadableClassManager {
                 ERRORED_CLASSES.removeIfPresent(className, loadableClass);
                 LOADED_CLASSES.put(className, loadableClass);
             } catch (Exception e) {
-                XtraFightAPIMod.err("Failed to load class [{}], {}", simpleClassName, e);
+                XtraFightAPI.LOGGER.error("Failed to load class [{}], {}", simpleClassName, e);
                 ERRORED_CLASSES.put(className, loadableClass);
                 PENDING_CLASSES.removeIfPresent(className, loadableClass);
                 LOADED_CLASSES.removeIfPresent(className, loadableClass);

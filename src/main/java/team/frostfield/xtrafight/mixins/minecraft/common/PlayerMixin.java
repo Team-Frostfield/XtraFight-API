@@ -18,7 +18,7 @@ public abstract class PlayerMixin {
     )
     private void injectEventHookPre(CallbackInfo ci) {
         PlayerTickDispatchEvent.Pre tickPre = new PlayerTickDispatchEvent.Pre((Player) (Object) this);
-        MinecraftDispatchableEvents.Player.TICK_PRE.postEventWithParams(tickPre, params -> params.onPlayerTick(this.self));
+        MinecraftDispatchableEvents.Player.TICK_PRE.postWithParams(tickPre, params -> params.onPlayerTick(this.self));
     }
 
     @Inject(
@@ -28,6 +28,6 @@ public abstract class PlayerMixin {
     )
     private void injectEventHookPost(CallbackInfo ci) {
         PlayerTickDispatchEvent.Post tickPost = new PlayerTickDispatchEvent.Post((Player) (Object) this);
-        MinecraftDispatchableEvents.Player.TICK_POST.postEventWithParams(tickPost, params -> params.onPlayerTick(this.self));
+        MinecraftDispatchableEvents.Player.TICK_POST.postWithParams(tickPost, params -> params.onPlayerTick(this.self));
     }
 }

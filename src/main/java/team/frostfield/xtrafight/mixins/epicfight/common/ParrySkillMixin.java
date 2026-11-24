@@ -22,7 +22,7 @@ public class ParrySkillMixin {
 
     private static void injectEvent(CallbackInfoReturnable<Builder> cir) {
         AddGuardMotionsDispatchEvent.Parry parryDE = new Parry(cir.getReturnValue());
-        XtraFightAPIDispatchableEvents.Skill.ADD_PARRY_GUARD_MOTIONS.postEventWithParams(parryDE, params -> params.onAddMotions(parryDE.getBuilder()));
+        XtraFightAPIDispatchableEvents.Skill.ADD_PARRY_GUARD_MOTIONS.postWithParams(parryDE, params -> params.onAddMotions(parryDE.getBuilder()));
     }
 
 }

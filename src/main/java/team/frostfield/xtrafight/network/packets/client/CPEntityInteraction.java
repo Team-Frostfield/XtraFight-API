@@ -62,7 +62,7 @@ public record CPEntityInteraction(int targetEntityId, InteractionType interactio
                     } else {
                         this.interactionType.execute(player, target, context);
                     }
-                    XtraFightAPIMod.debugIfDevSide("Executed interaction: {}", this.interactionType.toString().toLowerCase());
+                    XtraFightAPI.LOGGER.debugIfDevSide("Executed interaction: {}", this.interactionType.toString().toLowerCase());
                 }
             }
         });

@@ -27,9 +27,9 @@ public abstract class MinecraftMixin {
             remap = false
     )
 
-    public void injectCWDE(LevelStorageAccess levelStorage, PackRepository packRepository, WorldStem worldStem, boolean newWorld, CallbackInfo ci) {
+    public void injectWorldInitialize(LevelStorageAccess levelStorage, PackRepository packRepository, WorldStem worldStem, boolean newWorld, CallbackInfo ci) {
         WorldLoadDispatchEvent.Initialize worldInitEventHook = new WorldLoadDispatchEvent.Initialize(levelStorage, packRepository, worldStem, newWorld);
-        MinecraftDispatchableEvents.Client.WORLD_INIT.postEventWithParams(worldInitEventHook, params -> params.onWorldLoading(levelStorage, packRepository, worldStem, newWorld));
+        MinecraftDispatchableEvents.Client.WORLD_INIT.postWithParams(worldInitEventHook, params -> params.onWorldLoading(levelStorage, packRepository, worldStem, newWorld));
     }
 
     @Inject(
@@ -39,7 +39,7 @@ public abstract class MinecraftMixin {
     )
     public void injectCIDEPre(GameConfig gameConfig, CallbackInfo ci) {
         ClientInitializeDispatchEvent.Pre clientInitDEPre = new Pre(this.self);
-        MinecraftDispatchableEvents.Client.START_PRE.postEventWithParams(clientInitDEPre, params -> params.onInitialize(this.self));
+        MinecraftDispatchableEvents.Client.START_PRE.postWithParams(clientInitDEPre, params -> params.onInitialize(this.self));
     }
 
     @Inject(
@@ -49,7 +49,7 @@ public abstract class MinecraftMixin {
     )
     public void injectCIDEPost(GameConfig gameConfig, CallbackInfo ci) {
         ClientInitializeDispatchEvent.Post clientInitDEPost = new Post(this.self);
-        MinecraftDispatchableEvents.Client.START_POST.postEventWithParams(clientInitDEPost, param -> param.onInitialize(this.self));
+        MinecraftDispatchableEvents.Client.START_POST.postWithParams(clientInitDEPost, param -> param.onInitialize(this.self));
 
     }
 
@@ -61,7 +61,7 @@ public abstract class MinecraftMixin {
 
     public void injectCTDE(CallbackInfo ci) {
         ClientTickDispatchEvent clientTickDE = new ClientTickDispatchEvent(this.self);
-        MinecraftDispatchableEvents.Client.TICK.postEventWithParams(clientTickDE, params -> params.onTick(this.self));
+        MinecraftDispatchableEvents.Client.TICK.postWithParams(clientTickDE, params -> params.onTick(this.self));
     }
 
 

@@ -5,7 +5,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload.Type;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import team.frostfield.xtrafight.main.XtraFightAPIMod;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 import team.frostfield.xtrafight.utils.code.AccessType;
 import team.frostfield.xtrafight.utils.code.CodeUtils;
 
@@ -37,7 +37,7 @@ public class XtraFightAPIPacketsManager {
             BIDIRECTIONAL_PACKETS.add(customPacket);
             packetType = "bidirectional";
         }
-        XtraFightAPIMod.debugIfDevSide("Registered {} packet {}", packetType, packetName);
+        XtraFightAPI.LOGGER.debugIfDevSide("Registered {} packet {}", packetType, packetName);
     }
 
     static {
