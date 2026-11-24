@@ -14,6 +14,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import team.frostfield.xtrafight.animation.client.CameraAnimatorAPI;
 import team.frostfield.xtrafight.animation.client.CameraAnimatorAPI.CameraFOVHelper;
 import team.frostfield.xtrafight.client.gui.InteractionAPI;
+import team.frostfield.xtrafight.config.XtraFightAPIConfigs;
 import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.registry.CameraAnimationRegistryDispatchEvent;
 import team.frostfield.xtrafight.main.XtraFightAPI;
@@ -70,13 +71,15 @@ public class XtraFightAPISubscribeEvents {
             event.setYaw(interpolatedYaw);
             event.setPitch(interpolatedPitch);
         }
-        //@SubscribeEvent
+        
+        @SubscribeEvent
         public static void computeFOV(ViewportEvent.ComputeFov event) {
             if (CameraAnimatorAPI.getInstance().isPlaying()) {
-                CameraAnimatorAPI.CamAnim current = CameraAnimatorAPI.getInstance().getCurrentCamAnim();
-                //FIXME: This is calculated Default FOV from blender, do you guys really think it should be default
-                if (current != null) {
-                    event.setFOV(CameraFOVHelper.focalLengthToFOV(10.3923f));
+                CameraAnimatorAPI api = CameraAnimatorAPI.getInstance();
+                CameraAnimatorAPI.CamAnim current = api.getCurrentCamAnim();
+                if (current != null && CameraAnimatorAPI.getInstance().hasFovTrack() && XtraFightAPIConfigs.Client.isCamFovAnimationEnabled()) {
+                
+                    event.setFOV(api.getCamAnimFovModifier());
                 }
             }
         }

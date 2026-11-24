@@ -32,6 +32,14 @@ public class XtraFightAPIConfigs implements ILoadableClass {
         private static final ModConfigSpec.Builder BUILDER = new Builder();
 
         public static final ModConfigSpec SPEC = BUILDER.build();
+
+        private static final ModConfigSpec.BooleanValue ENABLE_CAMERA_FOV_ANIMATION = BUILDER.comment("Whether to enable Camera Fov Animations").define("enableCamFovAnimations", true);
+       
+        public static boolean isCamFovAnimationEnabled(){
+            return ENABLE_CAMERA_FOV_ANIMATION.getAsBoolean();
+        }
+
+
     }
 
     public static class Server {

@@ -19,11 +19,11 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.TransformSheet;
-import yesman.epicfight.api.asset.JsonAssetLoader;
 import yesman.epicfight.api.client.event.EpicFightClientEventHooks;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+
 
 import javax.annotation.Nullable;
 
@@ -39,11 +39,11 @@ public class CameraAnimatorAPI {
     private final BasicMap<ResourceLocation, CameraAnimation> animations = new BasicHashMap<>();
 
     @Nullable
-    private CameraAnimation currentAnimation;
+    private CameraAnimation currentAnimation; 
     private ResourceLocation currentAnimationName;
     private CamAnim currentCamAnim;
     private Entity originEntity;
-
+  
     private float currentTime;
     private boolean playing;
     private boolean looping;
@@ -51,6 +51,9 @@ public class CameraAnimatorAPI {
     private boolean worldSpace;
     private boolean hasEventRegistered;
     private boolean paused;
+
+    private float FovModifier = 0.0f;
+  
 
     private boolean lockMousePanning;
     private float lockedYaw;
@@ -85,7 +88,7 @@ public class CameraAnimatorAPI {
     public void registerAnimation(CamAnim camAnim) {
         try {
             Minecraft mc = Minecraft.getInstance();
-            JsonAssetLoader loader = new JsonAssetLoader(mc.getResourceManager(), camAnim.jsonLocation());
+            ExtendedJsonAssetLoader loader = new ExtendedJsonAssetLoader(mc.getResourceManager(), camAnim.jsonLocation());
             CameraAnimation animation = this.loadAnimation(loader);
             ResourceLocation name = camAnim.id();
             if (this.animations.containsKey(name)) {
@@ -98,20 +101,24 @@ public class CameraAnimatorAPI {
         }
     }
 
-    private CameraAnimation loadAnimation(JsonAssetLoader loader) {
+    private CameraAnimation loadAnimation(ExtendedJsonAssetLoader loader) {
         JsonObject rootJson = loader.getRootJson();
         JsonObject cameraObject = rootJson.getAsJsonObject("camera");
         if (cameraObject == null) throw new IllegalArgumentException("JSON must contain 'camera' object");
 
         JsonObject convertedJson = new JsonObject();
         convertedJson.add("time", cameraObject.get("time"));
+
         convertedJson.add("transform", cameraObject.get("transform"));
         convertedJson.addProperty("name", "camera");
 
-        TransformSheet sheet = JsonAssetLoader.getTransformSheet(
-                convertedJson, null, false, JsonAssetLoader.TransformFormat.ATTRIBUTES
+        TransformSheet sheet = ExtendedJsonAssetLoader.getTransformSheet(
+                convertedJson, null, false, ExtendedJsonAssetLoader.TransformFormat.ATTRIBUTES
         );
-        return new CameraAnimation(sheet);
+
+        FovTrack fovTrak = loader.getFovTrack();
+
+        return new CameraAnimation(sheet, fovTrak);
     }
 
     public void play(CamAnim anim, boolean loop, boolean lockMouse, boolean useWorldSpace, @Nullable Vec3 WorldSpaceOrigin){
@@ -205,6 +212,7 @@ public class CameraAnimatorAPI {
     }
 
 
+
     public Iterable<ResourceLocation> getAnimationNames() {
         return this.animations.keySet();
     }
@@ -213,6 +221,7 @@ public class CameraAnimatorAPI {
     public CameraAnimation getAnimationByName(ResourceLocation id) {
         return this.animations.get(id);
     }
+
 
     private boolean gameHasBeenPaused;
 
@@ -253,6 +262,11 @@ public class CameraAnimatorAPI {
 
         float animTime = currentTime + (partialTick / 20.0f);
         CameraTransform anim = getTransformAtTime(animTime);
+        float FovFloat = 0.0f;
+
+        if(hasFovTrack()) FovFloat = this.currentAnimation.fovTrack.getFovFloatAtTime(animTime);
+
+        this.FovModifier = FovFloat;
 
         float baseYaw = this.lockMousePanning ? this.lockedYaw : this.originEntity.getViewYRot(partialTick);
 
@@ -301,6 +315,10 @@ public class CameraAnimatorAPI {
 
     }
 
+    public double getCamAnimFovModifier(){
+        return CameraFOVHelper.focalLengthToFOV(FovModifier);
+    } 
+
     private @NotNull Vector3f getDesiredPos(float partialTick, Minecraft mc, Vector3f animOffset) {
         Vec3 basePos;
         if (worldSpace) {
@@ -342,6 +360,10 @@ public class CameraAnimatorAPI {
         );
     }
 
+
+    
+    
+
     // Getters
     public void pause() {
         this.paused = true;
@@ -368,8 +390,16 @@ public class CameraAnimatorAPI {
         return this.isMirrored;
     }
 
+    public boolean hasFovTrack(){
+        return this.currentAnimation.FovTrackPresent();
+    }
+
     public float getCurrentTime() {
         return this.currentTime;
+    }
+
+    public CameraAnimation getCurrentCameraAnimation(){
+        return this.currentAnimation;
     }
 
     public boolean hasAnimation(ResourceLocation name) {
@@ -386,12 +416,17 @@ public class CameraAnimatorAPI {
     private static class CameraAnimation {
         private final TransformSheet sheet;
         private final float duration;
-        public CameraAnimation(TransformSheet sheet) {
+        private final FovTrack fovTrack;
+        public CameraAnimation(TransformSheet sheet, @Nullable FovTrack fovTrack) {
             this.sheet = sheet;
             this.duration = sheet.maxFrameTime();
+            this.fovTrack = fovTrack;
         }
         public float getDuration() {
             return this.duration;
+        }
+        public boolean FovTrackPresent(){
+            return this.fovTrack != null;
         }
     }
 
