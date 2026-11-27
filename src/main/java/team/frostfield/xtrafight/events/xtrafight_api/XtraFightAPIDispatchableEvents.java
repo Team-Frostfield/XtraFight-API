@@ -2,6 +2,7 @@ package team.frostfield.xtrafight.events.xtrafight_api;
 
 import team.frostfield.xtrafight.events.dispatch.dispatchers.parameterized.CancelableParameterizedEventDispatch;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.parameterized.ParameterizedEventDispatch;
+import team.frostfield.xtrafight.events.xtrafight_api.animation.GrabAttackDispatchEvent;
 import team.frostfield.xtrafight.events.xtrafight_api.entity.EntityInteractDispatchEvent;
 import team.frostfield.xtrafight.events.xtrafight_api.entity.EntityInteractDispatchEvent.EntityInteractParams;
 import team.frostfield.xtrafight.events.xtrafight_api.player.AddPlayerMotionsDispatchEvent;
@@ -46,6 +47,10 @@ public class XtraFightAPIDispatchableEvents {
 
     public static class Entity {
         public static final ParameterizedEventDispatch<EntityInteractDispatchEvent, EntityInteractParams> ENTITY_INTERACT = ParameterizedEventDispatch.createParameterized();
+    }
+
+    public static class Animation {
+        public static final CancelableParameterizedEventDispatch<GrabAttackDispatchEvent, GrabAttackDispatchEvent.GrabAttackParams> GRAB_ATTACK = CancelableParameterizedEventDispatch.createCancelable();
     }
 
 

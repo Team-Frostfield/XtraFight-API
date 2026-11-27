@@ -65,14 +65,14 @@ public class EnvironmentHelper {
     public static boolean isLogicalServer() {
         if (DIST.isClient()) return false;
         return currentServer != null && currentServer.isSameThread()
-                || EnvironmentHelper.getEnvironment().is(Environments.DEDICATED_SERVER, Environments.GAME_TEST_SERVER, Environments.LAN_SERVER);
+                || EnvironmentHelper.getEnvironment().isServer();
     }
 
     public static boolean isLogicalClient() {
         if (!DIST.isClient()) return false;
         return currentServer == null
                 || !currentServer.isSameThread()
-                || EnvironmentHelper.getEnvironment().is(Environments.CLIENT);
+                || EnvironmentHelper.getEnvironment().isClient();
     }
 
     public static Environments getEnvironment() {

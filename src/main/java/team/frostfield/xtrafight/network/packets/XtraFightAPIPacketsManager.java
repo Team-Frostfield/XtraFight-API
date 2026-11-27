@@ -22,9 +22,10 @@ public class XtraFightAPIPacketsManager {
     public static void register(Class<? extends ICustomPacket<?>> packet) {
         String packetName = packet.getSimpleName();
         String packetType = "";
-        ICustomPacket<?> customPacket = CodeUtils.newInstance(packet, AccessType.DECLARED);
-
-        // these were flipped ClientBound is server > client
+        ICustomPacket<?> customPacket = CodeUtils.newEmptyInstance(packet, AccessType.DECLARED);
+        if (SERVER_PACKETS.contains(customPacket) || CLIENT_PACKETS.contains(customPacket) || BIDIRECTIONAL_PACKETS.contains(customPacket)) {
+            throw new IllegalArgumentException("Packet: " + packetName + "is already registered!");
+        }
         if (nameStartsOrContains(packetName, "SP", "SB", "STC", "ClientBound", "ServerPacket")) {
             SERVER_PACKETS.add(customPacket);
             packetType = "server";
@@ -47,8 +48,7 @@ public class XtraFightAPIPacketsManager {
         }
     }
 
-    // the instances in these lists are just templates for the slop
-    // so handle the packet we actually got instead
+
     @SuppressWarnings("unchecked")
     public static <T extends ICustomPacket<T>> void register(PayloadRegistrar registrar) {
         CLIENT_PACKETS.forEach(iCustomPacket ->

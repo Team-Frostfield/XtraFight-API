@@ -1,4 +1,4 @@
-package team.frostfield.xtrafight.cls.loadable;
+package team.frostfield.xtrafight.utils.managers;
 
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Type;
 import sun.misc.Unsafe;
+import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.enums.LoadableEnum;
 import team.frostfield.xtrafight.cls.loadable.marks.Compatibility;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
@@ -16,11 +17,10 @@ import team.frostfield.xtrafight.cls.maps.BasicHashMap;
 import team.frostfield.xtrafight.cls.maps.BasicMap;
 import team.frostfield.xtrafight.events.bus.ModBus;
 import team.frostfield.xtrafight.events.bus.NeoBus;
-import team.frostfield.xtrafight.events.bus.impl.ModBusImpl;
-import team.frostfield.xtrafight.events.bus.impl.NeoBusImpl;
 import team.frostfield.xtrafight.exception.ClassLoadingException;
 import team.frostfield.xtrafight.exception.DeveloperException;
 import team.frostfield.xtrafight.main.XtraFightAPI;
+import team.frostfield.xtrafight.shared.XtraFightAPISharedConstants;
 import team.frostfield.xtrafight.utils.EnvironmentHelper;
 import team.frostfield.xtrafight.utils.EnvironmentHelper.Environments;
 
@@ -59,8 +59,9 @@ public final class LoadableClassManager {
 
             Map<Class<?>, Object> allowedConstructorArgs = Map.of(
                     Environments.class, EnvironmentHelper.getEnvironment(),
-                    ModBusImpl.class, bus,
-                    NeoBusImpl.class, NeoBusImpl.EVENT_BUS
+                    ModBus.class, bus,
+                    NeoBus.class, NeoBus.EVENT_BUS,
+                    ModContainer.class, ModLoadingContext.get().getActiveContainer()
             );
 
             try {
@@ -270,7 +271,7 @@ public final class LoadableClassManager {
 
         loadClass(bus, commonClasses);
 
-        if (EnvironmentHelper.getEnvironment().isClient()) {
+        if (XtraFightAPISharedConstants.isLogicalClient()) {
             Class<? extends ILoadableClass>[] clientClasses = Arrays.stream(loadableEnumValues)
                     .filter(LoadableEnum::isClientOnly)
                     .map(LoadableEnum::getLoadableClass)

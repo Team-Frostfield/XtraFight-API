@@ -36,16 +36,16 @@ public abstract class CrashReportMixin {
 
     @Unique
     private static final String[] RANDOM_MESSAGES = {
-            "XtraFight-API is not epic after all huh?",
+            "XtraFight-API is not xtra after all huh?",
             "This crash is definitely from XtraFight API. Go yell at the team here: https://github.com/Team-Frostfield/XtraFight-API/issues",
             "An animation frame tried to divide by zero. Please hand this log over to the authorities: https://github.com/Team-Frostfield/XtraFight-API/issues",
-            "The combos were too epic for the engine to handle. Report this absolute disaster!: https://github.com/Team-Frostfield/XtraFight-API/issues",
+            "The combos were too xtra for the engine to handle. Report this absolute disaster!: https://github.com/Team-Frostfield/XtraFight-API/issues",
             "Don't panic, but a compiler gremlin just broke the combat pipeline. Open an issue at https://github.com/Team-Frostfield/XtraFight-API/issues!",
             "Local developer forgets how index boundaries work. Go roast them on GitHub: https://github.com/Team-Frostfield/XtraFight-API/issues"
     };
 
     @Inject(method = "saveToFile(Ljava/nio/file/Path;Lnet/minecraft/ReportType;)Z", at = @At("HEAD"))
-    private void epicAPI$injectBlameHeader(Path path, ReportType type, CallbackInfoReturnable<Boolean> cir) {
+    private void xtrafight$injectBlameHeader(Path path, ReportType type, CallbackInfoReturnable<Boolean> cir) {
         try {
             CrashReport report = (CrashReport) (Object) this;
             boolean isXtraAtFault = false;

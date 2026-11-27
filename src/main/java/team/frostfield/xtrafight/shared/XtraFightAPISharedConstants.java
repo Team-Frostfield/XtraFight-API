@@ -17,14 +17,22 @@ public class XtraFightAPISharedConstants {
     }
 
     public static boolean isLogicalClient() {
-        return ENVIRONMENT.isClient();
+        return EnvironmentHelper.isLogicalClient();
     }
 
     public static boolean isLogicalServer() {
-        return ENVIRONMENT.isServer();
+        return EnvironmentHelper.isLogicalClient();
     }
 
     public static boolean isDeveloperEnvironment() {
         return ENVIRONMENT.isDevEnv();
+    }
+
+    public static boolean isPhysicalClient() {
+        return ENVIRONMENT.isClient();
+    }
+
+    public static boolean isPhysicalServer() {
+        return !isPhysicalClient();
     }
 }

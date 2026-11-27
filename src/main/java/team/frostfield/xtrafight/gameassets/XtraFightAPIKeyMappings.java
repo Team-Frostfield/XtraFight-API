@@ -10,7 +10,7 @@ import team.frostfield.xtrafight.cls.lists.BasicArrayList;
 import team.frostfield.xtrafight.cls.lists.BasicList;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
-import team.frostfield.xtrafight.events.bus.impl.ModBusImpl;
+import team.frostfield.xtrafight.events.bus.ModBus;
 import team.frostfield.xtrafight.input.InputKeyCodes;
 import team.frostfield.xtrafight.main.XtraFightAPI;
 import yesman.epicfight.client.input.CombatKeyMapping;
@@ -19,18 +19,21 @@ import yesman.epicfight.client.input.CombatKeyMapping;
 public class XtraFightAPIKeyMappings implements ILoadableClass {
     private static final BasicList<KeyMapping> KEY_MAPPINGS = new BasicArrayList<>();
 
+    private static final KeyMapping EMPTY = new KeyMapping("", 0, "");
+    private static final CombatKeyMapping COMBAT_EMPTY = new CombatKeyMapping("", 0, "");
+
     @Invoke
-    private XtraFightAPIKeyMappings(ModBusImpl modBusImpl) {
-        modBusImpl.addListener(this::onKeysRegistry);
+    private XtraFightAPIKeyMappings(ModBus modBus) {
+        modBus.addListener(this::onKeysRegistry);
     }
 
-    public static final CombatKeyMapping HEAVY_ATTACK = XtraFightAPIKeyMappings.registerCombatKey(
+    public static final CombatKeyMapping HEAVY_ATTACK = registerCombatKey(
             XtraFightAPITranslations.KEY_HEAVY_ATTACK,
             InputType.MOUSE,
             InputKeyCodes.MOUSE_LEFT_CLICK
     );
 
-    public static final CombatKeyMapping COUNTER_ATTACK = XtraFightAPIKeyMappings.registerCombatKey(
+    public static final CombatKeyMapping COUNTER_ATTACK = registerCombatKey(
             XtraFightAPITranslations.KEY_COUNTER_ATTACK,
             InputType.KEYBOARD,
             InputKeyCodes.KEY_X
@@ -40,19 +43,20 @@ public class XtraFightAPIKeyMappings implements ILoadableClass {
         KeyMapping keyMapping = KeyMappingsBuilder.newKeyMapping(name.getString(), keyCode, inputType, category);
         if (KEY_MAPPINGS.contains(keyMapping)) {
             XtraFightAPI.LOGGER.errorIfDevSide("Keymapping: [{}] is already registered!", name.getString());
-            return null;
+            return EMPTY;
         }
-        KEY_MAPPINGS.add(keyMapping);
+        KEY_MAPPINGS.addOnlyOnce(keyMapping);
         return keyMapping;
     }
+
 
     private static CombatKeyMapping registerCombatKey(Component name, InputType inputType, int keyCode) {
         CombatKeyMapping keyMapping = KeyMappingsBuilder.newCombatKeyMapping(name.getString(), inputType, keyCode, KeyCategory.EPICFIGHT_COMBAT);
         if (KEY_MAPPINGS.contains(keyMapping)) {
             XtraFightAPI.LOGGER.errorIfDevSide("Keymapping: [{}] is already registered!", name.getString());
-            return null;
+            return COMBAT_EMPTY;
         }
-        KEY_MAPPINGS.add(keyMapping);
+        KEY_MAPPINGS.addOnlyOnce(keyMapping);
         return keyMapping;
     }
 

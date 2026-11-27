@@ -1,15 +1,11 @@
 package team.frostfield.xtrafight.config;
 
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec.Builder;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
-import team.frostfield.xtrafight.main.XtraFightAPI;
-
-import java.util.Optional;
 
 public class XtraFightAPIConfigs implements ILoadableClass {
     public static class Common {
@@ -49,9 +45,8 @@ public class XtraFightAPIConfigs implements ILoadableClass {
     }
 
     @Invoke
-    private XtraFightAPIConfigs() {
-        Optional<? extends ModContainer> container = ModList.get().getModContainerById(XtraFightAPI.MOD_ID);
-        container.ifPresent(this::register);
+    private XtraFightAPIConfigs(ModContainer container) {
+        this.register(container);
     }
 
     private void register(ModContainer modContainer) {

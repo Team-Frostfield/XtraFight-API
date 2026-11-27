@@ -1,13 +1,14 @@
-package team.frostfield.xtrafight.compat.plugin;
+package team.frostfield.xtrafight.utils.managers;
 
 import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.NotNull;
 import team.frostfield.xtrafight.cls.logging.Logger;
 import team.frostfield.xtrafight.cls.maps.BasicHashMap;
 import team.frostfield.xtrafight.cls.maps.BasicMap;
+import team.frostfield.xtrafight.compat.plugin.CompatibilityPlugin;
 import team.frostfield.xtrafight.events.bus.ModBus;
 import team.frostfield.xtrafight.events.bus.NeoBus;
-import team.frostfield.xtrafight.utils.EnvironmentHelper;
+import team.frostfield.xtrafight.shared.XtraFightAPISharedConstants;
 import team.frostfield.xtrafight.utils.code.AccessType;
 import team.frostfield.xtrafight.utils.code.CodeUtils;
 
@@ -29,7 +30,7 @@ public final class CompatibilityPluginsManager {
                 }
                 if (ModList.get().isLoaded(plugin.getTargetModID())) {
                     if (plugin.isClientOnly()) {
-                        if (!EnvironmentHelper.getEnvironment().isClient()) {
+                        if (!XtraFightAPISharedConstants.isLogicalClient()) {
                             LOGGER.info("Skipped plugin: [{}], not a client environment!", pluginClass);
                             continue;
                         }

@@ -148,13 +148,14 @@ class XtraFightAPIExamples {
 
         private static void build(AnimationManager.AnimationBuilder builder) {
             Joint toolR = Armatures.BIPED.get().toolR;
-            ArmatureAccessor<HumanoidArmature> BIPED = Armatures.BIPED;
+            ArmatureAccessor<HumanoidArmature> biped = Armatures.BIPED;
+            HumanoidArmature armature = biped.get();
                     PLACEHOLDER_IDLE = builder.nextAccessor("path/idle", accessor ->
                     new SimpleStaticAnimation(
                             // repeatable
                             true,
                             accessor,
-                            BIPED
+                            biped
                     )
                     .withLayer(Layer.LayerType.COMPOSITE_LAYER)
                     .withPriority(Layer.Priority.LOW)
@@ -168,7 +169,7 @@ class XtraFightAPIExamples {
                             // movement speed (starts at 1.0F)
                             1.16F,
                             accessor,
-                            BIPED
+                            biped
                     )
                     .withLayer(LayerType.COMPOSITE_LAYER)
                     .withPriority(Priority.MIDDLE)
@@ -194,10 +195,10 @@ class XtraFightAPIExamples {
                        // accessor
                        accessor,
                        // armature
-                       BIPED
+                       biped
                )
                .addTrail(
-                       BIPED.get().toolR,
+                       armature.toolR,
                        TrailColor.IRON,
                        TrailPreset.SWORD
                )
@@ -284,7 +285,6 @@ class XtraFightAPIExamples {
         static final MovesetRegister MOVESET_REGISTRY = MovesetRegister.create(XtraFightAPIMod.MOD_ID);
 
         // then we build a capability
-        // (it has to be a supplier because this runs before epic fight's animation registry?, odd):
         static final Supplier<DeferredCapabilityBuilder> BOKKEN_2H = () -> DeferredCapabilityBuilder.builder()
                 .newMoveSet(
                         Styles.TWO_HAND,
@@ -426,12 +426,9 @@ class XtraFightAPIExamples {
         // Or optionally, you can do everything inside it's constructor instead
         // As shown, these are the allowed constructor arguments:
         @Invoke // Don't forget the invoke annotation!
-        LoadableEnumsAndClasses(Environments environments, NeoBus neoBusImpl, ModBus modBusImpl) {
+        LoadableEnumsAndClasses(Environments environments, NeoBus neoBus, ModBus modBus) {
             // your logic here
         }
-
-        // The NeoBusImpl and the ModBusImpl above are impls from IEventBus, so they're the same
-        // They are separate classes so the arguments does not copy an instance of IEventBus
 
         // To load this class, you call LoadableClassManager#loadClass(IEventBus, Class<? extends ILoadableClass>[]) in your mod's constructor
         // each class loaded will automatically invoke and run these methods, easily registering and running code instead of calling everything in the mod's constructor

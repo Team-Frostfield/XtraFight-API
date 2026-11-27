@@ -1,7 +1,6 @@
 package team.frostfield.xtrafight.builders.epicfight;
 
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.ApiStatus.Internal;
 import yesman.epicfight.api.asset.JsonAssetLoader;
 import yesman.epicfight.api.client.model.ClassicMesh;
 import yesman.epicfight.api.client.model.Mesh;
@@ -44,7 +43,6 @@ public class MeshBuilder {
         return toAccessor(parsed.getNamespace(), parsed.getPath(), MeshType.SKINNED);
     }
 
-    @Internal
     private static <ME extends Mesh> Meshes.MeshAccessor<ME> toAccessor(String modid, String path, MeshType type) {
         return Meshes.MeshAccessor.create(modid, path, type::load);
     }

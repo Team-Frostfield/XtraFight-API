@@ -7,7 +7,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
-import team.frostfield.xtrafight.events.bus.impl.ModBusImpl;
+import team.frostfield.xtrafight.events.bus.ModBus;
 import team.frostfield.xtrafight.skills.common.CounterAttack;
 import team.frostfield.xtrafight.skills.common.HeavyAttack;
 import team.frostfield.xtrafight.utils.registry.DeferredRegistryUtil;
@@ -17,14 +17,14 @@ import yesman.epicfight.skill.SkillDataKey;
 public class XtraFightAPISkillDataKeys implements ILoadableClass {
     private static final DeferredRegister<SkillDataKey<?>> SKILL_DATA_KEYS = DeferredRegistryUtil.createDefaultSDK();
 
-    public static final DeferredHolder<SkillDataKey<?>, SkillDataKey<Integer>> HEAVY_COUNTER = XtraFightAPISkillDataKeys.register(
+    public static final DeferredHolder<SkillDataKey<?>, SkillDataKey<Integer>> HEAVY_COUNTER = register(
             "heavy_counter",
             ByteBufCodecs.INT,
             0,
             false,
             HeavyAttack.class
     );
-    public static final DeferredHolder<SkillDataKey<?>, SkillDataKey<Integer>> MOTION_COUNTER = XtraFightAPISkillDataKeys.register(
+    public static final DeferredHolder<SkillDataKey<?>, SkillDataKey<Integer>> MOTION_COUNTER = register(
             "motion_counter",
             ByteBufCodecs.INT,
             0,
@@ -33,8 +33,8 @@ public class XtraFightAPISkillDataKeys implements ILoadableClass {
     );
 
     @Invoke
-    private XtraFightAPISkillDataKeys(ModBusImpl modBusImpl) {
-        SKILL_DATA_KEYS.register(modBusImpl);
+    private XtraFightAPISkillDataKeys(ModBus modBus) {
+        SKILL_DATA_KEYS.register(modBus);
     }
 
     @SafeVarargs

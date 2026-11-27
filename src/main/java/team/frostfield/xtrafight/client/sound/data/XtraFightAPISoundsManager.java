@@ -11,7 +11,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
-import team.frostfield.xtrafight.events.bus.impl.NeoBusImpl;
+import team.frostfield.xtrafight.events.bus.NeoBus;
 import team.frostfield.xtrafight.main.XtraFightAPI;
 
 import java.util.HashMap;
@@ -25,9 +25,9 @@ public class XtraFightAPISoundsManager extends SimpleJsonResourceReloadListener 
 
 
     @Invoke
-    private XtraFightAPISoundsManager(NeoBusImpl neoBusImpl) {
+    private XtraFightAPISoundsManager(NeoBus neoBus) {
         super(GSON, "advanced_sounds");
-        neoBusImpl.<AddReloadListenerEvent>addListener(event -> event.addListener(this));
+        neoBus.addListener(AddReloadListenerEvent.class, event -> event.addListener(this));
     }
 
     @Override

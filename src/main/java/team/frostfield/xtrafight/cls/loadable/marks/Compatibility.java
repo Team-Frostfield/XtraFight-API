@@ -1,7 +1,7 @@
 package team.frostfield.xtrafight.cls.loadable.marks;
 
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
-import team.frostfield.xtrafight.cls.loadable.LoadableClassManager;
+import team.frostfield.xtrafight.utils.managers.LoadableClassManager;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 
