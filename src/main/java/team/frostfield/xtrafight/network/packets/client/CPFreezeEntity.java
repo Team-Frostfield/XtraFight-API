@@ -1,24 +1,18 @@
 package team.frostfield.xtrafight.network.packets.client;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import team.frostfield.xtrafight.client.gui.InteractionType;
-import team.frostfield.xtrafight.cls.Comment;
-import team.frostfield.xtrafight.main.XtraFightAPI;
-import team.frostfield.xtrafight.network.interfaces.PacketBufHandler;
-import team.frostfield.xtrafight.network.packets.ICustomPacket;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.NetworkEvent;
+import team.frostfield.xtrafight.client.gui.InteractionType;
+import team.frostfield.xtrafight.main.XtraFightAPI;
+import team.frostfield.xtrafight.network.packets.ICustomPacket;
 
 public record CPFreezeEntity(int entityId, boolean freeze) implements ICustomPacket<CPFreezeEntity> {
     // remembers if the mob already had NoAI before it got frozen
@@ -28,8 +22,6 @@ public record CPFreezeEntity(int entityId, boolean freeze) implements ICustomPac
         this(0, false);
     }
 
-
-    @Comment("Invoked by PacketBufHandler#codecOf")
     private CPFreezeEntity(FriendlyByteBuf byteBuf) {
         this(byteBuf.readInt(), byteBuf.readBoolean());
     }
@@ -40,25 +32,18 @@ public record CPFreezeEntity(int entityId, boolean freeze) implements ICustomPac
         buf.writeBoolean(this.freeze);
     }
 
-    @Override
-    public StreamCodec<? super RegistryFriendlyByteBuf, CPFreezeEntity> codec() {
-        return PacketBufHandler.codecOf(CPFreezeEntity.class, CPFreezeEntity::encode, CPFreezeEntity::decode);
-    }
 
     @Override
     public CPFreezeEntity decode(FriendlyByteBuf buf) {
         return new CPFreezeEntity(buf);
     }
 
-    @Override
-    public CustomPacketPayload.@NotNull Type<CPFreezeEntity> type() {
-        return new CustomPacketPayload.Type<>(XtraFightAPI.getInstance().identifier("freeze_entity"));
-    }
 
     @Override
-    public void handle(IPayloadContext context) {
+    public void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> {
-            if (!(context.player() instanceof ServerPlayer sender)) return;
+            if (!(context.getSender() instanceof ServerPlayer)) return;
+            ServerPlayer sender = context.getSender();
 
             Entity target = sender.level().getEntity(this.entityId);
             if (target == null) return;
@@ -70,6 +55,7 @@ public record CPFreezeEntity(int entityId, boolean freeze) implements ICustomPac
                 unfreeze(mob);
             }
         });
+        context.setPacketHandled(true);
     }
 
     private static void freeze(ServerPlayer sender, Entity target) {
@@ -101,7 +87,7 @@ public record CPFreezeEntity(int entityId, boolean freeze) implements ICustomPac
     }
 
     // if someone logs off mid-dialogue the mob gets saved frozen, so let it go when it loads back in
-    @EventBusSubscriber(modid = XtraFightAPI.MOD_ID)
+    @Mod.EventBusSubscriber(modid = XtraFightAPI.MOD_ID)
     public static final class FrozenMobCleanup {
         @SubscribeEvent
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {

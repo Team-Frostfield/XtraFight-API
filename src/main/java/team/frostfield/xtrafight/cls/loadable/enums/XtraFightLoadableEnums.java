@@ -8,6 +8,7 @@ import team.frostfield.xtrafight.gameassets.XtraFightAPIKeyMappings;
 import team.frostfield.xtrafight.gameassets.XtraFightAPISkillDataKeys;
 import team.frostfield.xtrafight.gameassets.XtraFightAPISkills;
 import team.frostfield.xtrafight.network.XtraFightAPINetworkManager;
+import team.frostfield.xtrafight.server.commands.XtraFightCommands;
 
 @Internal
 public enum XtraFightLoadableEnums implements LoadableEnum {
@@ -16,6 +17,7 @@ public enum XtraFightLoadableEnums implements LoadableEnum {
     SOUND_MANAGER(XtraFightAPISoundsManager.class),
     SKILLS(XtraFightAPISkills.class),
     SKILL_DATA_KEYS(XtraFightAPISkillDataKeys.class),
+    COMMANDS(XtraFightCommands.class),
     // Client Registries
     KEY_MAPPINGS(XtraFightAPIKeyMappings.class, true);
 

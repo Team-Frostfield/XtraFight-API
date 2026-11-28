@@ -1,7 +1,7 @@
 package team.frostfield.xtrafight.main;
 
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.ModContainer;
+import net.minecraftforge.fml.ModContainer;
 import team.frostfield.xtrafight.cls.logging.Logger;
 import team.frostfield.xtrafight.events.bus.ModBus;
 

@@ -82,6 +82,16 @@ public class BasicArrayList<T> extends ArrayList<T> implements BasicList<T> {
         return (T[]) super.toArray();
     }
 
+    @Override
+    public T getFirst() {
+        return this.get(0);
+    }
+
+    @Override
+    public T getLast() {
+        return this.get(this.size() - 1);
+    }
+
     public Object[] getObjectArray() {
         return this.toArray();
     }

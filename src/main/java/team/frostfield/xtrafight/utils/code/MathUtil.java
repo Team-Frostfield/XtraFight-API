@@ -51,7 +51,7 @@ public final class MathUtil {
     }
 
     public static int clamp(int val, int min, int max) {
-        return Math.clamp(val, min, max);
+        return Mth.clamp(val, min, max);
     }
 
     public static double clamp(double val, double min, double max) {

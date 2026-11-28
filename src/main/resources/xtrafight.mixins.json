@@ -2,11 +2,12 @@
   "required": true,
   "minVersion": "0.8",
   "package": "team.frostfield.xtrafight.mixins",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
     "epicfight.common.ControlEngineMixin",
     "epicfight.common.GuardAnimationMixin",
     "epicfight.common.GuardSkillMixin",
+    "epicfight.common.MeshesMixin",
     "epicfight.common.ParrySkillMixin",
     "epicfight.common.PlayerPatchMixin",
     "epicfight.common.WeaponTypeReloadListenerMixin",
@@ -26,7 +27,7 @@
     "minecraft.server.GameTestServerMixin",
     "minecraft.server.MinecraftServerMixin",
     "minecraft.server.ServerLevelMixin",
-    "neoforge.server.ServerLifecycleHooksMixin"
+    "forge.server.ServerLifecycleHooksMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -20,5 +20,9 @@ public interface BasicList<T> extends List<T> {
 
     T[] toArray();
 
+    T getFirst();
+
+    T getLast();
+
     void forEach(Consumer<? super T> tConsumer);
 }

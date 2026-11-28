@@ -8,8 +8,6 @@ import team.frostfield.xtrafight.events.dispatch.marks.HybridEvent;
 import team.frostfield.xtrafight.events.dispatch.side.EventSide;
 import team.frostfield.xtrafight.main.XtraFightAPI;
 import team.frostfield.xtrafight.utils.code.CodeUtils;
-import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Comparator;
 import java.util.List;
@@ -99,11 +97,7 @@ public class CancelableEventDispatch<T extends DispatchEvent> extends EventDispa
         if (hasHybrid && eventClass.getSuperclass() != DispatchEvent.class) {
             HybridEvent hybridEvent = eventClass.getAnnotation(HybridEvent.class);
             if (hybridEvent != null) {
-                switch (hybridEvent.value()) {
-                    case MOD -> ModLoader.postEvent(dispatchableEvent);
-                    case GAME -> NeoForge.EVENT_BUS.post(dispatchableEvent);
-                    case BOTH -> this.postToAllBuses(dispatchableEvent);
-                }
+                super.postToAllBuses(dispatchableEvent);
             }
         }
 

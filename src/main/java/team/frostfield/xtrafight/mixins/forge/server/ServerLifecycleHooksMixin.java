@@ -1,24 +1,25 @@
-package team.frostfield.xtrafight.mixins.neoforge.server;
+package team.frostfield.xtrafight.mixins.forge.server;
 
-import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
-import team.frostfield.xtrafight.events.mc.server.ServerInitializeDispatchEvent;
-import team.frostfield.xtrafight.events.mc.server.ServerStopDispatchEvent;
 import net.minecraft.server.MinecraftServer;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
+import team.frostfield.xtrafight.events.mc.server.ServerInitializeDispatchEvent;
+import team.frostfield.xtrafight.events.mc.server.ServerStopDispatchEvent;
 
 @Mixin(ServerLifecycleHooks.class)
 public class ServerLifecycleHooksMixin {
 
     @Inject(
-            at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/common/util/LogicalSidedProvider;setServer(Ljava/util/function/Supplier;)V"),
+            at = @At(value = "INVOKE", target = "Lnet/minecraftforge/common/util/LogicalSidedProvider;setServer(Ljava/util/function/Supplier;)V"),
             method = "handleServerAboutToStart",
             remap = false
     )
-    private static void injectEventHookPre(MinecraftServer server, CallbackInfo ci) {
+    private static void injectEventHookPre(MinecraftServer server, CallbackInfoReturnable<Boolean> cir) {
         ServerInitializeDispatchEvent.Pre serverInitPre = new ServerInitializeDispatchEvent.Pre(server);
         MinecraftDispatchableEvents.Server.START_PRE.postWithParams(serverInitPre, params -> params.onInitialize(server));
     }

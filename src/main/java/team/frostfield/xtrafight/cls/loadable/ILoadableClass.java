@@ -1,8 +1,7 @@
 package team.frostfield.xtrafight.cls.loadable;
 
 import team.frostfield.xtrafight.events.bus.ModBus;
-import team.frostfield.xtrafight.events.bus.NeoBus;
-import team.frostfield.xtrafight.events.bus.impl.NeoBusImpl;
+import team.frostfield.xtrafight.events.bus.ForgeBus;
 
 public interface ILoadableClass {
 
@@ -13,10 +12,10 @@ public interface ILoadableClass {
     default void onModClientConstruct(ModBus bus) {}
 
     /** Use to register listeners to the global NeoForge.EVENT_BUS. Called Directly. */
-    default void onGameConstruct(NeoBus bus) {}
+    default void onGameConstruct(ForgeBus bus) {}
 
     /** Use to register listeners to the client side of NeoForge.EVENT_BUS. Called Directly. */
-    default void onGameClientConstruct(NeoBus bus) {}
+    default void onGameClientConstruct(ForgeBus bus) {}
 
     /** Overridden so the class does not log/throws an exception that it wasn't loaded */
     default boolean ignoreNotLoadedWarning() {

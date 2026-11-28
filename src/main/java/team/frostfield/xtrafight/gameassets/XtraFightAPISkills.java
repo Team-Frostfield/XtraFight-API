@@ -1,28 +1,28 @@
 package team.frostfield.xtrafight.gameassets;
 
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
 import team.frostfield.xtrafight.events.bus.ModBus;
+import team.frostfield.xtrafight.main.XtraFightAPI;
 import team.frostfield.xtrafight.skills.common.CounterAttack;
 import team.frostfield.xtrafight.skills.common.HeavyAttack;
-import team.frostfield.xtrafight.utils.registry.DeferredRegistryUtil;
+import yesman.epicfight.api.forgeevent.SkillBuildEvent;
 import yesman.epicfight.skill.Skill;
-import yesman.epicfight.skill.SkillBuilder;
 
 public class XtraFightAPISkills implements ILoadableClass {
-    private static final DeferredRegister<Skill> SKILLS = DeferredRegistryUtil.createDefaultSkills();
 
-    public static final DeferredHolder<Skill, HeavyAttack> HEAVY_ATTACKS = register("heavy_attack", HeavyAttack.createHeavyAttackBuilder());
-    public static final DeferredHolder<Skill, CounterAttack> COUNTER_ATTACK = register("counter_attack", CounterAttack.createCounterAttackBuilder());
+    public static Skill HEAVY_ATTACK;
+    public static Skill COUNTER_ATTACK;
 
     @Invoke
     private XtraFightAPISkills(ModBus modBus) {
-        SKILLS.register(modBus);
+       modBus.addListener(XtraFightAPISkills::registerSkills);
     }
 
-    private static <T extends SkillBuilder<?>, S extends Skill> DeferredHolder<Skill, S> register(String name, T skillBuilder) {
-        return SKILLS.register(name, skillBuilder::build);
+    private static void registerSkills(SkillBuildEvent event) {
+        SkillBuildEvent.ModRegistryWorker worker = event.createRegistryWorker(XtraFightAPI.MOD_ID);
+        HEAVY_ATTACK = worker.build("heavy_attack", HeavyAttack::new, HeavyAttack.createHeavyAttackBuilder());
+        COUNTER_ATTACK = worker.build("counter_attack", CounterAttack::new, CounterAttack.createCounterAttackBuilder());
     }
+
 }

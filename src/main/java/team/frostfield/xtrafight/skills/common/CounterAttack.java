@@ -1,6 +1,7 @@
 package team.frostfield.xtrafight.skills.common;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;
 import team.frostfield.xtrafight.animation.XtraFightAPIAnimationStates;
 import team.frostfield.xtrafight.builders.epicfight.excap.deferred.DeferredCapabilityBuilder;
@@ -12,11 +13,9 @@ import team.frostfield.xtrafight.skills.XtraFightAPISkillCategories;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
-import yesman.epicfight.api.event.EpicFightEventHooks;
-import yesman.epicfight.api.event.types.player.SkillConsumeEvent;
+import yesman.epicfight.gameasset.EpicFightSkills;
+import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.network.EntityPairingPacketTypes;
-import yesman.epicfight.registry.entries.EpicFightSkills;
-import yesman.epicfight.registry.entries.EpicFightSounds;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillBuilder;
 import yesman.epicfight.skill.SkillContainer;
@@ -27,29 +26,30 @@ import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
+import yesman.epicfight.world.entity.eventlistener.SkillConsumeEvent;
 
 import java.util.List;
 
 public class CounterAttack extends Skill {
     private float counterConsumption;
 
-    public static SkillBuilder<?> createCounterAttackBuilder() {
-        return new SkillBuilder<>(CounterAttack::new)
+    public static SkillBuilder<CounterAttack> createCounterAttackBuilder() {
+        return new SkillBuilder<CounterAttack>()
                 .setCategory(XtraFightAPISkillCategories.COUNTER_ATTACK)
                 .setResource(Resource.STAMINA);
     }
 
-    public CounterAttack(SkillBuilder<?> builder) {
+    public CounterAttack(SkillBuilder<CounterAttack> builder) {
         super(builder);
     }
 
     @Override
-    public void loadDatapackParameters(CompoundTag params) {
+    public void setParams(CompoundTag params) {
         this.counterConsumption = params.getFloat("stamina_consumption");
     }
 
     @Override
-    public void executeOnServer(SkillContainer container, CompoundTag tag) {
+    public void executeOnServer(SkillContainer container, FriendlyByteBuf tag) {
         PlayerPatch<?> executor = container.getExecutor();
         ServerPlayerPatch serverExecutor = container.getServerExecutor();
 
@@ -57,7 +57,7 @@ public class CounterAttack extends Skill {
 
         CounterAttackDispatchEvent counterAttackEvent = new CounterAttackDispatchEvent(container);
         SkillConsumeEvent skillConsumeEvent = new SkillConsumeEvent(executor, this, this.resource, null);
-        ParryingSkill parryingSkill = EpicFightSkills.PARRYING.get();
+        ParryingSkill parryingSkill = (ParryingSkill) EpicFightSkills.PARRYING;
         boolean canParry = parryingSkill.isHoldingWeaponAvailable(executor, mainHand, GuardSkill.BlockType.ADVANCED_GUARD);
 
         CounterType counterType = canParry ? CounterType.PARRY : CounterType.NORMAL;
@@ -68,7 +68,7 @@ public class CounterAttack extends Skill {
         }
 
         if (!XtraFightAPIDispatchableEvents.Player.COUNTER_ATTACK.postWithParamsAndCheckCanceled(counterAttackEvent, params -> params.onCounter(container))) {
-            if (!EpicFightEventHooks.Player.CONSUME_SKILL.postWithListener(skillConsumeEvent, executor.getEventListener()).isCanceled()) {
+            if (!skillConsumeEvent.isCanceled()) {
                 skillConsumeEvent.getResourceType().consumer.consume(container, serverExecutor, this.counterConsumption);
             }
             container.getExecutor().playSound(EpicFightSounds.HYPERVITALITY.get(), 0.5F, 0, 0);
@@ -85,8 +85,8 @@ public class CounterAttack extends Skill {
 
             if (parryList != null && !parryList.isEmpty()) {
                 SkillDataManager dataManager = container.getDataManager();
-                int motionCounter = dataManager.getDataValue(XtraFightAPISkillDataKeys.MOTION_COUNTER);
-                dataManager.setDataF(XtraFightAPISkillDataKeys.MOTION_COUNTER, this::increment);
+                int motionCounter = dataManager.getDataValue(XtraFightAPISkillDataKeys.MOTION_COUNTER.get());
+                dataManager.setDataF(XtraFightAPISkillDataKeys.MOTION_COUNTER.get(), this::increment);
 
                 return parryList.get(Math.abs(motionCounter) % parryList.size());
             }

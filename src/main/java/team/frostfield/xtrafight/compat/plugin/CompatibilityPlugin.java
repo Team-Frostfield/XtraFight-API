@@ -1,7 +1,7 @@
 package team.frostfield.xtrafight.compat.plugin;
 
 import team.frostfield.xtrafight.events.bus.ModBus;
-import team.frostfield.xtrafight.events.bus.NeoBus;
+import team.frostfield.xtrafight.events.bus.ForgeBus;
 
 public interface CompatibilityPlugin {
     // The target for the compatibility, if not present, it will not initialize the plugin
@@ -10,5 +10,5 @@ public interface CompatibilityPlugin {
     // ONLY runs on the client side if the compatibility is client-side
     boolean isClientOnly();
 
-    void onInitialize(NeoBus neoBusImpl, ModBus modBusImpl);
+    void onInitialize(ForgeBus forgeBusImpl, ModBus modBusImpl);
 }

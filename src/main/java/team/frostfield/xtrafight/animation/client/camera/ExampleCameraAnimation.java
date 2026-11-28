@@ -1,18 +1,18 @@
 package team.frostfield.xtrafight.animation.client.camera;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import team.frostfield.xtrafight.animation.client.CameraAnimatorAPI;
 import team.frostfield.xtrafight.events.xtrafight_api.registry.CameraAnimationRegistryDispatchEvent;
 import team.frostfield.xtrafight.main.XtraFightAPI;
 import team.frostfield.xtrafight.main.XtraFightAPIMod;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber(value = Dist.CLIENT, modid = XtraFightAPIMod.MOD_ID)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = XtraFightAPIMod.MOD_ID)
 public final class ExampleCameraAnimation {
 
     private static final List<CameraAnimatorAPI.CamAnim> CAM_ANIM_LIST = new ArrayList<>();

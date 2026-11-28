@@ -83,7 +83,6 @@ public final class InteractionAPI {
         this.pendingDialogueBuilder = DialogueData.builder(interactedEntity.getDisplayName(), "...");
 
         EntityInteractDispatchEvent entityInteractDE = new EntityInteractDispatchEvent(interacter, interactedEntity, this);
-        entityInteractDE.post();
         XtraFightAPIDispatchableEvents.Entity.ENTITY_INTERACT.postEventParameterized(params -> params.onInteract(interacter, interactedEntity, this));
 
         if (entityInteractDE.isCanceled()) {
@@ -140,7 +139,6 @@ public final class InteractionAPI {
         }
 
         EntityInteractDispatchEvent entityInteractDE = new EntityInteractDispatchEvent(interacter, interactedEntity, this);
-        entityInteractDE.post();
         XtraFightAPIDispatchableEvents.Entity.ENTITY_INTERACT.postEventParameterized(params -> params.onInteract(interacter, interactedEntity, this));
 
         if (entityInteractDE.isCanceled()) {
@@ -356,7 +354,6 @@ public final class InteractionAPI {
         this.currentTarget.setDeltaMovement(Vec3.ZERO);
 
         if (this.currentTarget instanceof Mob mobTarget) {
-            mobTarget.stopInPlace();
             mobTarget.getNavigation().stop();
             mobTarget.setSpeed(0.0F);
             mobTarget.xxa = 0.0F;

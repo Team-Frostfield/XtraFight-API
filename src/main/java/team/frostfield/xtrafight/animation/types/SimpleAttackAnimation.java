@@ -17,7 +17,7 @@ import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.gameasset.Animations;
-import yesman.epicfight.registry.entries.EpicFightParticles;
+import yesman.epicfight.particle.EpicFightParticles;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -122,12 +122,12 @@ public class SimpleAttackAnimation extends AttackAnimation {
                 .addState(EntityState.PHASE_LEVEL, 1)
 
                 .newTimePair(phase.start, phase.contact)
-                .addState(EntityState.SKILL_EXECUTABLE, false)
+                .addState(EntityState.CAN_SKILL_EXECUTION, false)
 
                 .newTimePair(phase.start, phase.recovery)
                 .addState(EntityState.MOVEMENT_LOCKED, true)
                 .addState(EntityState.UPDATE_LIVING_MOTION, false)
-                .addState(EntityState.COMBO_ATTACKS_DOABLE, false)
+                .addState(EntityState.CAN_BASIC_ATTACK, false)
 
                 .newTimePair(phase.start, phase.end)
                 .addState(EntityState.INACTION, true)

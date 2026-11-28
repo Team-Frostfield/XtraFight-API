@@ -6,8 +6,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.network.NetworkEvent;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +23,7 @@ public enum InteractionType {
     ),
 
     HEAL((player, target, ctx, args) -> {
-        float amount = args.isEmpty() ? 4.0F : ((Number) args.getFirst()).floatValue();
+        float amount = args.isEmpty() ? 4.0F : ((Number) args.get(0)).floatValue();
         if (target instanceof LivingEntity living) {
             living.heal(amount);
         }
@@ -37,7 +37,7 @@ public enum InteractionType {
     }),
 
     GIVE_ITEM((player, target, ctx, args) -> {
-        if (!args.isEmpty() && args.getFirst() instanceof ItemStack stack) {
+        if (!args.isEmpty() && args.get(0) instanceof ItemStack stack) {
             ItemHandlerHelper.giveItemToPlayer(player, stack.copy());
         }
     }),
@@ -51,12 +51,12 @@ public enum InteractionType {
 
     @FunctionalInterface
     public interface ParameterizedHandler {
-        void execute(ServerPlayer player, Entity target, IPayloadContext context, List<Object> args);
+        void execute(ServerPlayer player, Entity target, NetworkEvent.Context context, List<Object> args);
     }
 
     @FunctionalInterface
     public interface InteractionHandler {
-        void handle(ServerPlayer player, Entity target, IPayloadContext context);
+        void handle(ServerPlayer player, Entity target, NetworkEvent.Context context);
     }
 
     private final ParameterizedHandler parameterizedHandler;
@@ -81,11 +81,11 @@ public enum InteractionType {
         return this.arguments;
     }
 
-    public void execute(ServerPlayer player, Entity target, IPayloadContext context) {
+    public void execute(ServerPlayer player, Entity target, NetworkEvent.Context context) {
         this.execute(player, target, context, List.of());
     }
 
-    public void execute(ServerPlayer player, Entity target, IPayloadContext context, List<Object> args) {
+    public void execute(ServerPlayer player, Entity target, NetworkEvent.Context context, List<Object> args) {
         if (!target.isAlive() || player.distanceToSqr(target) > MAX_INTERACTION_DISTANCE_SQR) {
             return;
         }

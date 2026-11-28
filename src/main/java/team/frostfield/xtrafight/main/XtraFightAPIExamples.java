@@ -9,15 +9,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.GameRules.BooleanValue;
 import net.minecraft.world.level.GameRules.Category;
 import net.minecraft.world.level.GameRules.IntegerValue;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.server.command.EnumArgument;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.server.command.EnumArgument;
 import team.frostfield.xtrafight.animation.types.SimpleAttackAnimation;
 import team.frostfield.xtrafight.animation.types.SimpleAttackAnimation.TrailColor;
 import team.frostfield.xtrafight.animation.types.SimpleAttackAnimation.TrailPreset;
@@ -39,8 +38,8 @@ import team.frostfield.xtrafight.cls.loadable.enums.LoadableEnum;
 import team.frostfield.xtrafight.cls.loadable.marks.Compatibility;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
 import team.frostfield.xtrafight.compat.plugin.CompatibilityPlugin;
+import team.frostfield.xtrafight.events.bus.ForgeBus;
 import team.frostfield.xtrafight.events.bus.ModBus;
-import team.frostfield.xtrafight.events.bus.NeoBus;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventPriority;
 import team.frostfield.xtrafight.events.mc.MinecraftDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.dispatch.DispatchingEvent;
@@ -53,24 +52,23 @@ import yesman.epicfight.api.client.animation.Layer.LayerType;
 import yesman.epicfight.api.client.animation.Layer.Priority;
 import yesman.epicfight.api.client.model.Meshes.MeshAccessor;
 import yesman.epicfight.api.client.model.SkinnedMesh;
+import yesman.epicfight.api.forgeevent.WeaponCapabilityPresetRegistryEvent;
 import yesman.epicfight.client.mesh.HumanoidMesh;
 import yesman.epicfight.client.mesh.WitherMesh;
 import yesman.epicfight.gameasset.Animations;
 import yesman.epicfight.gameasset.Armatures;
 import yesman.epicfight.gameasset.Armatures.ArmatureAccessor;
 import yesman.epicfight.gameasset.ColliderPreset;
+import yesman.epicfight.gameasset.EpicFightSkills;
+import yesman.epicfight.gameasset.EpicFightSounds;
 import yesman.epicfight.model.armature.HumanoidArmature;
-import yesman.epicfight.registry.deferred.ItemPresetRegister;
-import yesman.epicfight.registry.deferred.MovesetRegister;
-import yesman.epicfight.registry.entries.EpicFightParticles;
-import yesman.epicfight.registry.entries.EpicFightProviderConditionals;
-import yesman.epicfight.registry.entries.EpicFightSkills;
-import yesman.epicfight.registry.entries.EpicFightSounds;
+import yesman.epicfight.particle.EpicFightParticles;
+import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.Styles;
 import yesman.epicfight.world.capabilities.item.CapabilityItem.WeaponCategories;
 
 import java.util.Collection;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 // This class shows how this API is used, no more!
 @SuppressWarnings("removal")
@@ -102,12 +100,12 @@ class XtraFightAPIExamples {
     static class Items {
         private static final ItemsBuilder REGISTRY = ItemsBuilder.createRegistry("modid");
 
-        public static final DeferredHolder<Item, Item> PLACEHOLDER_ITEM = REGISTRY.newItem("item1", Item::new);
+        public static final RegistryObject<Item> PLACEHOLDER_ITEM = REGISTRY.newItem("item1", Item::new);
 
-        public static final DeferredHolder<Item, Item> PLACEHOLDER_ITEM_PROPS = REGISTRY.newItem("item2", Item::new, properties -> properties
+        public static final RegistryObject<Item> PLACEHOLDER_ITEM_PROPS = REGISTRY.newItem("item2", Item::new, properties -> properties
                 .durability(1990)
                 .rarity(Rarity.EPIC)
-                .attributes(ItemAttributeModifiers.builder().build()));
+        );
 
 
     }
@@ -280,18 +278,14 @@ class XtraFightAPIExamples {
     }
 
     static class CapabilityPreset implements ILoadableClass {
-        // first off, we do 2 registries as so:
-        static final ItemPresetRegister ITEM_REGISTRY = ItemPresetRegister.create(XtraFightAPIMod.MOD_ID);
-        static final MovesetRegister MOVESET_REGISTRY = MovesetRegister.create(XtraFightAPIMod.MOD_ID);
-
-        // then we build a capability
-        static final Supplier<DeferredCapabilityBuilder> BOKKEN_2H = () -> DeferredCapabilityBuilder.builder()
+        // we build a capability
+        static final Function<Item, CapabilityItem.Builder> BOKKEN = item ->
+                DeferredCapabilityBuilder.builder()
                 .newMoveSet(
                         Styles.TWO_HAND,
                         XtraFightAPI.getInstance().identifier("bokken_2h"),
                         WeaponCategories.SWORD,
                         ColliderPreset.SWORD,
-                        EpicFightProviderConditionals.DEFAULT_2H_WIELD_STYLE,
                         EpicFightSounds.WHOOSH,
                         EpicFightSounds.BLADE_HIT,
                         EpicFightParticles.HIT_BLADE,
@@ -319,25 +313,23 @@ class XtraFightAPIExamples {
                         LivingMotions.RUN, Animations.BIPED_RUN_LONGSWORD
                 )
                 .addGuardAnimation(Animations.LONGSWORD_GUARD)
-                .addGuardHitAnimation(Animations.LONGSWORD_GUARD_HIT)
-                .addParryingAnimations(Animations.LONGSWORD_GUARD_ACTIVE_HIT1, Animations.LONGSWORD_GUARD_ACTIVE_HIT2)
                 .addCounterAttack(Animations.SWEEPING_EDGE)
                 // these will play in order from first to last
                 // only if the weapon can parry!
-                .addParryCounterAttacks(Animations.DANCING_EDGE, Animations.STEEL_WHIRLWIND);
+                .addParryCounterAttacks(Animations.DANCING_EDGE, Animations.STEEL_WHIRLWIND)
+                .buildWeapon();
         // if you want another style, you can call newMoveSet() again, or for cleaner code, you can build another capability the same way
 
        // you can do a static-block, or you can define a DeferredWeapon and DeferredMoveset separately
-       static {
-            ITEM_REGISTRY.registerWeapon("bokken", () -> BOKKEN_2H.get().buildWeapon());
-            MOVESET_REGISTRY.registerMoveset("bokken_2h", () -> BOKKEN_2H.get().buildMoveSet());
-       }
 
         // now you register the bus either by using ILoadableClass or calling the registries in the mod constructor
         @Override
-        public void onModConstruct(ModBus modBusImpl) {
-            ITEM_REGISTRY.register(modBusImpl);
-            MOVESET_REGISTRY.register(modBusImpl);
+        public void onModConstruct(ModBus modBus) {
+            modBus.addListener(this::register);
+        }
+
+        private void register(WeaponCapabilityPresetRegistryEvent event) {
+            event.getTypeEntry().put(XtraFightAPI.getInstance().identifier("bokken"), BOKKEN);
         }
 
         @Override
@@ -346,7 +338,7 @@ class XtraFightAPIExamples {
         }
     }
 
-    @EventBusSubscriber(modid = XtraFightAPIMod.MOD_ID)
+    @Mod.EventBusSubscriber(modid = XtraFightAPIMod.MOD_ID)
     static class DispatchableEvents {
         // a dispatchable event is almost like an event hook, but more flexible, as so:
         private static void onDispatch() {
@@ -400,8 +392,8 @@ class XtraFightAPIExamples {
 
         // in this method, it also passed a bus, but it's Neo's bus instead, same running logic
         @Override
-        public void onGameConstruct(NeoBus neoBusImpl) {
-            ILoadableClass.super.onGameConstruct(neoBusImpl);
+        public void onGameConstruct(ForgeBus forgeBusImpl) {
+            ILoadableClass.super.onGameConstruct(forgeBusImpl);
         }
 
         // in this one though, it works the same way as ILoadableClass#onModConstruct, but it only runs on the client side
@@ -413,8 +405,8 @@ class XtraFightAPIExamples {
 
         // same logic here, except it passes Neo's event bus
         @Override
-        public void onGameClientConstruct(NeoBus neoBusImpl) {
-            ILoadableClass.super.onGameClientConstruct(neoBusImpl);
+        public void onGameClientConstruct(ForgeBus forgeBusImpl) {
+            ILoadableClass.super.onGameClientConstruct(forgeBusImpl);
         }
 
         // Ignores the log/exception if this class wasn't loaded, false by default
@@ -426,7 +418,7 @@ class XtraFightAPIExamples {
         // Or optionally, you can do everything inside it's constructor instead
         // As shown, these are the allowed constructor arguments:
         @Invoke // Don't forget the invoke annotation!
-        LoadableEnumsAndClasses(Environments environments, NeoBus neoBus, ModBus modBus) {
+        LoadableEnumsAndClasses(Environments environments, ForgeBus forgeBus, ModBus modBus) {
             // your logic here
         }
 
@@ -482,7 +474,7 @@ class XtraFightAPIExamples {
             }
             // The initialization of this plugin, it passes the mod's bus and Neo's bus, they're optional
             @Override
-            public void onInitialize(NeoBus neoBus, ModBus modBus) {}
+            public void onInitialize(ForgeBus forgeBus, ModBus modBus) {}
 
             // And to load this plugin, you call this in your mod's constructor:
             // CompatibilityPluginsManager.registerPlugins(modBus, SomePlugin.class);

@@ -76,7 +76,7 @@ public class InteractionMiniScreen extends Screen {
 
         switch (this.optionStyle) {
             case SINGLE -> {
-                DialogueData.DialogueOption singleOption = options.getFirst();
+                DialogueData.DialogueOption singleOption = options.get(0);
                 int btnWidth = 100;
                 int btnX = centerX - (btnWidth / 2);
 

@@ -1,7 +1,7 @@
 package team.frostfield.xtrafight.mixins.epicfight.common;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -15,30 +15,31 @@ import team.frostfield.xtrafight.skills.XtraFightSkillSlots;
 import yesman.epicfight.api.animation.Animator;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
-import yesman.epicfight.world.capabilities.skill.PlayerSkills;
+import yesman.epicfight.world.capabilities.skill.CapabilitySkill;
 
 @Mixin(value = PlayerPatch.class, remap = false)
 public abstract class PlayerPatchMixin<T extends Player> extends LivingEntityPatch<T> {
     @Unique
     private final PlayerPatch<?> self = (PlayerPatch<?>) (Object) this;
 
-    private PlayerPatchMixin(T entity) {
-        super(entity);
+    private PlayerPatchMixin() {
+        super();
     }
 
+
     @Shadow
-    public abstract PlayerSkills getPlayerSkills();
+    public abstract CapabilitySkill getSkillCapability();
 
     @Inject(
             at = @At(value = "HEAD"),
-            method = "onJoinWorld(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/Level;Z)V",
+            method = "onJoinWorld(Lnet/minecraft/world/entity/player/Player;Lnet/minecraftforge/event/entity/EntityJoinLevelEvent;)V",
             remap = false
     )
-    private void xtrafight$onJoinWorld(T entity, Level level, boolean worldgenSpawn, CallbackInfo ci) {
+    private void xtrafight$onJoinWorld(T entity, EntityJoinLevelEvent event, CallbackInfo ci) {
         // add HeavyAttack and CounterAttack as a default skill
-        PlayerSkills skillCapability = this.getPlayerSkills();
-        skillCapability.getSkillContainerFor(XtraFightSkillSlots.HEAVY_ATTACK).setSkill(XtraFightAPISkills.HEAVY_ATTACKS.get());
-        skillCapability.getSkillContainerFor(XtraFightSkillSlots.COUNTER_ATTACK).setSkill(XtraFightAPISkills.COUNTER_ATTACK.get());
+        CapabilitySkill skillCapability = this.getSkillCapability();
+        skillCapability.getSkillContainerFor(XtraFightSkillSlots.HEAVY_ATTACK).setSkill(XtraFightAPISkills.HEAVY_ATTACK);
+        skillCapability.getSkillContainerFor(XtraFightSkillSlots.COUNTER_ATTACK).setSkill(XtraFightAPISkills.COUNTER_ATTACK);
     }
 
     @Inject(

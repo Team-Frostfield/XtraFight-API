@@ -1,12 +1,11 @@
 package team.frostfield.xtrafight.builders.epicfight.excap.deferred;
 
 import com.google.common.collect.Maps;
-import net.minecraft.core.Holder;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -19,10 +18,8 @@ import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.collider.Collider;
 import yesman.epicfight.api.collider.MultiOBBCollider;
-import yesman.epicfight.api.ex_cap.data.Moveset;
-import yesman.epicfight.registry.deferred.holders.DeferredConditional;
+import yesman.epicfight.particle.HitParticleType;
 import yesman.epicfight.skill.Skill;
-import yesman.epicfight.skill.guard.GuardSkill.BlockType;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.WeaponCapability;
@@ -34,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 @Experimental
+@SuppressWarnings("removal")
 public class DeferredCapabilityBuilder {
     // heavy attack maps
     private static final Map<WeaponCategory, Map<Style, List<AnimationAccessor<? extends AttackAnimation>>>> globalHeavyCombos = Maps.newHashMap();
@@ -45,15 +43,14 @@ public class DeferredCapabilityBuilder {
     private final List<AnimationAccessor<? extends AttackAnimation>> localNormalCounters = new ArrayList<>();
     private final List<AnimationAccessor<? extends AttackAnimation>> localParryCounters = new ArrayList<>();
 
-    protected final Moveset.Builder moveSetBuilder;
     protected final WeaponCapability.Builder weaponCapabilityBuilder;
 
     protected Collider currentCollider;
     protected WeaponCategory currentCategory;
-    protected Holder<SoundEvent> currentSwingSound;
-    protected Holder<SoundEvent> currentHitSound;
-    protected @Nullable Holder<Skill> currentPassive;
-    protected @Nullable Holder<Skill> currentInnate;
+    protected RegistryObject<SoundEvent> currentSwingSound;
+    protected RegistryObject<SoundEvent> currentHitSound;
+    protected @Nullable Skill currentPassive;
+    protected @Nullable Skill currentInnate;
     protected boolean currentHoldableInOffHand;
     protected Object[] currentMotionsPair;
     protected AnimationAccessor<? extends AttackAnimation>[] currentCombo;
@@ -63,7 +60,6 @@ public class DeferredCapabilityBuilder {
     protected Object[] currentPresetProperties;
 
     private DeferredCapabilityBuilder() {
-        this.moveSetBuilder = Moveset.builder();
         this.weaponCapabilityBuilder = WeaponCapability.builder();
     }
 
@@ -74,10 +70,10 @@ public class DeferredCapabilityBuilder {
     @SafeVarargs
     public final DeferredCapabilityBuilder newMoveSet(
             Style style, ResourceLocation moveSetID, WeaponCategory category, Collider collider,
-            DeferredConditional condition, Holder<SoundEvent> swingSound, Holder<SoundEvent> hitSound,
-            Holder<ParticleType<?>> hitParticleType, boolean holdableInOffHand,
-            @Nullable Holder<Skill> passiveSkill,
-            @Nullable Holder<Skill> innateSkill,
+            RegistryObject<SoundEvent> swingSound, RegistryObject<SoundEvent> hitSound,
+            RegistryObject<HitParticleType> hitParticleType, boolean holdableInOffHand,
+            @Nullable Skill passiveSkill,
+            @Nullable Skill innateSkill,
             AnimationAccessor<? extends AttackAnimation>... animations
     ) {
         this.currentCombo = animations;
@@ -93,21 +89,19 @@ public class DeferredCapabilityBuilder {
         this.currentMoveSetID = moveSetID;
 
         this.weaponCapabilityBuilder
-                .addConditionals(condition)
                 .category(category)
                 .collider(collider)
-                .swingSound(swingSound)
-                .hitParticle(hitParticleType)
-                .addMoveset(style, this.moveSetBuilder)
-                .canBePlacedOffhand(holdableInOffHand);
-
-        this.moveSetBuilder.addComboAttacks(animations);
+                .swingSound(swingSound.get())
+                .hitSound(hitSound.get())
+                .hitParticle(hitParticleType.get())
+                .canBePlacedOffhand(holdableInOffHand)
+                .newStyleCombo(style, animations);
 
         if (innateSkill != null) {
-            this.moveSetBuilder.addInnateSkill((itemStack, playerPatch) -> innateSkill.value());
+            this.weaponCapabilityBuilder.innateSkill(style, itemStack -> innateSkill);
         }
         if (passiveSkill != null) {
-            this.moveSetBuilder.setPassiveSkill(passiveSkill);
+            this.weaponCapabilityBuilder.passiveSkill(passiveSkill);
         }
         return this;
     }
@@ -130,7 +124,7 @@ public class DeferredCapabilityBuilder {
     }
 
     public DeferredCapabilityBuilder addLivingMotion(LivingMotion motion, AnimationAccessor<? extends StaticAnimation> animation) {
-        this.moveSetBuilder.addLivingMotionModifier(motion, animation);
+        this.weaponCapabilityBuilder.livingMotionModifier(this.currentStyle, motion, animation);
         return this;
     }
 
@@ -155,16 +149,6 @@ public class DeferredCapabilityBuilder {
         return this;
     }
 
-    public DeferredCapabilityBuilder addGuardHitAnimation(AnimationAccessor<? extends StaticAnimation> animation) {
-        this.moveSetBuilder.addGuardAnimations(BlockType.GUARD, animation);
-        return this;
-    }
-
-    public DeferredCapabilityBuilder addGuardBreakAnimation(AnimationAccessor<? extends StaticAnimation> animation) {
-        this.moveSetBuilder.addGuardAnimations(BlockType.GUARD_BREAK, animation);
-        return this;
-    }
-
     public final DeferredCapabilityBuilder addCounterAttack(AnimationAccessor<? extends AttackAnimation> animation) {
         this.localNormalCounters.add(animation);
         return this;
@@ -176,19 +160,12 @@ public class DeferredCapabilityBuilder {
         return this;
     }
 
-    @SafeVarargs
-    public final DeferredCapabilityBuilder addParryingAnimations(AnimationAccessor<? extends StaticAnimation>... animation) {
-        this.moveSetBuilder.addGuardAnimations(BlockType.ADVANCED_GUARD, animation);
-        return this;
-    }
-
     @Internal
     public static @Nullable List<AnimationAccessor<? extends AttackAnimation>> getHeavyCombo(WeaponCategory category, Style style) {
         Map<Style, List<AnimationAccessor<? extends AttackAnimation>>> styleMap = globalHeavyCombos.get(category);
         return styleMap != null ? styleMap.get(style) : null;
     }
 
-    // Cleaned up duplicate methods to provide exactly one distinct getter per type
     @Internal
     public static @Nullable AnimationAccessor<? extends AttackAnimation> getNormalCounterAttack(WeaponCategory category) {
         return globalNormalCounters.get(category);
@@ -200,6 +177,7 @@ public class DeferredCapabilityBuilder {
     }
 
     @Internal
+    @SuppressWarnings("unchecked")
     public static void registerHeavyComboFromTag(ResourceLocation rl, CompoundTag rootTag) {
         String categoryStr = rootTag.getString("category");
         if (categoryStr.isEmpty()) {
@@ -219,10 +197,10 @@ public class DeferredCapabilityBuilder {
 
                 for (int i = 0; i < animList.size(); ++i) {
                     String animId = animList.getString(i);
-                    AnimationAccessor<? extends AttackAnimation> animation = AnimationManager.byKey(animId);
+                    AnimationAccessor<? extends StaticAnimation> animation = AnimationManager.byKey(animId);
 
                     if (animation != null) {
-                        anims.add(animation);
+                        anims.add((AnimationAccessor<? extends AttackAnimation>) animation);
                     } else {
                         XtraFightAPI.LOGGER.error("Missing animation {} in {}", animId, rl);
                     }
@@ -241,8 +219,8 @@ public class DeferredCapabilityBuilder {
      * Parses the data configuration using the singular "normal_counter" layout.
      */
     @Internal
+    @SuppressWarnings("unchecked")
     public static void registerCounterFromTag(ResourceLocation rl, CompoundTag rootTag) {
-        // grab the weapon category from the file first
         String categoryStr = rootTag.getString("category");
         if (categoryStr.isEmpty()) {
             throw new IllegalArgumentException("Can't find weapon category for the counter attack in: " + rl);
@@ -252,10 +230,10 @@ public class DeferredCapabilityBuilder {
 
         if (rootTag.contains("normal_counter", 8)) { // 8 = StringTag
             String animId = rootTag.getString("normal_counter");
-            AnimationAccessor<? extends AttackAnimation> animation = AnimationManager.byKey(animId);
+            AnimationAccessor<? extends StaticAnimation> animation = AnimationManager.byKey(animId);
 
             if (animation != null) {
-                globalNormalCounters.put(category, animation);
+                globalNormalCounters.put(category, (AnimationAccessor<? extends AttackAnimation>) animation);
             } else {
                 XtraFightAPI.LOGGER.error("Missing normal counter animation [{}] for category [{}] in file [{}]", animId, categoryStr, rl);
             }
@@ -267,10 +245,10 @@ public class DeferredCapabilityBuilder {
 
             for (int i = 0; i < animList.size(); ++i) {
                 String animId = animList.getString(i);
-                AnimationAccessor<? extends AttackAnimation> animation = AnimationManager.byKey(animId);
+                AnimationAccessor<? extends StaticAnimation> animation = AnimationManager.byKey(animId);
 
                 if (animation != null) {
-                    counters.add(animation);
+                    counters.add((AnimationAccessor<? extends AttackAnimation>) animation);
                 } else {
                     XtraFightAPI.LOGGER.error("Missing parry counter animation sequence index [{}] -> [{}] for category [{}] in file [{}]", i, animId, categoryStr, rl);
                 }
@@ -282,7 +260,7 @@ public class DeferredCapabilityBuilder {
         }
     }
 
-    public Moveset.Builder buildMoveSet() {
+    public void flushMaps() {
         if (this.currentCategory != null && !this.localHeavyComboMap.isEmpty()) {
             Map<Style, List<AnimationAccessor<? extends AttackAnimation>>> categoryMap =
                     globalHeavyCombos.computeIfAbsent(this.currentCategory, k -> Maps.newHashMap());
@@ -292,8 +270,7 @@ public class DeferredCapabilityBuilder {
 
         if (this.currentCategory != null) {
             if (!this.localNormalCounters.isEmpty()) {
-                // If populated via standard code registration builder, save the first entry element
-                globalNormalCounters.put(this.currentCategory, this.localNormalCounters.getFirst());
+                globalNormalCounters.put(this.currentCategory, this.localNormalCounters.get(0));
             }
             if (!this.localParryCounters.isEmpty()) {
                 globalParryCounters.put(this.currentCategory, new ArrayList<>(this.localParryCounters));
@@ -301,10 +278,10 @@ public class DeferredCapabilityBuilder {
         }
 
         XtraFightAPI.LOGGER.debugIfDevSide("Registered moveset: [{}], with combo: {}", this.currentMoveSetID, this.currentCombo);
-        return this.moveSetBuilder;
     }
 
     public WeaponCapability.Builder buildWeapon() {
+        flushMaps();
         this.currentPresetProperties = new Object[]{
                 this.currentCategory,
                 this.currentCollider instanceof MultiOBBCollider multiOBBCollider ? multiOBBCollider.toString() : this.currentCollider.toString(),

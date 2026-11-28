@@ -2,15 +2,16 @@ package team.frostfield.xtrafight.input;
 
 import team.frostfield.xtrafight.builders.minecraft.client.KeyMappingsBuilder.InputType;
 import team.frostfield.xtrafight.cls.lists.BasicArrayList;
+import team.frostfield.xtrafight.cls.lists.BasicList;
 
 import java.util.Collections;
 import java.util.List;
 
 public final class InputKeyCodes {
 
-    private static final BasicArrayList<Integer> KEYBOARD_KEYS = new BasicArrayList<>();
-    private static final BasicArrayList<Integer> MOUSE_KEYS = new BasicArrayList<>();
-    private static final BasicArrayList<Integer> INPUT_ACTIONS = new BasicArrayList<>();
+    private static final BasicList<Integer> KEYBOARD_KEYS = new BasicArrayList<>();
+    private static final BasicList<Integer> MOUSE_KEYS = new BasicArrayList<>();
+    private static final BasicList<Integer> INPUT_ACTIONS = new BasicArrayList<>();
 
     private InputKeyCodes() {}
 

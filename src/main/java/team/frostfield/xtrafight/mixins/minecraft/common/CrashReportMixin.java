@@ -2,7 +2,6 @@ package team.frostfield.xtrafight.mixins.minecraft.common;
 
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
-import net.minecraft.ReportType;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -13,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.nio.file.Path;
+import java.io.File;
 import java.util.List;
 import java.util.Random;
 
@@ -44,8 +43,8 @@ public abstract class CrashReportMixin {
             "Local developer forgets how index boundaries work. Go roast them on GitHub: https://github.com/Team-Frostfield/XtraFight-API/issues"
     };
 
-    @Inject(method = "saveToFile(Ljava/nio/file/Path;Lnet/minecraft/ReportType;)Z", at = @At("HEAD"))
-    private void xtrafight$injectBlameHeader(Path path, ReportType type, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "saveToFile", at = @At("HEAD"))
+    private void xtrafight$injectBlameHeader(File p_127513_, CallbackInfoReturnable<Boolean> cir) {
         try {
             CrashReport report = (CrashReport) (Object) this;
             boolean isXtraAtFault = false;

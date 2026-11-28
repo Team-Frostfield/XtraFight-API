@@ -4,24 +4,22 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.RenderFrameEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import team.frostfield.xtrafight.animation.client.CameraAnimatorAPI;
-import team.frostfield.xtrafight.animation.client.CameraAnimatorAPI.CameraFOVHelper;
 import team.frostfield.xtrafight.client.gui.InteractionAPI;
 import team.frostfield.xtrafight.config.XtraFightAPIConfigs;
 import team.frostfield.xtrafight.events.xtrafight_api.XtraFightAPIDispatchableEvents;
 import team.frostfield.xtrafight.events.xtrafight_api.registry.CameraAnimationRegistryDispatchEvent;
 import team.frostfield.xtrafight.main.XtraFightAPI;
-import yesman.epicfight.api.client.event.EpicFightClientEventHooks;
+import yesman.epicfight.api.client.event.EpicFightClientHooks;
 
 public class XtraFightAPISubscribeEvents {
-    @EventBusSubscriber(
+    @Mod.EventBusSubscriber(
             modid = XtraFightAPI.MOD_ID,
             value = Dist.CLIENT
     )
@@ -35,7 +33,7 @@ public class XtraFightAPISubscribeEvents {
             }
         }
 
-        @SubscribeEvent
+     /*   @SubscribeEvent
         public static void onRenderFrame(RenderFrameEvent.Pre event) {
             InteractionAPI api = InteractionAPI.getInstance();
             if (!api.isInteracting()) {
@@ -54,6 +52,8 @@ public class XtraFightAPISubscribeEvents {
 
             api.updateInteractionLock(deltaSeconds);
         }
+
+      */
 
         @SubscribeEvent
         public static void onCameraAngles(ViewportEvent.ComputeCameraAngles event) {
@@ -86,7 +86,7 @@ public class XtraFightAPISubscribeEvents {
 
         @SubscribeEvent
         public static void onCameraBuild(FMLClientSetupEvent evt) {
-            EpicFightClientEventHooks.Camera.BUILD_TRANSFORM_PRE.registerEvent(event -> {
+            EpicFightClientHooks.Camera.BUILD_TRANSFORM_PRE.registerEvent(event -> {
                 if (!CameraAnimatorAPI.getInstance().isPlaying()) return;
 
                 // Apply Camera animation

@@ -1,12 +1,11 @@
 package team.frostfield.xtrafight.network;
 
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.ChunkPos;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.network.PacketDistributor;
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
 import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
 import team.frostfield.xtrafight.events.bus.ModBus;
@@ -21,48 +20,59 @@ public class XtraFightAPINetworkManager implements ILoadableClass {
         modBus.addListener(this::registerNetworking);
     }
 
-    private void registerNetworking(final RegisterPayloadHandlersEvent event) {
-        XtraFightAPIPacketsManager.register(event.registrar("1.0"));
+    private void registerNetworking(final FMLCommonSetupEvent event) {
+        // Somehow can't accept lambda???
+        event.enqueueWork(() -> XtraFightAPIPacketsManager.registerPackets());
     }
 
-    public static void sendToServer(CustomPacketPayload payload) {
-        PacketDistributor.sendToServer(payload);
+    public static <MSG> void sendToServer(MSG message) {
+        XtraFightAPIPacketsManager.CHANNEL.send(PacketDistributor.SERVER.noArg(), message);
     }
 
-    public static void sendToAllPlayers(CustomPacketPayload payload) {
-        PacketDistributor.sendToAllPlayers(payload);
+    public static <MSG> void sendToAllPlayers(MSG message) {
+        XtraFightAPIPacketsManager.CHANNEL.send(PacketDistributor.ALL.noArg(), message);
     }
 
-    public static void sendToAllTrackingThisEntity(Entity entity, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
+    public static <MSG> void sendToAllTrackingThisEntity(Entity entity, MSG message) {
+        XtraFightAPIPacketsManager.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
     }
 
-    public static void sendToAllTrackingThisEntityAndSelf(Entity entity, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, payload);
+    public static <MSG> void sendToAllTrackingThisEntityAndSelf(Entity entity, MSG message) {
+        XtraFightAPIPacketsManager.CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), message);
     }
 
-    public static void sendToPlayer(ServerPlayer serverPlayer, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayer(serverPlayer, payload);
+    public static <MSG> void sendToPlayer(ServerPlayer serverPlayer, MSG message) {
+        XtraFightAPIPacketsManager.CHANNEL.send(PacketDistributor.PLAYER.with(() -> serverPlayer), message);
     }
 
-    public static void sendToAllPlayersInChunk(ServerLevel serverLevel, ChunkPos chunkPos, CustomPacketPayload payload) {
-        PacketDistributor.sendToPlayersTrackingChunk(serverLevel, chunkPos, payload);
+    public static <MSG> void sendToAllPlayersInChunk(ServerLevel serverLevel, BlockPos blockPos, MSG message) {
+        XtraFightAPIPacketsManager.CHANNEL.send(
+                PacketDistributor.TRACKING_CHUNK.with(() -> serverLevel.getChunkAt(blockPos)),
+                message
+        );
     }
 
     public static void sendPairingPacket(Entity entity, EntityPairingPacketType pairingType, Object... arguments) {
         SPEntityPairingPacket entityPairPacket = new SPEntityPairingPacket(entity.getId(), pairingType);
         for (Object argument : arguments) {
-            switch (argument) {
-                case Integer integer -> entityPairPacket.buffer().writeInt(integer);
-                case Float flt -> entityPairPacket.buffer().writeFloat(flt);
-                case Long lng -> entityPairPacket.buffer().writeLong(lng);
-                case Short shrt -> entityPairPacket.buffer().writeShort(shrt);
-                case Byte byt -> entityPairPacket.buffer().writeByte(byt);
-                case Boolean bool -> entityPairPacket.buffer().writeBoolean(bool);
-                case Enum<?> enumCls -> entityPairPacket.buffer().writeEnum(enumCls);
-                default -> throw new IllegalStateException("Unexpected argument: " + argument);
+            if (argument instanceof Integer integer) {
+                entityPairPacket.getBuffer().writeInt(integer);
+            } else if (argument instanceof Float flt) {
+                entityPairPacket.getBuffer().writeFloat(flt);
+            } else if (argument instanceof Long lng) {
+                entityPairPacket.getBuffer().writeLong(lng);
+            } else if (argument instanceof Short shrt) {
+                entityPairPacket.getBuffer().writeShort(shrt);
+            } else if (argument instanceof Byte byt) {
+                entityPairPacket.getBuffer().writeByte(byt);
+            } else if (argument instanceof Boolean bool) {
+                entityPairPacket.getBuffer().writeBoolean(bool);
+            } else if (argument instanceof Enum<?> enumCls) {
+                entityPairPacket.getBuffer().writeEnum(enumCls);
+            } else {
+                throw new IllegalStateException("Unexpected argument: " + argument);
             }
         }
-        XtraFightAPINetworkManager.sendToAllTrackingThisEntityAndSelf(entity, entityPairPacket);
+        sendToAllTrackingThisEntityAndSelf(entity, entityPairPacket);
     }
 }

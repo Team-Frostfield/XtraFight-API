@@ -1,13 +1,13 @@
 package team.frostfield.xtrafight.utils.managers;
 
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 import org.jetbrains.annotations.NotNull;
 import team.frostfield.xtrafight.cls.logging.Logger;
 import team.frostfield.xtrafight.cls.maps.BasicHashMap;
 import team.frostfield.xtrafight.cls.maps.BasicMap;
 import team.frostfield.xtrafight.compat.plugin.CompatibilityPlugin;
 import team.frostfield.xtrafight.events.bus.ModBus;
-import team.frostfield.xtrafight.events.bus.NeoBus;
+import team.frostfield.xtrafight.events.bus.ForgeBus;
 import team.frostfield.xtrafight.shared.XtraFightAPISharedConstants;
 import team.frostfield.xtrafight.utils.code.AccessType;
 import team.frostfield.xtrafight.utils.code.CodeUtils;
@@ -35,7 +35,7 @@ public final class CompatibilityPluginsManager {
                             continue;
                         }
                     }
-                    plugin.onInitialize(NeoBus.EVENT_BUS, modBus);
+                    plugin.onInitialize(ForgeBus.EVENT_BUS, modBus);
                 }
 
                 PLUGIN_BY_MOD_ID.put(plugin.getTargetModID(), plugin);

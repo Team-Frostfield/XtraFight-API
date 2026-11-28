@@ -2,7 +2,7 @@ package team.frostfield.xtrafight.gameassets;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import team.frostfield.xtrafight.builders.minecraft.client.KeyMappingsBuilder;
 import team.frostfield.xtrafight.builders.minecraft.client.KeyMappingsBuilder.InputType;
 import team.frostfield.xtrafight.builders.minecraft.client.KeyMappingsBuilder.KeyCategory;

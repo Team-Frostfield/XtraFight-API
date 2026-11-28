@@ -1,20 +1,13 @@
 package team.frostfield.xtrafight.network.packets;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkEvent;
 
-public interface ICustomPacket<T extends CustomPacketPayload> extends CustomPacketPayload {
-    @Override
-    Type<T> type();
-
-    StreamCodec<? super RegistryFriendlyByteBuf, T> codec();
+public interface ICustomPacket<T extends ICustomPacket<T>> {
 
     void encode(FriendlyByteBuf buf);
 
     T decode(FriendlyByteBuf buf);
 
-    void handle(IPayloadContext context);
+    void handle(NetworkEvent.Context context);
 }

@@ -3,6 +3,8 @@ package team.frostfield.xtrafight.events.xtrafight_api.skill;
 import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventParameters;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.impls.ParameterizedEvent;
+import yesman.epicfight.api.animation.AnimationManager;
+import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.skill.guard.GuardSkill;
 import yesman.epicfight.skill.guard.GuardSkill.Builder;
 import yesman.epicfight.skill.guard.ParryingSkill;
@@ -37,11 +39,11 @@ public abstract class AddGuardMotionsDispatchEvent extends DispatchEvent impleme
         }
 
 
-        public void addGuardMotion(WeaponCategory category, BiFunction<CapabilityItem, PlayerPatch<?>, ?> function) {
+        public void addGuardMotion(WeaponCategory category, BiFunction<CapabilityItem, PlayerPatch<?>, AnimationManager.AnimationAccessor<? extends StaticAnimation>> function) {
             this.builder.addGuardMotion(category, function);
         }
 
-        public void addGuardBreakMotion(WeaponCategory category, BiFunction<CapabilityItem, PlayerPatch<?>, ?> function) {
+        public void addGuardBreakMotion(WeaponCategory category, BiFunction<CapabilityItem, PlayerPatch<?>, AnimationManager.AnimationAccessor<? extends StaticAnimation>> function) {
             this.builder.addGuardBreakMotion(category, function);
         }
     }

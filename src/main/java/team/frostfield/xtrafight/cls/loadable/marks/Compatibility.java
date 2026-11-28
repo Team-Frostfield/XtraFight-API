@@ -1,9 +1,8 @@
 package team.frostfield.xtrafight.cls.loadable.marks;
 
 import team.frostfield.xtrafight.cls.loadable.ILoadableClass;
+import team.frostfield.xtrafight.events.bus.ModBus;
 import team.frostfield.xtrafight.utils.managers.LoadableClassManager;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModList;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,7 +26,7 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  *
- * @see LoadableClassManager#loadClass(IEventBus, Class[])
+ * @see LoadableClassManager#loadClass(ModBus, Class[])
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -36,7 +35,7 @@ public @interface Compatibility {
 
     /**
      * The unique Mod ID required for this class to load.
-     * If {@link ModList#isLoaded(String)} returns {@code false},
+     * If {@link net.minecraftforge.fml.ModList#isLoaded(String)} returns {@code false},
      * the class will be ignored.
      */
     String[] modid();

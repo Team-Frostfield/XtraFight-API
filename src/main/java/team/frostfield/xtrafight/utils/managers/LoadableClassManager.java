@@ -1,5 +1,11 @@
 package team.frostfield.xtrafight.utils.managers;
 
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.forgespi.language.IModFileInfo;
+import net.minecraftforge.forgespi.language.ModFileScanData;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
@@ -16,7 +22,7 @@ import team.frostfield.xtrafight.cls.loadable.marks.Invoke;
 import team.frostfield.xtrafight.cls.maps.BasicHashMap;
 import team.frostfield.xtrafight.cls.maps.BasicMap;
 import team.frostfield.xtrafight.events.bus.ModBus;
-import team.frostfield.xtrafight.events.bus.NeoBus;
+import team.frostfield.xtrafight.events.bus.ForgeBus;
 import team.frostfield.xtrafight.exception.ClassLoadingException;
 import team.frostfield.xtrafight.exception.DeveloperException;
 import team.frostfield.xtrafight.main.XtraFightAPI;
@@ -60,8 +66,9 @@ public final class LoadableClassManager {
             Map<Class<?>, Object> allowedConstructorArgs = Map.of(
                     Environments.class, EnvironmentHelper.getEnvironment(),
                     ModBus.class, bus,
-                    NeoBus.class, NeoBus.EVENT_BUS,
-                    ModContainer.class, ModLoadingContext.get().getActiveContainer()
+                    ForgeBus.class, ForgeBus.EVENT_BUS,
+                    ModContainer.class, ModList.get().getModContainerById(bus),
+                    FMLJavaModLoadingContext.class, FMLJavaModLoadingContext.get()
             );
 
             try {
@@ -145,11 +152,11 @@ public final class LoadableClassManager {
                 ILoadableClass instance = (ILoadableClass) selectedConstructor.newInstance(resolvedArgs);
 
                 instance.onModConstruct(bus);
-                instance.onGameConstruct(NeoBus.EVENT_BUS);
+                instance.onGameConstruct(ForgeBus.EVENT_BUS);
 
                 if (EnvironmentHelper.getEnvironment().is(Environments.CLIENT)) {
                     instance.onModClientConstruct(bus);
-                    instance.onGameClientConstruct(NeoBus.EVENT_BUS);
+                    instance.onGameClientConstruct(ForgeBus.EVENT_BUS);
                 }
 
                 if (selectedConstructor.isAnnotationPresent(Invoke.class)) {

@@ -1,7 +1,7 @@
 package team.frostfield.xtrafight.events.xtrafight_api.dispatch;
 
-import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.ModLoader;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
 
@@ -17,8 +17,8 @@ public class DispatchingEvent extends DispatchEvent {
     @Internal
     public static void postEvent() {
         DispatchingEvent instance = new DispatchingEvent();
-        NeoForge.EVENT_BUS.post(instance);
-        ModLoader.postEvent(instance);
+        MinecraftForge.EVENT_BUS.post(instance);
+        ModLoader.get().postEvent(instance);
     }
 
 }

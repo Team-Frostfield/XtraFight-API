@@ -1,21 +1,22 @@
 package team.frostfield.xtrafight.builders.minecraft;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 public class ItemsBuilder {
 
-    private final DeferredRegister.Items rawRegistry;
+    private final DeferredRegister rawRegistry;
     private final String modID;
 
     private ItemsBuilder(String modID) {
         this.modID = modID;
-        this.rawRegistry = DeferredRegister.createItems(modID);
+        this.rawRegistry = DeferredRegister.create(Registries.ITEM, modID);
     }
 
     private static boolean usedBuilderRegistry = false;
@@ -31,7 +32,7 @@ public class ItemsBuilder {
      * @param constructor The constructor reference (e.g., MyItem::new).
      * @param propertyModifier A lambda to adjust item properties (e.g., p -> p.stacksTo(1)).
      */
-    public <T extends Item> DeferredHolder<Item, T> newItem(
+    public <T extends Item> RegistryObject<T> newItem(
             String itemID,
             Function<Item.Properties, T> constructor,
             UnaryOperator<Item.Properties> propertyModifier
@@ -52,7 +53,7 @@ public class ItemsBuilder {
 
 
     // Overload for simple items that don't need custom properties
-    public <T extends Item> DeferredHolder<Item, T> newItem(String itemID, Function<Item.Properties, T> constructor) {
-        return newItem(itemID, constructor, p -> p);
+    public <T extends Item> RegistryObject<T> newItem(String itemID, Function<Item.Properties, T> constructor) {
+        return this.newItem(itemID, constructor, p -> p);
     }
 }

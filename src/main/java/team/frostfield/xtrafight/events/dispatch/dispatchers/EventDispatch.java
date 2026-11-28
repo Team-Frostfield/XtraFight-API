@@ -1,17 +1,15 @@
 package team.frostfield.xtrafight.events.dispatch.dispatchers;
 
-import team.frostfield.xtrafight.events.bus.NeoBus;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.ModLoader;
 import team.frostfield.xtrafight.events.dispatch.abstracts.DispatchEvent;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.entires.ListenerEntry;
-import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventBusType;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventDispatcher;
 import team.frostfield.xtrafight.events.dispatch.dispatchers.extras.EventPriority;
 import team.frostfield.xtrafight.events.dispatch.marks.HybridEvent;
 import team.frostfield.xtrafight.events.dispatch.side.EventSide;
 import team.frostfield.xtrafight.main.XtraFightAPI;
 import team.frostfield.xtrafight.utils.code.CodeUtils;
-import net.neoforged.fml.ModLoader;
-import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Comparator;
 import java.util.List;
@@ -91,14 +89,6 @@ public class EventDispatch<T extends DispatchEvent> {
         if (hasHybrid && CodeUtils.getSuperClass(eventClass) != DispatchEvent.class) {
             HybridEvent hybridEvent = eventClass.getAnnotation(HybridEvent.class);
             if (hybridEvent != null) {
-                if (hybridEvent.value() != EventBusType.BOTH) {
-                    switch (hybridEvent.value()) {
-                        case MOD -> ModLoader.postEvent(dispatchableEvent);
-                        case GAME -> NeoBus.EVENT_BUS.post(dispatchableEvent);
-                    }
-                } else {
-                    XtraFightAPI.LOGGER.warn("@HybridEvent value for {} is already defaulted to BOTH!", dispatchableEvent.getEventClsName());
-                }
                 this.postToAllBuses(dispatchableEvent);
             }
         }
@@ -115,8 +105,8 @@ public class EventDispatch<T extends DispatchEvent> {
     }
 
     public void postToAllBuses(T dispatchableEvent) {
-        ModLoader.postEvent(dispatchableEvent);
-        NeoForge.EVENT_BUS.post(dispatchableEvent);
+        ModLoader.get().postEvent(dispatchableEvent);
+        MinecraftForge.EVENT_BUS.post(dispatchableEvent);
     }
 
     public boolean postAndCheckCanceled(T dispatchableEvent) {

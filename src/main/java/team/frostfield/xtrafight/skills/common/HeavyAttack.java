@@ -1,8 +1,10 @@
 package team.frostfield.xtrafight.skills.common;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.HangingEntityItem;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
@@ -21,22 +23,23 @@ import yesman.epicfight.api.animation.AnimationVariables;
 import yesman.epicfight.api.animation.property.AnimationProperty;
 import yesman.epicfight.api.animation.types.AttackAnimation;
 import yesman.epicfight.api.animation.types.StaticAnimation;
-import yesman.epicfight.api.event.EpicFightEventHooks;
-import yesman.epicfight.api.event.types.player.ModifyComboCounter;
-import yesman.epicfight.api.event.types.player.SkillConsumeEvent;
 import yesman.epicfight.api.utils.math.ValueModifier;
 import yesman.epicfight.api.utils.math.Vec3f;
-import yesman.epicfight.network.common.AbstractAnimatorControl;
+import yesman.epicfight.network.common.AnimatorControlPacket;
 import yesman.epicfight.network.server.SPAnimatorControl;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillBuilder;
 import yesman.epicfight.skill.SkillContainer;
+import yesman.epicfight.skill.SkillDataKeys;
 import yesman.epicfight.skill.SkillDataManager;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.Style;
 import yesman.epicfight.world.capabilities.item.WeaponCategory;
+import yesman.epicfight.world.entity.eventlistener.ComboCounterHandleEvent;
+import yesman.epicfight.world.entity.eventlistener.PlayerEventListener;
+import yesman.epicfight.world.entity.eventlistener.SkillConsumeEvent;
 import yesman.epicfight.world.gamerule.EpicFightGameRules;
 
 import java.util.HashMap;
@@ -47,7 +50,7 @@ import java.util.function.BiFunction;
 public class HeavyAttack extends Skill {
     public double MIN_ATTACK_Y = 0.1;
     private final Map<WeaponCategory, Map<Style, BiFunction<CapabilityItem, PlayerPatch<?>, List<AnimationManager.AnimationAccessor<? extends AttackAnimation>>>>> heavyMotionMap = new HashMap<>();
-    public static final AnimationVariables.IndependentVariableKey<Boolean> HEAVY_COMBO = AnimationVariables.unsyncIndependent((animator) -> false, false);
+    public static final AnimationVariables.IndependentAnimationVariableKey<Boolean> HEAVY_COMBO = AnimationVariables.independent((animator) -> false, false);
 
     protected float heavyAttackConsumption;
     protected float heavyDashAttackConsumption;
@@ -61,19 +64,19 @@ public class HeavyAttack extends Skill {
     protected float armorNegation;
 
     // standard builder
-    public static SkillBuilder<?> createHeavyAttackBuilder() {
-        return new SkillBuilder<>(HeavyAttack::new)
+    public static SkillBuilder<HeavyAttack> createHeavyAttackBuilder() {
+        return new SkillBuilder<HeavyAttack>()
                 .setCategory(XtraFightAPISkillCategories.HEAVY_ATTACK)
                 .setActivateType(ActivateType.ONE_SHOT)
                 .setResource(Resource.STAMINA);
     }
 
-    public HeavyAttack(SkillBuilder<?> builder) {
+    public HeavyAttack(SkillBuilder<? extends HeavyAttack> builder) {
         super(builder);
     }
 
     @Override
-    public void loadDatapackParameters(CompoundTag parameters) {
+    public void setParams(CompoundTag parameters) {
         // Attack consumptions
         this.heavyAttackConsumption = parameters.getFloat("heavy_attack_consumption");
         this.heavyDashAttackConsumption = parameters.getFloat("heavy_dash_consumption");
@@ -87,7 +90,7 @@ public class HeavyAttack extends Skill {
     }
 
     @Override
-    public void executeOnServer(SkillContainer skillContainer, CompoundTag args) {
+    public void executeOnServer(SkillContainer skillContainer, FriendlyByteBuf args) {
         ServerPlayerPatch executor = skillContainer.getServerExecutor();
         SkillConsumeEvent skillConsumeEvent = new SkillConsumeEvent(executor, this, this.resource, null);
         HeavyAttackDispatchEvent heavyAttackEvent = new HeavyAttackDispatchEvent(skillContainer);
@@ -96,7 +99,7 @@ public class HeavyAttack extends Skill {
             return;
         }
 
-        if (!EpicFightEventHooks.Player.CONSUME_SKILL.postWithListener(skillConsumeEvent, skillConsumeEvent.getEntityPatch().getEventListener()).isCanceled()) {
+        if (!skillConsumeEvent.isCanceled()) {
             skillConsumeEvent.getResourceType().consumer.consume(skillContainer, executor, skillConsumeEvent.getAmount());
         }
 
@@ -105,7 +108,7 @@ public class HeavyAttack extends Skill {
             AnimationAccessor<? extends AttackAnimation> attackMotion;
             ServerPlayer player = executor.getOriginal();
             SkillDataManager dataManager = skillContainer.getDataManager();
-            int comboCounter = dataManager.getDataValue(XtraFightAPISkillDataKeys.HEAVY_COUNTER);
+            int comboCounter = dataManager.getDataValue(XtraFightAPISkillDataKeys.HEAVY_COUNTER.get());
             Vec3f blocksToDelta = this.deltaToBlocks(new Vec3f(player.getDeltaMovement()));
             boolean dashAttack = player.isSprinting();
             boolean airAttack = !player.isInWater() && !player.onGround() && blocksToDelta.y > this.MIN_ATTACK_Y && !player.getBlockStateOn().is(Block.byItem(Items.DIRT_PATH));
@@ -133,7 +136,7 @@ public class HeavyAttack extends Skill {
             if (attackMotion != null && this.checkConsumption(executor, dashAttack, airAttack)) {
                 this.applyWeaponScaling(attackMotion.get());
 
-                setHeavyCounter(ModifyComboCounter.Causal.ANOTHER_ACTION_ANIMATION, executor, skillContainer, attackMotion, comboCounter);
+                setHeavyCounter(ComboCounterHandleEvent.Causal.ANOTHER_ACTION_ANIMATION, executor, skillContainer, attackMotion, comboCounter);
                 // do Animator#playAnimationSynchronized() instead of Animator#play(), for safer animation play handling
                 executor.playAnimationSynchronized(attackMotion, 0.0F);
                 executor.getAnimator().getVariables().put(HEAVY_COMBO, attackMotion, true);
@@ -171,11 +174,9 @@ public class HeavyAttack extends Skill {
 
     @Override
     public void updateContainer(SkillContainer container) {
-        container.runOnServer((serverPlayerPatch) -> {
-            if (container.getExecutor().getTickSinceLastAction() > this.attackRecovery && container.getDataManager().getDataValue(XtraFightAPISkillDataKeys.HEAVY_COUNTER) > 0) {
-                setHeavyCounter(ModifyComboCounter.Causal.TIME_EXPIRED, serverPlayerPatch, container, null, 0);
-            }
-        });
+        if (!container.getExecutor().isLogicalClient() && container.getExecutor().getTickSinceLastAction() > this.attackRecovery && container.getDataManager().getDataValue(SkillDataKeys.COMBO_COUNTER.get()) > 0) {
+            setHeavyCounter(ComboCounterHandleEvent.Causal.TIME_EXPIRED, container.getServerExecutor(), container, null, 0);
+        }
     }
 
     @Nullable
@@ -195,11 +196,11 @@ public class HeavyAttack extends Skill {
         return null;
     }
 
-    private static void setHeavyCounter(ModifyComboCounter.Causal reason, ServerPlayerPatch playerpatch, SkillContainer container, AnimationManager.AnimationAccessor<? extends StaticAnimation> causalAnimation, int value) {
-        int prevValue = container.getDataManager().getDataValue(XtraFightAPISkillDataKeys.HEAVY_COUNTER);
-        ModifyComboCounter comboResetEvent = new ModifyComboCounter(reason, playerpatch, causalAnimation, prevValue, value);
-        EpicFightEventHooks.Player.MODIFY_COMBO_COUNTER.postWithListener(comboResetEvent, playerpatch.getEventListener());
-        container.getDataManager().setData(XtraFightAPISkillDataKeys.HEAVY_COUNTER, comboResetEvent.getNextValue());
+    private static void setHeavyCounter(ComboCounterHandleEvent.Causal reason, ServerPlayerPatch playerpatch, SkillContainer container, AnimationManager.AnimationAccessor<? extends StaticAnimation> causalAnimation, int value) {
+        int prevValue = container.getDataManager().getDataValue(XtraFightAPISkillDataKeys.HEAVY_COUNTER.get());
+        ComboCounterHandleEvent comboResetEvent = new ComboCounterHandleEvent(reason, playerpatch, causalAnimation, prevValue, value);
+        container.getExecutor().getEventListener().triggerEvents(PlayerEventListener.EventType.COMBO_COUNTER_HANDLE_EVENT, comboResetEvent);
+        container.getDataManager().setData(XtraFightAPISkillDataKeys.HEAVY_COUNTER.get(), comboResetEvent.getNextValue());
     }
 
     public boolean checkConsumption(PlayerPatch<?> playerPatch, boolean dash, boolean air) {
@@ -209,8 +210,8 @@ public class HeavyAttack extends Skill {
 
     private static @NotNull SPAnimatorControl getAnimatorControl(SkillContainer skillContainer, boolean stiffAttack, AnimationManager.AnimationAccessor<? extends AttackAnimation> attackMotion) {
         return stiffAttack
-                ? new SPAnimatorControl(AbstractAnimatorControl.Action.PLAY, attackMotion, skillContainer.getExecutor(), 0.0F)
-                : new SPAnimatorControl(AbstractAnimatorControl.Action.PLAY_CLIENT, attackMotion, skillContainer.getExecutor(), 0.0F, AbstractAnimatorControl.Layer.COMPOSITE_LAYER, AbstractAnimatorControl.Priority.HIGHEST);
+                ? new SPAnimatorControl(AnimatorControlPacket.Action.PLAY, attackMotion, 0.0F, skillContainer.getExecutor())
+                : new SPAnimatorControl(AnimatorControlPacket.Action.PLAY_CLIENT, attackMotion, 0.0F, skillContainer.getExecutor(), AnimatorControlPacket.Layer.COMPOSITE_LAYER, AnimatorControlPacket.Priority.HIGHEST);
     }
 
 }

@@ -1,6 +1,7 @@
 package team.frostfield.xtrafight.builders.minecraft;
 
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraftforge.server.command.EnumArgument;
 import team.frostfield.xtrafight.network.XtraFightAPINetworkManager;
 import team.frostfield.xtrafight.network.packets.server.SPGameRuleSync;
 import net.minecraft.commands.CommandSourceStack;
@@ -10,7 +11,6 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameRules.Type;
 import net.minecraft.world.level.GameRules.Value;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.server.command.EnumArgument;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

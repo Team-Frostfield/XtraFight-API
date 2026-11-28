@@ -1,7 +1,6 @@
 package team.frostfield.xtrafight.events.bus;
 
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModLoadingContext;
+import net.minecraftforge.eventbus.api.IEventBus;
 import team.frostfield.xtrafight.events.bus.impl.ModBusImpl;
 
 public interface ModBus extends IEventBus {
@@ -9,13 +8,15 @@ public interface ModBus extends IEventBus {
         return new ModBusImpl(modBus);
     }
 
-    static ModBus byID(String modID) {
+    static ModBus active() {
+        return new ModBusImpl();
+    }
+
+    static ModBus fromID(String modID) {
         return new ModBusImpl(modID);
     }
 
-    static ModBus active() {
-        return new ModBusImpl(ModLoadingContext.get().getActiveContainer().getEventBus());
-    }
+    String getModID();
 
 
 }

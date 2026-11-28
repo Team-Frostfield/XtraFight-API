@@ -1,10 +1,10 @@
 package team.frostfield.xtrafight.mixins.epicfight.common;
 
-import team.frostfield.xtrafight.animation.XtraFightAPIAnimationStates;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import team.frostfield.xtrafight.animation.XtraFightAPIAnimationStates;
 import yesman.epicfight.api.animation.types.EntityState;
 import yesman.epicfight.api.animation.types.GuardAnimation;
 import yesman.epicfight.api.animation.types.StateSpectrum.Blueprint;
@@ -24,7 +24,7 @@ public abstract class GuardAnimationMixin {
                 .addState(EntityState.TURNING_LOCKED, true)
                 .addState(EntityState.MOVEMENT_LOCKED, true)
                 .addState(EntityState.UPDATE_LIVING_MOTION, false)
-                .addState(EntityState.COMBO_ATTACKS_DOABLE, false)
+                .addState(EntityState.CAN_BASIC_ATTACK, false)
                 .addState(XtraFightAPIAnimationStates.CAN_COUNTER_ATTACK, true)
                 .newTimePair(start, Float.MAX_VALUE)
                 .addState(EntityState.INACTION, true);

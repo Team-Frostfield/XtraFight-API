@@ -19,11 +19,10 @@ import team.frostfield.xtrafight.main.XtraFightAPI;
 import team.frostfield.xtrafight.mixins.minecraft.client.CameraAccessor;
 import yesman.epicfight.api.animation.JointTransform;
 import yesman.epicfight.api.animation.TransformSheet;
-import yesman.epicfight.api.client.event.EpicFightClientEventHooks;
+import yesman.epicfight.api.client.event.EpicFightClientHooks;
 import yesman.epicfight.api.utils.math.Vec3f;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
-
 
 import javax.annotation.Nullable;
 
@@ -141,7 +140,7 @@ public class CameraAnimatorAPI {
         if (cameraType.isFirstPerson() || cameraType.isMirrored() || !XtraFightAPIConfigs.Common.shouldClipToHead()) return;
 
         if (!this.hasEventRegistered) {
-            EpicFightClientEventHooks.Camera.BUILD_TRANSFORM_POST.registerEvent(event -> {
+            EpicFightClientHooks.Camera.BUILD_TRANSFORM_POST.registerEvent(event -> {
                 try {
                     if (event.getCameraApi().isLockingOnTarget() && this.isPlaying()) {
                         event.getCameraApi().toggleLockOn();
